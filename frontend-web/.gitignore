@@ -1,0 +1,38 @@
+# Node modules
+/node_modules/
+
+# Build output
+/build/
+
+# Logs
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# IDE and editor files
+/.idea/
+/.vscode/
+/*.sublime-workspace
+/*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.* # If using multiple .env files for different environments
+
+# Optional: Storybook files (if using Storybook)
+.storybook/
+
+# Testing directories and files
+/coverage/
+*.test.js
+
+# React Native specific (if using React Native as well)
+.expo/
+.expo-shared/
+
+# Webpack cache
+/.webpack/

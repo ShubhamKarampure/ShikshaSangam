@@ -1,0 +1,52 @@
+# Node modules
+/node_modules/
+
+# React Native bundler and cache
+/.metro/
+/.react-native/
+
+# Yarn and npm log files
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Build artifacts
+/android/build/
+/ios/build/
+
+# React Native packager cache
+/packager-lock.json
+
+# IDE/Editor files
+.idea/
+/.vscode/
+/*.sublime-workspace
+/*.sublime-project
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Expo files (if using Expo)
+.expo/
+.expo-shared/
+
+# Android Studio specific files
+/.idea/
+/*.iml
+/local.properties
+/.gradle/
+/build/
+
+# Xcode specific files
+xcuserdata/
+*.xcuserstate
+
+# Temporary files
+*.swp
+*.swo
+*.bak
+
+# Optional: Secrets and keys
+.env
+.env.* # If you're using environment variables in .env files
