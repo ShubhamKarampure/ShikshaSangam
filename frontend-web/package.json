@@ -1,5 +1,5 @@
 {
-  "name": "socialreact",
+  "name": "shikshasangam",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -52,7 +52,7 @@
     "eslint-plugin-react-hooks": "^4.6.2",
     "eslint-plugin-react-refresh": "^0.4.7",
     "prettier": "^3.3.3",
-    "sass": "^1.77.6",
+    "sass": "^1.32.13 ",
     "vite": "^5.4.11"
   }
 }
