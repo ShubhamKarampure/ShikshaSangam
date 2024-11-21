@@ -1,0 +1,63 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django stuff:
+*.log
+*.pot
+*.pyc
+*.pyo
+db.sqlite3
+instance/
+.media/
+.static/
+
+# Environment variables
+.env
+
+# Virtual environment
+env/
+venv/
+ENV/
+venv.bak/
+venv-*/
+
+# IDEs and editors
+.idea/
+*.sublime-project
+*.sublime-workspace
+.vscode/
+*.swp
+*~
+
+# Testing
+.coverage
+*.cover
+htmlcov/
+.tox/
+.nox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.egg-info/
+.eggs/
+
+# Migrations
+**/migrations/*.pyc
+**/migrations/*.py
+
+# Static and media files
+staticfiles/
+media/
+
+# Ignore secrets
+secrets.json
+
+# Build and distribution
+build/
+dist/
+*.egg
+*.egg-info/
+*.manifest
+*.spec
