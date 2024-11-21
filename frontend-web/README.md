@@ -1,30 +1,32 @@
-# React + TypeScript + Vite
+# Frontend Setup (React)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Follow these steps to set up and run the React frontend:
 
-Currently, two official plugins are available:
+### 1. Navigate to the Frontend Directory
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Go to the `frontend-web` directory:
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
-
-- Configure the top-level `parserOptions` property like this:
-
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json', './tsconfig.app.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
+```bash
+cd frontend-web
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+### 2. Install Dependencies
+
+Ensure that you have Node.js installed on your system. If you don't have it installed, you can download it from the official website: [Node.js Download](https://nodejs.org/).
+
+Once Node.js is installed, install the required dependencies for the React project:
+
+```bash
+npm install
+```
+
+### 3. Run the Development Server
+
+Start the development server by running:
+
+```bash
+npm run dev
+```
+
+This will start the React application locally, typically at `http://localhost:3000/`. You can open this URL in your browser to access the frontend of the project.
+

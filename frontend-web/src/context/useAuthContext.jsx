@@ -9,7 +9,7 @@ export function useAuthContext() {
   }
   return context;
 }
-const authSessionKey = '_SOCIAL_AUTH_KEY_';
+const authSessionKey = '_SS_AUTH_KEY_';
 export function AuthProvider({
   children
 }) {
@@ -19,6 +19,7 @@ export function AuthProvider({
     if (!fetchedCookie) return;else return JSON.parse(fetchedCookie);
   };
   const [user, setUser] = useState(getSession());
+  console.log(user)
   const saveSession = user => {
     setCookie(authSessionKey, JSON.stringify(user));
     setUser(user);

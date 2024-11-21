@@ -58,6 +58,7 @@ const ForgotPassAdvance = lazy(() => import('@/app/(plain)/(authentication)/auth
 const NotFoundPage = lazy(() => import('@/app/(social)/(with-topbar)/not-found/page'));
 const OfflinePage = lazy(() => import('@/app/(plain)/offline/page'));
 const PrivacyAndTermPage = lazy(() => import('@/app/(social)/(with-topbar)/privacy-terms/page'));
+
 const initialRoutes = [{
   path: '/',
   name: 'root',
