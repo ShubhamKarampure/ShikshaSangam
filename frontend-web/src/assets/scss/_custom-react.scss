@@ -1,0 +1,41 @@
+.content-none {
+  &:after {
+    display: none !important;
+  }
+
+  &:before {
+    display: none !important;
+  }
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.icons-center {
+  display: inline-flex;
+  align-items: center;
+}
+
+.flex-centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-navbar-dropdown-menu {
+  @include media-breakpoint-down(lg) {
+    position: static !important;
+    transform: none !important;
+  }
+}
+
+.custom-notification-accordion{
+  .accordion-button{
+    padding: 0px !important;
+  }
+  .accordion-button:not(.collapsed){
+    background-color: transparent;
+    box-shadow: none !important;
+  }
+}
