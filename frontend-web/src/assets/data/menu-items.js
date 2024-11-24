@@ -258,24 +258,6 @@ export const APP_MENU_ITEMS = [{
       label: 'Forgot Password',
       url: '/auth/forgot-pass',
       parentKey: 'acc-authentication'
-    }, {
-      key: 'auth-divider-1',
-      isDivider: true
-    }, {
-      key: 'auth-sign-in-advance',
-      label: 'Sign In Advance',
-      url: '/auth-advance/sign-in',
-      parentKey: 'acc-authentication'
-    }, {
-      key: 'auth-sign-up-advance',
-      label: 'Sign Up Advance',
-      url: '/auth-advance/sign-up',
-      parentKey: 'acc-authentication'
-    }, {
-      key: 'auth-forgot-pass-advance',
-      label: 'Forgot Password Advance',
-      url: '/auth-advance/forgot-pass',
-      parentKey: 'acc-authentication'
     }]
   }, {
     key: 'acc-error-404',
