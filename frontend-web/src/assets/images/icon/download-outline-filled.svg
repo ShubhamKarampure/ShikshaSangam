@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 64 64" enable-background="new 0 0 64 64" xml:space="preserve">
+<g>
+	<g>
+		<g>
+			<g>
+				<rect x="1" y="55" fill="#C3C2CE" width="62" height="8"/>
+			</g>
+			<g>
+				<path fill="#2C2C3D" d="M63,64H1c-0.6,0-1-0.4-1-1v-8c0-0.6,0.4-1,1-1h62c0.6,0,1,0.4,1,1v8C64,63.6,63.6,64,63,64z M2,62h60v-6
+					H2V62z"/>
+			</g>
+		</g>
+	</g>
+	<g>
+		<g>
+			<polygon fill="#2ECC71" points="48.4,26 32,46.5 15.6,26 27,26 27,1 37,1 37,26 			"/>
+		</g>
+		<g>
+			<path fill="#2C2C3D" d="M32,47.5c-0.3,0-0.6-0.1-0.8-0.4L14.9,26.6c-0.2-0.3-0.3-0.7-0.1-1.1c0.2-0.3,0.5-0.6,0.9-0.6H26V1
+				c0-0.6,0.4-1,1-1h10c0.6,0,1,0.4,1,1v24h10.4c0.4,0,0.7,0.2,0.9,0.6c0.2,0.3,0.1,0.8-0.1,1.1L32.8,47.1
+				C32.6,47.3,32.3,47.5,32,47.5z M17.7,27L32,44.9L46.3,27H37c-0.6,0-1-0.4-1-1V2h-8v24c0,0.6-0.4,1-1,1H17.7z"/>
+		</g>
+	</g>
+</g>
+</svg>

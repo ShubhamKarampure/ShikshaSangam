@@ -1,0 +1,6 @@
+// variables-dark.scss
+// Bootstrap variable dark overrides by theme author
+
+$link-color-dark:                   $primary;
+$link-hover-color-dark:             shift-color($primary, $link-shade-percentage);
+$body-secondary-color-dark:         rgba($gray-300, .5);
