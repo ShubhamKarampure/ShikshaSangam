@@ -1,11 +1,13 @@
 from django.db import models
 
 # Create your models here.
+from django.db import models
+
+# Create your models here.
 
 
 from django.db import models
 import uuid
-
 
 class College(models.Model):
     college_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -35,16 +37,9 @@ class UserProfile(models.Model):
 class StudentProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
     enrollment_year = models.PositiveIntegerField()
-    
-from django.db import models
-
-class StudentProfile(models.Model):
-    profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
-    enrollment_year = models.PositiveIntegerField()
     current_program = models.CharField(max_length=100)  # Text field for program name
     expected_graduation_year = models.PositiveIntegerField()
     specialization = models.CharField(max_length=100, blank=True, null=True)
-
 
 class AlumnusProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
