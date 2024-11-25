@@ -1,39 +1,46 @@
-import { deleteCookie, getCookie, hasCookie, setCookie } from 'cookies-next';
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next';
+
 const AuthContext = createContext(undefined);
-export function useAuthContext() {
+
+export const useAuthContext = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
     throw new Error('useAuthContext must be used within an AuthProvider');
   }
   return context;
-}
-const authSessionKey = '_SOCIAL_AUTH_KEY_';
-export function AuthProvider({
-  children
-}) {
+};
+
+const authSessionKey = '_SS_AUTH_KEY_';
+
+export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+
+  // Retrieve session from cookies
   const getSession = () => {
-    const fetchedCookie = getCookie(authSessionKey)?.toString();
-    if (!fetchedCookie) return;else return JSON.parse(fetchedCookie);
+    const cookieData = getCookie(authSessionKey);
+    return cookieData ? JSON.parse(cookieData) : null;
   };
+
   const [user, setUser] = useState(getSession());
-  const saveSession = user => {
-    setCookie(authSessionKey, JSON.stringify(user));
-    setUser(user);
+
+  // Save session
+  const saveSession = (sessionData) => {
+    setCookie(authSessionKey, JSON.stringify(sessionData));
+    setUser(sessionData.user);
   };
+
+  // Remove session
   const removeSession = () => {
     deleteCookie(authSessionKey);
-    setUser(undefined);
+    setUser(null);
     navigate('/auth/sign-in');
   };
-  return <AuthContext.Provider value={{
-    user,
-    isAuthenticated: hasCookie(authSessionKey),
-    saveSession,
-    removeSession
-  }}>
+
+  return (
+    <AuthContext.Provider value={{ user, isAuthenticated: hasCookie(authSessionKey), saveSession, removeSession }}>
       {children}
-    </AuthContext.Provider>;
-}
+    </AuthContext.Provider>
+  );
+};
