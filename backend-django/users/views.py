@@ -1,30 +1,47 @@
 from rest_framework import viewsets
+from .models import User
+from .serializers import UserSerializer
+from rest_framework import status, generics
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from django.contrib.auth import get_user_model
+from rest_framework.exceptions import ValidationError
 
-from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile
-from .serializers import (
-    CollegeSerializer,
-    UserProfileSerializer,
-    StudentProfileSerializer,
-    AlumnusProfileSerializer,
-    CollegeStaffProfileSerializer
-)
+User = get_user_model()
 
-class CollegeViewSet(viewsets.ModelViewSet):
-    queryset = College.objects.all()
-    serializer_class = CollegeSerializer
+class RegisterView(generics.CreateAPIView):
+    queryset = User.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
-class UserProfileViewSet(viewsets.ModelViewSet):
-    queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    def perform_create(self, serializer):
+        try:
+            user = serializer.save()
+            print(f"User {user.username} created successfully.")  
+            return Response({
+                'user': user.username,
+            }, status=status.HTTP_201_CREATED)
 
-class StudentProfileViewSet(viewsets.ModelViewSet):
-    queryset = StudentProfile.objects.all()
-    serializer_class = StudentProfileSerializer
+        except ValidationError as e:
+            print(f"Validation error: {str(e)}")  
+            return Response({'detail': 'An account with this credentials already exists '}, status=status.HTTP_400_BAD_REQUEST)
 
-class AlumnusProfileViewSet(viewsets.ModelViewSet):
-    queryset = AlumnusProfile.objects.all()
-    serializer_class = AlumnusProfileSerializer
+        except Exception as e:
+            print(f"Error occurred: {str(e)}")  
+            return Response({'detail': 'An error occurred during registration.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
-    queryset = CollegeStaffProfile.objects.all()
-    serializer_class = CollegeStaffProfileSerializer
+class LoginView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = LoginSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(serializer.validated_data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer

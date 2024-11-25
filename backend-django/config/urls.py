@@ -1,5 +1,5 @@
 """
-URL configuration for backend_django project.
+URL configuration for config project.
 
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/5.1/topics/http/urls/
@@ -18,9 +18,6 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
-    path('auth/', include('dj_rest_auth.urls')),  # Login, logout, password reset
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),  # Registration
-    path('accounts/', include('allauth.urls')),  # For Google OAuth
-    path('users/', include('users.urls'))
+    path('admin/', admin.site.urls),
+    path('api/', include('users.urls')),
 ]
