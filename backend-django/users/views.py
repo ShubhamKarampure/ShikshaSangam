@@ -9,6 +9,14 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
+from rest_framework import viewsets, permissions
+from .models import StudentProfile, AlumnusProfile, CollegeAdminProfile, College
+from .serializers import (
+    StudentProfileSerializer,
+    AlumnusProfileSerializer,
+    CollegeAdminProfileSerializer,
+    CollegeSerializer,
+)
 
 User = get_user_model()
 
@@ -35,7 +43,6 @@ class RegisterView(generics.CreateAPIView):
 
 class LoginView(APIView):
     permission_classes = [AllowAny]
-
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -45,3 +52,33 @@ class LoginView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+
+class StudentProfileViewSet(viewsets.ModelViewSet):
+    queryset = StudentProfile.objects.all()
+    serializer_class = StudentProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.role == 'college_admin':
+            return StudentProfile.objects.filter(college=self.request.user.college_admin_profile.managed_college)
+        return super().get_queryset()
+
+
+class AlumnusProfileViewSet(viewsets.ModelViewSet):
+    queryset = AlumnusProfile.objects.all()
+    serializer_class = AlumnusProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CollegeAdminProfileViewSet(viewsets.ModelViewSet):
+    queryset = CollegeAdminProfile.objects.all()
+    serializer_class = CollegeAdminProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+
+class CollegeViewSet(viewsets.ModelViewSet):
+    queryset = College.objects.all()
+    serializer_class = CollegeSerializer
+    permission_classes = [permissions.IsAuthenticated]
+

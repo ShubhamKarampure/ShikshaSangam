@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework_simplejwt.tokens import RefreshToken
+from .models import User, StudentProfile, AlumnusProfile, CollegeAdminProfile, College
 
 User = get_user_model()
 
@@ -71,3 +72,69 @@ class LoginSerializer(serializers.Serializer):
 
         # Raise error for invalid credentials
         raise serializers.ValidationError({"detail": "Invalid email or password."})
+    
+
+class CollegeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = College
+        fields = '__all__'
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ['id', 'email', 'username', 'role']
+
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)
+
+    class Meta:
+        model = StudentProfile  # Can also be used for AlumnusProfile or CollegeAdminProfile
+        fields = [
+            'user',
+            'full_name',
+            'avatar_image',
+            'banner_image',
+            'bio',
+            'contact_number',
+            'specialization',
+            'location',
+            'social_links',
+            'resume_url',
+            'preferences',
+            'connections',
+            'is_verified',
+            'created_at',
+            'updated_at',
+        ]
+
+
+class StudentProfileSerializer(UserProfileSerializer):
+    class Meta(UserProfileSerializer.Meta):
+        model = StudentProfile
+        fields = UserProfileSerializer.Meta.fields + [
+            'enrollment_year',
+            'current_program',
+            'expected_graduation_year',
+        ]
+
+
+class AlumnusProfileSerializer(UserProfileSerializer):
+    class Meta(UserProfileSerializer.Meta):
+        model = AlumnusProfile
+        fields = UserProfileSerializer.Meta.fields + [
+            'graduation_year',
+            'current_employment',
+            'career_path',
+        ]
+
+
+class CollegeAdminProfileSerializer(UserProfileSerializer):
+    managed_college = CollegeSerializer()
+
+    class Meta(UserProfileSerializer.Meta):
+        model = CollegeAdminProfile
+        fields = UserProfileSerializer.Meta.fields + [
+            'managed_college',
+        ]
