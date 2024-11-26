@@ -6,6 +6,8 @@ import { ChatProvider } from '@/context/useChatContext';
 import { LayoutProvider } from '@/context/useLayoutContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from '@/context/useAuthContext';
+import { GoogleOAuthProvider } from '@react-oauth/google';
+
 const AppProvidersWrapper = ({
   children
 }) => {
@@ -28,6 +30,8 @@ const AppProvidersWrapper = ({
     };
   }, []);
   return <LayoutProvider>
+    <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+>
       <AuthProvider>
         <HelmetProvider>
           <ChatProvider>
@@ -38,6 +42,7 @@ const AppProvidersWrapper = ({
           </ChatProvider>
         </HelmetProvider>
       </AuthProvider>
+    </GoogleOAuthProvider>
     </LayoutProvider>;
 };
 export default AppProvidersWrapper;

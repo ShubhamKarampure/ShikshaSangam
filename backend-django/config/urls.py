@@ -34,7 +34,4 @@ urlpatterns = [
     # Apps
     path('users/', include('users.urls')),
     path('test/', include('test_app.urls'))
-    
-
-
 ]

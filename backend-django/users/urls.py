@@ -5,6 +5,7 @@ from .views import (
     SignupView, ProfileSetupView, CreateCollegeView
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from users.views import GoogleLoginApi
 
 # Initialize the router
 router = DefaultRouter()
@@ -21,4 +22,5 @@ urlpatterns = [
     # JWT token routes
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path("api/v1/auth/google/callback/",GoogleLoginApi.as_view(), name="google_login_callback"),
 ]

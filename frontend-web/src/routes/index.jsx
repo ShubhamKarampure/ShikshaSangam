@@ -61,7 +61,8 @@ const initialRoutes = [{
   path: '/',
   name: 'root',
   element: <Navigate to="/feed/home" />
-}];
+}
+];
 
 // feed with container
 const generalRoutes = [{

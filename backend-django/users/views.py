@@ -7,6 +7,31 @@ from .serializers import (
     StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
 )
 from django.contrib.auth.models import User
+from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
+from allauth.socialaccount.providers.oauth2.client import OAuth2Client
+from dj_rest_auth.registration.views import SocialLoginView
+from django.conf import settings
+
+import requests
+from django.http import JsonResponse
+from .services import get_user_data
+from django.shortcuts import redirect
+from django.conf import settings
+from django.contrib.auth import login
+from rest_framework.views import APIView
+from .serializers import AuthSerializer
+from django.conf import settings
+
+# views that handle 'localhost://8000/auth/api/login/google/'
+class GoogleLoginApi(APIView):
+    def get(self, request, *args, **kwargs):
+        auth_serializer = AuthSerializer(data=request.GET)
+        auth_serializer.is_valid(raise_exception=True)
+        validated_data = auth_serializer.validated_data
+        user_data = get_user_data(validated_data)
+        user = User.objects.get(email=user_data['email'])
+        login(request, user)
+        return redirect(settings.BASE_APP_URL)
 
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()

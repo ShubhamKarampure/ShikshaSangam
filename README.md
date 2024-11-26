@@ -87,7 +87,7 @@ Shiksha Sangam is an innovative platform designed to enhance the interaction bet
 - **Backend:** Django, Django REST Framework
 - **Frontend:** React.js
 - **Database:** PostgreSQL
-- **Authentication:** JWT, OAuth
+- **Authentication:** JWT, OAuth2
 - **Machine Learning:** Scikit-learn, TensorFlow
 - **Blockchain:** Hyperledger
 - **Cloud:** AWS, Google Cloud

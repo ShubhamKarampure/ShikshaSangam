@@ -36,3 +36,7 @@ class CollegeStaffProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegeStaffProfile
         fields = '__all__'
+
+class AuthSerializer(serializers.Serializer):
+    code = serializers.CharField(required=False)
+    error = serializers.CharField(required=False)

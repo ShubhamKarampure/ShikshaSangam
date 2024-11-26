@@ -55,8 +55,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
 
-    
-    
+
     'dj_rest_auth',
     'dj_rest_auth.registration',
     
@@ -72,7 +71,6 @@ INSTALLED_APPS = [
 ]
 
 REST_USE_JWT = True
-# AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -226,19 +224,24 @@ SITE_ID = 2
 LOGIN_REDIRECT_URL = '/accounts/password/change/'  # or your desired path
 ACCOUNT_SIGNUP_REDIRECT_URL = "/auth/login/"
 
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_OAUTH2_CLIENT_ID")
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH2_CLIENT_SECRET")
+GOOGLE_OAUTH2_CALLBACK_URL = os.getenv("GOOGLE_OAUTH2_CALLBACK_URL")
+
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
         'APP': {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'METHOD': 'oauth2',
-            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
-            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+            'client_id': GOOGLE_OAUTH2_CLIENT_ID,
+            'secret': GOOGLE_OAUTH2_CLIENT_SECRET,
             'key': ''
         }
     }
 }
 
+BASE_APP_URL = "http://127.0.0.1:8000"
 
 # Cloudinary
 CLOUDINARY_STORAGE = {
