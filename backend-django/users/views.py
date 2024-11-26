@@ -1,32 +1,111 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile,CollegeAdminProfile
 from .serializers import (
     CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer,
     StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
 )
 from django.contrib.auth.models import User
+from .permissions import *
+
 
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
     serializer_class = CollegeSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            # Only College Admins can create a college
+            permission_classes = [IsCollegeAdmin]
+        elif self.action in ['retrieve', 'list']:
+            # College Admins, Staff, and Verified Users can view college info
+           permission_classes = [IsAuthenticated]
+        elif self.action in ['update', 'partial_update']:
+            # Only College Admins can update college details
+            permission_classes = [IsCollegeAdmin, IsAuthenticated]
+        elif self.action == 'destroy':
+            # Only College Admins can delete a college
+            permission_classes = [IsCollegeAdmin, IsAuthenticated]
+        return [permission() for permission in permission_classes]
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
+
+    def get_permissions(self):
+        if self.action == 'create':
+            # Any verified user can create a UserProfile
+             permission_classes = [] # [IsAuthenticated]
+        elif self.action in ['retrieve', 'list']:
+            # Any verified user can view UserProfiles
+            permission_classes =  [IsVerifiedUser, IsAuthenticated]
+        elif self.action in ['update', 'partial_update']:
+            # Only the owner of the profile can update their profile
+            permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+        elif self.action == 'destroy':
+            # Only the owner of the profile can delete their profile
+            permission_classes = [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+        return [permission() for permission in permission_classes]
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            
+             permission_classes = [] # [IsAuthenticated]
+        elif self.action in ['retrieve', 'list']:
+           
+            permission_classes =  [IsVerifiedUser, IsAuthenticated]
+        elif self.action in ['update', 'partial_update']:
+            
+            permission_classes= [IsOwnerPermission | IsCollegeAdmin , IsVerifiedUser, IsAuthenticated]
+        elif self.action == 'destroy':
+            
+            permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
+        return [permission() for permission in permission_classes]
+        
+
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
     queryset = AlumnusProfile.objects.all()
     serializer_class = AlumnusProfileSerializer
 
+    def get_permissions(self):
+        if self.action == 'create':
+            
+             permission_classes = [] # [IsAuthenticated]
+        elif self.action in ['retrieve', 'list']:
+           
+            permission_classes =  [IsVerifiedUser, IsAuthenticated]
+        elif self.action in ['update', 'partial_update']:
+            
+            permission_classes= [IsOwnerPermission | IsCollegeAdmin , IsVerifiedUser, IsAuthenticated]
+        elif self.action == 'destroy':
+            
+            permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
+        return [permission() for permission in permission_classes]
+
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
     serializer_class = CollegeStaffProfileSerializer
+
+    def get_permissions(self):
+        if self.action == 'create':
+            
+             permission_classes = [] # [IsAuthenticated]
+        elif self.action in ['retrieve', 'list']:
+           
+            permission_classes =  [IsVerifiedUser, IsAuthenticated]
+        elif self.action in ['update', 'partial_update']:
+            
+            permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+        elif self.action == 'destroy':
+            
+            permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
+        return [permission() for permission in permission_classes]
 
 class ProfileSetupView(APIView):
     def post(self, request, *args, **kwargs):

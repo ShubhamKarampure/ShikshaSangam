@@ -1,45 +1,79 @@
-# permissions.py
 from rest_framework import permissions
+from .models import CollegeAdminProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, College, UserProfile
 
 class IsVerifiedUser(permissions.BasePermission):
-    """Allows access only to verified users."""
-
     def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.is_verified  # assuming `is_verified` is a field
+        user = request.user
+        if not user.is_authenticated:
+            return False
 
-class IsStudentOrReadOnly(permissions.BasePermission):
-    """Allows students to access their own profile, and read-only access for others."""
+        userprofile = getattr(user, 'userprofile', None)
+        if not userprofile:
+            return False
 
+        # Check if the user has any verified profile (admin, student, alumni, or staff)
+        for role_profile in ['collegeadminprofile', 'studentprofile', 'alumnusprofile', 'collegestaffprofile']:
+            profile = getattr(userprofile, role_profile, None)
+            if profile and profile.is_verified:
+                return True
+        return False
+class IsCollegeAdmin(permissions.BasePermission):
+    def has_permission(self, request, view):
+        userprofile = getattr(request.user, 'userprofile', None)
+        admin_profile = getattr(userprofile, 'collegeadminprofile', None)
+        return bool(admin_profile and admin_profile.is_verified)
+
+class IsStudent(permissions.BasePermission):
+    def has_permission(self, request, view):
+        userprofile = getattr(request.user, 'userprofile', None)
+        student_profile = getattr(userprofile, 'studentprofile', None)
+        return bool(student_profile and student_profile.is_verified)
+
+class IsAlumni(permissions.BasePermission):
+    def has_permission(self, request, view):
+        userprofile = getattr(request.user, 'userprofile', None)
+        alumni_profile = getattr(userprofile, 'alumnusprofile', None)
+        return bool(alumni_profile and alumni_profile.is_verified)
+
+class IsCollegeStaff(permissions.BasePermission):
+    def has_permission(self, request, view):
+        userprofile = getattr(request.user, 'userprofile', None)
+        staff_profile = getattr(userprofile, 'collegestaffprofile', None)
+        return bool(staff_profile and staff_profile.is_verified)
+
+class IsOwnerPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True  # Read-only access
-        return obj.user == request.user and request.user.is_student  # Assuming `is_student` attribute
 
-class IsAlumnusOrReadOnly(permissions.BasePermission):
-    """Allows alumni to access their own profile, and read-only access for others."""
+        if isinstance(obj, UserProfile):
+            return  obj.user == request.user
 
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj.user == request.user and request.user.is_alumnus  # Assuming `is_alumnus` attribute
+        return obj.userprofile.user == request.user
 
-class IsCollegeStaffOrReadOnly(permissions.BasePermission):
-    """Allows college staff to access their own profile, and read-only access for others."""
-
-    def has_object_permission(self, request, view, obj):
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        return obj.user == request.user and request.user.is_staff  # Assuming `is_staff` attribute
-
-
-class IsOwnerOrReadOnly(permissions.BasePermission):
+class IsUserOfCollege(permissions.BasePermission):
     """
-    Custom permission to allow only the owner of an object to edit it.
+    Custom permission to check if the user is a College Admin of the specific College.
     """
-
+    
     def has_object_permission(self, request, view, obj):
-        # Read-only permissions for safe methods (GET, HEAD, OPTIONS)
-        if request.method in permissions.SAFE_METHODS:
-            return True
-        # Write permissions only for the owner of the profile
-        return obj.user == request.user
+        """
+        Check if the logged-in user is a College Admin of the college associated with the given college object.
+        """
+        # Ensure the user is authenticated and has a UserProfile linked to them
+        if not request.user.is_authenticated or not hasattr(request.user, 'userprofile'):
+            return False
+        
+        # Get the user's college from their UserProfile
+        user_college = request.user.userprofile.college
+        
+        # Ensure the College object (`obj`) is available and has the `college` attribute
+        if not obj.college:
+            return False
+        
+        # If the object is a College object, compare its id with the user's college id
+        if isinstance(obj, College):
+            return user_college.id == obj.id
+        
+        # Ensure the College object (`obj`) is available and has the `college` attribute (for non-College objects)
+        if hasattr(obj, 'college') and obj.college:
+            return user_college == obj.college
+

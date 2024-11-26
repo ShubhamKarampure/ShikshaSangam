@@ -69,6 +69,7 @@ INSTALLED_APPS = [
 
     'users',
     'test_app',
+    'social',
 ]
 
 REST_USE_JWT = True

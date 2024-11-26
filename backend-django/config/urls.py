@@ -33,7 +33,9 @@ urlpatterns = [
    
     # Apps
     path('users/', include('users.urls')),
-    path('test/', include('test_app.urls'))
+    path('test/', include('test_app.urls')),
+    path('social/', include('social.urls')),
+
     
 
 

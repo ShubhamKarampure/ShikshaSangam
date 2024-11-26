@@ -22,6 +22,7 @@ class College(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class UserProfile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
     full_name = models.CharField(max_length=255, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
@@ -43,6 +44,8 @@ class StudentProfile(models.Model):
     current_program = models.CharField(max_length=100)  # Text field for program name
     expected_graduation_year = models.PositiveIntegerField()
     specialization = models.CharField(max_length=100, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+    department = models.CharField(max_length=100, null=True, blank=True)
 
 class AlumnusProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
@@ -50,8 +53,12 @@ class AlumnusProfile(models.Model):
     current_employment = models.JSONField(default=dict, blank=True, null=True)  # e.g., {"company": "XYZ", "role": "Engineer"}
     career_path = models.TextField(blank=True, null=True)
     specialization = models.CharField(max_length=100, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+
 
 class CollegeStaffProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
     position = models.CharField(max_length=100)
     department = models.CharField(max_length=100, blank=True, null=True)
+    is_verified = models.BooleanField(default=False)
+
