@@ -6,33 +6,105 @@ from .serializers import (
     CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer,
     StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
 )
+from rest_framework.exceptions import AuthenticationFailed
+import requests
+import random
+import string
 from django.contrib.auth.models import User
-from allauth.socialaccount.providers.google.views import GoogleOAuth2Adapter
-from allauth.socialaccount.providers.oauth2.client import OAuth2Client
-from dj_rest_auth.registration.views import SocialLoginView
 from django.conf import settings
+from rest_framework_simplejwt.tokens import RefreshToken
 
 import requests
-from django.http import JsonResponse
-from .services import get_user_data
-from django.shortcuts import redirect
 from django.conf import settings
-from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.db import transaction
 from rest_framework.views import APIView
-from .serializers import AuthSerializer
-from django.conf import settings
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework.exceptions import AuthenticationFailed
+from rest_framework_simplejwt.tokens import RefreshToken
+import secrets
+import string
+from .models import UserProfile  
 
-# views that handle 'localhost://8000/auth/api/login/google/'
-class GoogleLoginApi(APIView):
-    def get(self, request, *args, **kwargs):
-        auth_serializer = AuthSerializer(data=request.GET)
-        auth_serializer.is_valid(raise_exception=True)
-        validated_data = auth_serializer.validated_data
-        user_data = get_user_data(validated_data)
-        user = User.objects.get(email=user_data['email'])
-        login(request, user)
-        return redirect(settings.BASE_APP_URL)
+class GoogleAuthView(APIView):
+    def post(self, request):
+        token = request.data.get("token")
+        if not token:
+            return Response(
+                {"detail": "Token is required"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
+        try:
+            # Step 1: Verify the JWT Token with Google's OAuth2 API
+            response = requests.get(
+                "https://www.googleapis.com/oauth2/v3/tokeninfo",
+                params={"id_token": token},
+            )
+            google_data = response.json()
+
+            # Check response status and data validity
+            if response.status_code != 200 or "error" in google_data:
+                raise AuthenticationFailed("Invalid or expired token")
+
+            # Step 2: Check if the token is intended for this app
+            if google_data.get("aud") != settings.GOOGLE_OAUTH_CLIENT_ID:
+                raise AuthenticationFailed("Token is not from a valid source")
+
+            # Step 3: Extract user data from the token
+            email = google_data.get("email")
+            first_name = google_data.get("given_name", "")
+            last_name = google_data.get("family_name", "")
+            picture = google_data.get("picture", "")
+
+            if not email:
+                raise AuthenticationFailed("Email is required")
+
+            # Step 4: Check if the user exists or create a new user
+            user = User.objects.filter(email=email).first()
+            if not user:
+                with transaction.atomic():
+                    user = User.objects.create_user(
+                        email=email,
+                        username=email,  # Use email as username
+                        first_name=first_name,
+                        last_name=last_name,
+                        password=self.generate_random_password(),
+                    )
+                    # Create a user profile
+                    UserProfile.objects.create(
+                        user=user,
+                        full_name=f"{first_name} {last_name}",
+                    )
+
+            # Step 5: Generate JWT tokens for the user
+            refresh = RefreshToken.for_user(user)
+            access_token = str(refresh.access_token)
+
+            # Step 6: Return the access token
+            return Response(
+                {
+                    "status": "success",
+                    "message": "Login successful",
+                    "token": access_token,
+                },
+                status=status.HTTP_200_OK,
+            )
+
+        except requests.exceptions.RequestException:
+            return Response(
+                {"detail": "Failed to verify token with Google"},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            )
+
+    def generate_random_password(self):
+        """Generate a cryptographically secure random password."""
+        length = 12
+        characters = string.ascii_letters + string.digits + "!@#$%^&*()_+-=[]{}|;:,.<>?"
+        return ''.join(secrets.choice(characters) for _ in range(length))
+
+        
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
     serializer_class = CollegeSerializer

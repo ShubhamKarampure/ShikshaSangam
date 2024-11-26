@@ -55,7 +55,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
 
-
     'dj_rest_auth',
     'dj_rest_auth.registration',
     
@@ -224,9 +223,9 @@ SITE_ID = 2
 LOGIN_REDIRECT_URL = '/accounts/password/change/'  # or your desired path
 ACCOUNT_SIGNUP_REDIRECT_URL = "/auth/login/"
 
-GOOGLE_OAUTH2_CLIENT_ID = os.getenv("GOOGLE_OAUTH2_CLIENT_ID")
-GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH2_CLIENT_SECRET")
-GOOGLE_OAUTH2_CALLBACK_URL = os.getenv("GOOGLE_OAUTH2_CALLBACK_URL")
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
+GOOGLE_OAUTH_CALLBACK_URL = os.getenv("GOOGLE_OAUTH_CALLBACK_URL")
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -234,8 +233,8 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['profile', 'email'],
         'AUTH_PARAMS': {'access_type': 'online'},
         'METHOD': 'oauth2',
-            'client_id': GOOGLE_OAUTH2_CLIENT_ID,
-            'secret': GOOGLE_OAUTH2_CLIENT_SECRET,
+            'client_id': GOOGLE_OAUTH_CLIENT_ID,
+            'secret': GOOGLE_OAUTH_CLIENT_SECRET,
             'key': ''
         }
     }
