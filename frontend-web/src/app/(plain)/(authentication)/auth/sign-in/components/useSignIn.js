@@ -49,13 +49,13 @@ const useSignIn = () => {
 
       saveSession({ access, refresh, user });
 
-      // Redirect the user after a successful login
-      redirectUser();
-
       showNotification({
         message: 'Successfully logged in. Redirecting....',
         variant: 'success'
       });
+
+      // Redirect the user after a successful login
+      redirectUser();
     } catch (e) {
       // Handle any login errors
       const message = e.response?.data?.detail || 'Login failed. Please try again.';

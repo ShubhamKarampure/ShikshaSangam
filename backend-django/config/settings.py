@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'corsheaders',
 
+
     'dj_rest_auth',
     'dj_rest_auth.registration',
     

@@ -1,31 +1,26 @@
-from rest_framework import viewsets, status
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile,CollegeAdminProfile
-from .serializers import (
-    CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer,
-    StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
-)
-from rest_framework.exceptions import AuthenticationFailed
-import requests
-import random
-import string
-from django.contrib.auth.models import User
-from django.conf import settings
-from rest_framework_simplejwt.tokens import RefreshToken
-
-import requests
-from django.conf import settings
-from django.contrib.auth.models import User
-from django.db import transaction
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
-import secrets
+from rest_framework.exceptions import AuthenticationFailed
+from django.contrib.auth.models import User
+from django.db import transaction
+from django.conf import settings
+import requests
 import string
-from .models import UserProfile  
+import secrets
+from rest_framework import viewsets
+
+from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile
+from .serializers import (
+    CollegeSerializer,
+    UserProfileSerializer,
+    CollegeAdminProfileSerializer,
+    StudentProfileSerializer,
+    AlumnusProfileSerializer,
+    CollegeStaffProfileSerializer
+)
+  
 
 class GoogleAuthView(APIView):
     def post(self, request):
@@ -57,6 +52,7 @@ class GoogleAuthView(APIView):
             first_name = google_data.get("given_name", "")
             last_name = google_data.get("family_name", "")
             picture = google_data.get("picture", "")
+            username = f"{first_name}{last_name}".replace(" ", "").lower()
 
             if not email:
                 raise AuthenticationFailed("Email is required")
@@ -67,27 +63,28 @@ class GoogleAuthView(APIView):
                 with transaction.atomic():
                     user = User.objects.create_user(
                         email=email,
-                        username=email,  # Use email as username
+                        username=username,
                         first_name=first_name,
                         last_name=last_name,
                         password=self.generate_random_password(),
                     )
-                    # Create a user profile
-                    UserProfile.objects.create(
-                        user=user,
-                        full_name=f"{first_name} {last_name}",
-                    )
-
+                    
             # Step 5: Generate JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             access_token = str(refresh.access_token)
+            refresh_token = str(refresh)
 
-            # Step 6: Return the access token
+            # Step 6: Return the access, refresh, and user details
             return Response(
                 {
                     "status": "success",
                     "message": "Login successful",
-                    "token": access_token,
+                    "access": access_token,
+                    "refresh": refresh_token,
+                    "user": {
+                        "id": user.id,
+                        "email": user.email,
+                    },
                 },
                 status=status.HTTP_200_OK,
             )
@@ -103,7 +100,6 @@ class GoogleAuthView(APIView):
         length = 12
         characters = string.ascii_letters + string.digits + "!@#$%^&*()_+-=[]{}|;:,.<>?"
         return ''.join(secrets.choice(characters) for _ in range(length))
-
         
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
