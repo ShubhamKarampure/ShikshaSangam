@@ -8,6 +8,49 @@ import { Button, FormCheck } from 'react-bootstrap';
 import useSignUp from './useSignUp.js';
 import { GoogleLogin } from '@react-oauth/google'; 
 
+const GoogleLoginButton = () => {
+  
+  const handleLoginSuccess = (response) => {
+    const googleToken = response.credential;
+
+    // Send the Google JWT token to your Django backend
+    fetch('http://127.0.0.1:8000/users/google-auth/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ token: googleToken }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Handle the response and store the JWT token in localStorage/sessionStorage or Redux state
+        console.log('JWT token received:', data.token);
+        localStorage.setItem('token', data.token);  // Store the token for further use
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+      });
+  };
+
+  const handleLoginFailure = (error) => {
+    console.error('Google Login Error:', error);
+  };
+
+  return (
+    <div>
+      <GoogleLogin
+        clientId="your-client-id.apps.googleusercontent.com"
+        buttonText="Login with Google"
+        onSuccess={handleLoginSuccess}
+        onFailure={handleLoginFailure}
+        cookiePolicy="single_host_origin"
+      />
+    </div>
+  );
+};
+
+;
+
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState('');
   const {
@@ -21,23 +64,6 @@ const SignUpForm = () => {
   useEffect(() => {
     setFirstPassword(getValues().password1);
   }, [watch('password1')]);
-
-
-  // Handle Google login success
-  const handleGoogleSuccess = (response) => {
-    const user = decodeJwt(response.credential); // Decode the Google JWT token
-
-    // Fill the form with user information (email and name)
-    setValues({
-      email: user.email,
-      username: user.name, // You can change this to use another field if needed
-    });
-  };
-
-  // Handle Google login failure
-  const handleGoogleFailure = (error) => {
-    console.error('Google Login failed', error);
-  };
 
   return (
     <form className="mt-4" onSubmit={register}>
@@ -98,15 +124,7 @@ const SignUpForm = () => {
 </div>
 
 
-      
-      {/* Google Sign-In Button */}
-      <div className="mb-3">
-        <GoogleLogin 
-          onSuccess={handleGoogleSuccess} 
-          onError={handleGoogleFailure} 
-          useOneTap={true} 
-        />
-      </div>
+      <GoogleLoginButton/>
 
       <p className="mb-0 mt-3 text-center">
         ©{currentYear}
