@@ -2,12 +2,11 @@ import PasswordFormInput from '@/components/form/PasswordFormInput';
 import TextFormInput from '@/components/form/TextFormInput';
 import PasswordStrengthMeter from '@/components/PasswordStrengthMeter';
 import { currentYear, developedBy, developedByLink } from '@/context/constants';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-import { Button, FormCheck, ButtonGroup, ToggleButton } from 'react-bootstrap';
-import { Controller } from 'react-hook-form';
+import { Button, FormCheck } from 'react-bootstrap';
 import useSignUp from './useSignUp.js';
-
+ 
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState('');
   const {
@@ -19,14 +18,8 @@ const SignUpForm = () => {
   } = useSignUp();
   
   useEffect(() => {
-    setFirstPassword(getValues().password);
-  }, [watch('password')]);
-
-  const roles = [
-    { name: 'College Admin', value: 'college_admin' },
-    { name: 'Student', value: 'student' },
-    { name: 'Alumni', value: 'alumni' }
-  ];
+    setFirstPassword(getValues().password1);
+  }, [watch('password1')]);
 
   return (
     <form className="mt-4" onSubmit={register}>
@@ -53,7 +46,7 @@ const SignUpForm = () => {
 
       <div className="mb-3">
         <PasswordFormInput
-          name="password"
+          name="password1"
           control={control}
           size="lg"
           placeholder="Enter new password"
@@ -74,32 +67,7 @@ const SignUpForm = () => {
         
       </div>
 
-      <div className="mb-3">
-        <label className="form-label me-2">Select Role</label>
-        <Controller
-          name="role"
-          control={control}
-          render={({ field }) => (
-            <ButtonGroup>
-              {roles.map((r) => (
-                <ToggleButton
-                  key={r.value}
-                  id={`role-${r.value}`}
-                  type="radio"
-                  variant="outline-primary"
-                  value={r.value}
-                  checked={field.value === r.value}
-                  onChange={(e) => field.onChange(e.currentTarget.value)}
-                >
-                  {r.name}
-                </ToggleButton>
-              ))}
-            </ButtonGroup>
-          )}
-        />
-        
-      </div>
-
+  
       <div className="mb-3 text-start">
         <FormCheck label="Keep me signed in" id="termAndCondition" />
       </div>

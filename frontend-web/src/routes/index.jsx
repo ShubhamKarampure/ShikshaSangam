@@ -9,6 +9,7 @@ const HomeVideo = lazy(() => import('@/app/(social)/feed/(no-container)/videos/p
 const HomeEvent = lazy(() => import('@/app/(plain)/event/page'));
 const LandingPage = lazy(() => import('@/app/(plain)/landing/page'));
 const AppDownloadPage = lazy(() => import('@/app/(plain)/download/page'));
+const ProfileSetup = lazy(()=>import('@/app/(plain)/setup/page'))
 
 //pages
 const Albums = lazy(() => import('@/app/(social)/feed/(container)/albums/page'));
@@ -146,7 +147,13 @@ const otherRoutes = [{
   path: '/offline',
   name: 'Offline',
   element: <OfflinePage />
-}];
+  },
+  {
+  path: '/profile-setup',
+  name: 'Profile Setup',
+  element: <ProfileSetup/>
+  }
+];
 export const settingPagesRoutes = [{
   path: '/settings/account',
   name: 'Account Settings',
