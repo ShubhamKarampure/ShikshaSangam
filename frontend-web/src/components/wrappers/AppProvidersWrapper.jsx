@@ -6,6 +6,7 @@ import { ChatProvider } from '@/context/useChatContext';
 import { LayoutProvider } from '@/context/useLayoutContext';
 import { HelmetProvider } from 'react-helmet-async';
 import { AuthProvider } from '@/context/useAuthContext';
+import { SignUpPageProvider } from '../../context/useSignUpPageContext';
 const AppProvidersWrapper = ({
   children
 }) => {
@@ -32,7 +33,9 @@ const AppProvidersWrapper = ({
         <HelmetProvider>
           <ChatProvider>
             <NotificationProvider>
-              {children}
+              <SignUpPageProvider>
+                {children}
+              </SignUpPageProvider>
               <ToastContainer theme="colored" />
             </NotificationProvider>
           </ChatProvider>

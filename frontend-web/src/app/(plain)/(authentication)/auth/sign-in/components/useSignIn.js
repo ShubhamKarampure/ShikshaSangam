@@ -25,7 +25,7 @@ const useSignIn = () => {
     resolver: yupResolver(loginFormSchema),
     defaultValues: {
       email: 'user@demo.com',
-      password: '12345678'
+      password: 'Qwerty@123'
     }
   });
 
