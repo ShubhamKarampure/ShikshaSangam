@@ -1,16 +1,12 @@
-from rest_framework import viewsets
-from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile
-from .serializers import (
-    CollegeSerializer, UserProfileSerializer, 
-    StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
-)
-from rest_framework import status
+from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile,CollegeAdminProfile
+from .serializers import (
+    CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer,
+    StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
+)
 from django.contrib.auth.models import User
-
-
-
 
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
@@ -32,6 +28,90 @@ class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
     serializer_class = CollegeStaffProfileSerializer
 
+class ProfileSetupView(APIView):
+    def post(self, request, *args, **kwargs):
+        user = request.user  # Get the logged-in user
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+
+        # Handle admin profile creation
+        if user.role == 'admin':
+            return self._create_admin_profile(user)
+
+        # Step 1: Create the UserProfile
+        user_profile = self._create_user_profile(request, user)
+
+        # Step 2: Handle Role-Specific Profiles
+        role = request.data.get('role')
+        if role not in ['student', 'alumnus', 'staff']:
+            return Response({"detail": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
+
+        return self._create_role_profile(role, user_profile, request)
+
+    def _create_admin_profile(self, user):
+        serializer = CollegeAdminProfileSerializer(data={'user': user.id, 'is_verified': False})
+        if serializer.is_valid():
+            serializer.save()  # Save the CollegeAdminProfile
+            return Response({"detail": "Admin profile created. Awaiting verification."}, status=status.HTTP_201_CREATED)
+
+    def _create_user_profile(self, request, user):
+        user_profile_data = request.data.get('user_profile', {})
+        user_profile_data['user'] = user.id  # Link profile to the logged-in user
+        user_profile_serializer = UserProfileSerializer(data=user_profile_data)
+        if user_profile_serializer.is_valid():
+            return user_profile_serializer.save()
+        else:
+            return Response(user_profile_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def _create_role_profile(self, role, user_profile, request):
+        role_data = request.data.get('role_profile', {})
+        role_data['profile'] = user_profile.id
+
+        # Select appropriate serializer based on role
+        role_serializers = {
+            'student': StudentProfileSerializer,
+            'alumnus': AlumnusProfileSerializer,
+            'staff': CollegeStaffProfileSerializer,
+        }
+
+        serializer_class = role_serializers.get(role)
+        if serializer_class:
+            serializer = serializer_class(data=role_data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({"detail": "Profile created successfully"}, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({"detail": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateCollegeView(APIView):
+    def post(self, request, *args, **kwargs):
+        user = request.user  # Get the logged-in user
+        if not user.is_authenticated:
+            return Response({"detail": "Authentication required"}, status=status.HTTP_401_UNAUTHORIZED)
+        
+        # Check if user is an admin
+        if user.role != 'admin':
+            return Response({"detail": "Only admins can create a college"}, status=status.HTTP_403_FORBIDDEN)
+
+        # Check if admin profile exists and is verified
+        try:
+            admin_profile = CollegeAdminProfile.objects.get(user=user)
+        except CollegeAdminProfile.DoesNotExist:
+            return Response({"detail": "Admin profile not found"}, status=status.HTTP_404_NOT_FOUND)
+        
+        if not admin_profile.is_verified:
+            return Response({"detail": "Admin profile is not verified"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # If admin is verified, proceed to create the College
+        college_data = request.data.get('college', {})
+        college_serializer = CollegeSerializer(data=college_data)
+
+        if college_serializer.is_valid():
+            college_serializer.save()  # Save the college
+            return Response(college_serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(college_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SignupView(APIView):
     def post(self, request, *args, **kwargs):

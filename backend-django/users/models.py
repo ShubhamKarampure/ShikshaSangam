@@ -2,8 +2,14 @@ from django.db import models
 import uuid
 from cloudinary.models import CloudinaryField
 from .validators import validate_image
+from django.contrib.auth.models import User
 
-
+class CollegeAdminProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="college_admin")
+    college = models.ForeignKey('College', on_delete=models.SET_NULL, null=True, blank=True, related_name='admins')
+    is_verified = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
 class College(models.Model):
     #college_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -16,7 +22,6 @@ class College(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class UserProfile(models.Model):
-    
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
     full_name = models.CharField(max_length=255, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
