@@ -13,27 +13,17 @@ const useSignUp = () => {
   const { showNotification } = useNotificationContext();
   const {increaseStep} = useSignUpPageContext();
 
-  const roles = [
-    { name: 'College Admin', value: 'college_admin' },
-    { name: 'Student', value: 'student' },
-    { name: 'Alumni', value: 'alumni' }
-  ];
-
   const signUpSchema = yup.object({
     username: yup.string().required('Please enter your username'),
     email: yup.string().email('Please enter a valid email').required('Please enter your email'),
-    password: yup
+    password1: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .required('Please enter your password'),
     password2: yup
       .string()
-      .oneOf([yup.ref('password')], 'Passwords must match')
+      .oneOf([yup.ref('password1')], 'Passwords must match')
       .required('Please confirm your password'),
-    role: yup
-      .string()
-      .oneOf(['college_admin', 'student', 'alumni'], 'Please select a valid role')
-      .required('Please select a role')
   });
 
   const {
@@ -43,9 +33,6 @@ const useSignUp = () => {
     getValues,
   } = useForm({
     resolver: yupResolver(signUpSchema),
-    defaultValues: {
-      role: 'student'
-    }
   });
 const register = handleSubmit(async (data) => {
   setLoading(true); // Set loading to true when the form is submitted
@@ -65,7 +52,6 @@ const register = handleSubmit(async (data) => {
     // Check if e.response exists before trying to access it
     if (e && e.response && e.response.data && (e.response.data.email || e.response.data.username)) {
 
-      
       // Customize the error message based on the response
       if (e.response.data.email && e.response.data.username) {
         showNotification({

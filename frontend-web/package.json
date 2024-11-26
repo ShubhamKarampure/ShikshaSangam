@@ -16,7 +16,7 @@
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@hookform/resolvers": "^3.9.0",
-    "@mui/material": "^6.1.8",
+    "@react-oauth/google": "^0.12.1",
     "axios": "^1.7.2",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^5.3.3",
