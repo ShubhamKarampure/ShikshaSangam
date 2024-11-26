@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Button, FormCheck, ButtonGroup, ToggleButton } from 'react-bootstrap';
 import { Controller } from 'react-hook-form';
 import useSignUp from './useSignUp.js';
+import HorizontalLinearStepper from './HorizontalLinearStepper.jsx';
 
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState('');
@@ -30,26 +31,27 @@ const SignUpForm = () => {
 
   return (
     <form className="mt-4" onSubmit={register}>
-      
-      <div className="mb-3">
-        <TextFormInput
-          name="username"
-          control={control}
-          containerClassName="input-group-lg"
-          placeholder="Enter your username"
-        />
-      </div>
+      <div className='d-flex justify-content-center align-items-center gap-3'>   
+        <div className="mb-3">
+          <TextFormInput
+            name="username"
+            control={control}
+            containerClassName="input-group-lg"
+            placeholder="Enter your username"
+          />
+        </div>
 
-      <div className="mb-3">
-        <TextFormInput
-          name="email"
-          control={control}
-          containerClassName="input-group-lg"
-          placeholder="Enter your email"
-        />
-        
-        <small>We'll never share your email with anyone else.</small>
-      </div>
+        <div className="mb-3">
+          <TextFormInput
+            name="email"
+            control={control}
+            containerClassName="input-group-lg"
+            placeholder="Enter your email"
+          />
+          
+          {/* <small>We'll never share your email with anyone else.</small> */}
+        </div>
+      </div>  
 
       <div className="mb-3">
         <PasswordFormInput
@@ -64,7 +66,7 @@ const SignUpForm = () => {
         </div>
       </div>
 
-      <div className="mb-3">
+      {/* <div className="mb-3">
         <PasswordFormInput
           name="password2"
           control={control}
@@ -72,31 +74,33 @@ const SignUpForm = () => {
           placeholder="Confirm password"
         />
         
-      </div>
+      </div> */}
 
       <div className="mb-3">
         <label className="form-label me-2">Select Role</label>
-        <Controller
-          name="role"
-          control={control}
-          render={({ field }) => (
-            <ButtonGroup>
-              {roles.map((r) => (
-                <ToggleButton
-                  key={r.value}
-                  id={`role-${r.value}`}
-                  type="radio"
-                  variant="outline-primary"
-                  value={r.value}
-                  checked={field.value === r.value}
-                  onChange={(e) => field.onChange(e.currentTarget.value)}
-                >
-                  {r.name}
-                </ToggleButton>
-              ))}
-            </ButtonGroup>
-          )}
-        />
+        <div className='d-flex justify-content-center align-items-center'>
+          <Controller
+            name="role"
+            control={control}
+            render={({ field }) => (
+              <ButtonGroup>
+                {roles.map((r) => (
+                  <ToggleButton
+                    key={r.value}
+                    id={`role-${r.value}`}
+                    type="radio"
+                    variant="outline-primary"
+                    value={r.value}
+                    checked={field.value === r.value}
+                    onChange={(e) => field.onChange(e.currentTarget.value)}
+                  >
+                    {r.name}
+                  </ToggleButton>
+                ))}
+              </ButtonGroup>
+            )}
+          />
+        </div>
         
       </div>
 
@@ -104,23 +108,19 @@ const SignUpForm = () => {
         <FormCheck label="Keep me signed in" id="termAndCondition" />
       </div>
 
-      <div className="d-grid">
+      <div className="d-grid w-50">
         <Button variant="primary" size="lg" type="submit" disabled={loading}>
-          Sign me up
+          Next
         </Button>
       </div>
 
-      <p className="mb-0 mt-3 text-center">
-        Already have an account? <Link to="/login">Login here</Link>
-      </p>
-
-      <p className="mb-0 mt-3 text-center">
+      {/* <p className="mb-0 mt-3 text-center">
         ©{currentYear}
         <Link target="_blank" to={developedByLink}>
           {developedBy}.
         </Link>
         All rights reserved
-      </p>
+      </p> */}
     </form>
   );
 };

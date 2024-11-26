@@ -22,6 +22,8 @@ export const signup = async (data) => {
 
     // Parse the JSON response
     const res = await response.json();
+    console.log(res);
+    
     return res;
   } catch (error) {
     throw error;
@@ -41,6 +43,8 @@ export const signin = async (data) => {
     }
 
     const result = await response.json();
+    console.log(result);
+    
     return result;
   } catch (error) {
     throw error;

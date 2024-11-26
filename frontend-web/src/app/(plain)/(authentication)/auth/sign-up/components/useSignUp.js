@@ -5,11 +5,13 @@ import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signup } from '@/api/auth';
+import useSignUpPageContext from '@/context/useSignUpPageContext';
 
 const useSignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotificationContext();
+  const {increaseStep} = useSignUpPageContext();
 
   const roles = [
     { name: 'College Admin', value: 'college_admin' },
@@ -47,7 +49,7 @@ const useSignUp = () => {
   });
 const register = handleSubmit(async (data) => {
   setLoading(true); // Set loading to true when the form is submitted
-
+  
   try {
     const res = await signup(data); // Pass the form data to signup API
     
@@ -55,9 +57,8 @@ const register = handleSubmit(async (data) => {
       message: 'User created successfully. Redirecting....',
       variant: 'success'
     });
-
-    // Redirect to the home page after successful registration
-    navigate('/');
+    increaseStep();
+    
   } catch (e) {
     console.error('Signup error:', e); // Log the error to the console for debugging
 

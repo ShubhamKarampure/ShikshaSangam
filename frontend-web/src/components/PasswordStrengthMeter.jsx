@@ -10,9 +10,12 @@ const getProgress = progress => {
   };else if (progress > 25) return {
     variant: 'warning',
     message: 'That is a simple one'
-  };else return {
+  };else if(progress) return {
     variant: 'danger',
     message: 'Easy peasy!'
+  };else return {
+    variant: 'danger',
+    message: ''
   };
 };
 const calculatePasswordStrength = password => {
