@@ -12,11 +12,12 @@ import StudentForm from "./SpecificForm/StudentForm";
 import AlumniForm from "./SpecificForm/AlumniForm";
 import AdminForm from "./SpecificForm/AdminForm";
 import { set } from "react-hook-form";
+import useSignUpPageContext from "@/context/useSignUpPageContext";
 
 const steps = ["General", "Specific"];
 
 export default function HorizontalLinearStepper() {
-  const [activeStep, setActiveStep] = React.useState(0);
+  const {activeStep, setActiveStep} = useSignUpPageContext();
   const navigate = useNavigate();
   const [children, setChildren] = React.useState([
     <div>
@@ -66,9 +67,10 @@ export default function HorizontalLinearStepper() {
         ))}
       </Stepper>
       {activeStep === steps.length ? navigate('/') : (
+        <>
         <React.Fragment>
           <Box sx={{ mt: 2, mb: 1 }}>{children[activeStep]}</Box>
-          <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+          {/* <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
             <Button
               color="inherit"
               disabled={activeStep === 0}
@@ -91,8 +93,9 @@ export default function HorizontalLinearStepper() {
             >
               {activeStep === steps.length - 1 ? "Finish" : "Next"}
             </Button>
-          </Box>
+          </Box> */}
         </React.Fragment>
+        </>
       )}
     </Box>
   );

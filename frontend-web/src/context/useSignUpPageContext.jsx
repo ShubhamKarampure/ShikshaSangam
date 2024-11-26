@@ -18,7 +18,7 @@ export const SignUpPageProvider = ({ children }) => {
     setActiveStep((prev) => prev + 1);
   }
   return (
-    <SignUpPageContext.Provider value={{increaseStep}}>
+    <SignUpPageContext.Provider value={{increaseStep,activeStep,setActiveStep}}>
       {children}
     </SignUpPageContext.Provider>
   );

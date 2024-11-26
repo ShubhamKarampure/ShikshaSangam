@@ -2,11 +2,9 @@ import PasswordFormInput from "@/components/form/PasswordFormInput";
 import TextFormInput from "@/components/form/TextFormInput";
 import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
 import { currentYear, developedBy, developedByLink } from "@/context/constants";
-import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { Button, FormCheck } from "react-bootstrap";
 import useSignUp from "./useSignUp.js";
-import HorizontalLinearStepper from "./HorizontalLinearStepper.jsx";
 
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState("");
@@ -66,7 +64,7 @@ const SignUpForm = () => {
         <FormCheck label="Keep me signed in" id="termAndCondition" />
       </div>
 
-      <div className="d-grid w-50">
+      <div className="d-flex justify-content-center align-items-center">
         <Button variant="primary" size="lg" type="submit" disabled={loading}>
           Next
         </Button>
