@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     StudentProfileViewSet, AlumnusProfileViewSet, CollegeStaffProfileViewSet, CollegeViewSet,CollegeAdminViewSet,
-    GoogleAuthView
+    GoogleAuthView,UserRegistrationView,UserLoginView
 )
 
 # Initialize the router
@@ -21,12 +21,12 @@ urlpatterns = [
     # Signup and profile setup routes
     #Oauth
     path('auth/', include('dj_rest_auth.urls')),  # Login, logout, password reset
-    path('auth/registration/', include('dj_rest_auth.registration.urls')),  # Registration
-    
-    
+    path('auth/register/', UserRegistrationView.as_view(), name='register'),
+    path('auth/login/token', UserLoginView.as_view(), name='login'),
+
+
     # JWT token routes for authentication
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Google authentication route
     path('google-auth/', GoogleAuthView.as_view(), name='google_auth'),

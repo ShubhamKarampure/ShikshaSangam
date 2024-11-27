@@ -11,38 +11,133 @@ import string
 import secrets
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile
-from .serializers import CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer, StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer
+from .serializers import CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer, StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer,UserRegistrationSerializer
+from rest_framework import permissions
 
+class UserRegistrationView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request, *args, **kwargs):
+        # Serialize the incoming data
+        serializer = UserRegistrationSerializer(data=request.data)
+        
+        # Validate and create the user
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            # Generate JWT tokens for the user
+            refresh = RefreshToken.for_user(user)
+            access_token = refresh.access_token
+
+            # Return the JWT tokens and user details
+            return Response({
+                'status': 'success',
+                'message': 'User created successfully',
+                'refresh': str(refresh),
+                'access': str(access_token),
+                'user': {
+                    'id': user.id,
+                    'email': user.email,
+                    'username': user.username,
+                }
+            }, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class UserLoginView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    """
+    Normal authentication view to login with email/username and password.
+    Returns JWT access and refresh tokens if credentials are valid.
+    """
+
+    def post(self, request):
+        # Extract email/username and password from the request data
+        identifier = request.data.get("email") or request.data.get("username")
+        password = request.data.get("password")
+
+        if not identifier or not password:
+            return Response(
+                {"detail": "Email/username and password are required."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Check if the identifier is an email or username and find the user
+        try:
+            # Try to find the user by email if the identifier looks like an email
+            if "@" in identifier:
+                user = User.objects.get(email=identifier)
+            else:
+                user = User.objects.get(username=identifier)
+        except User.DoesNotExist:
+            # If the user does not exist, return an error message
+            raise AuthenticationFailed("No user found with the provided email/username.")
+
+        # Check if the password is correct
+        if not user.check_password(password):
+            return Response(
+                {"detail": "Invalid email/username or password."},
+                status=status.HTTP_401_UNAUTHORIZED,
+            )
+
+        # Generate JWT tokens (access and refresh)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
+        refresh_token = str(refresh)
+
+        # Return the tokens and user information
+        return Response(
+            {
+                "status": "success",
+                "message": "Login successful",
+                "access": access_token,
+                "refresh": refresh_token,
+                "user": {
+                    "id": user.id,
+                    "email": user.email,
+                    "username": user.username,
+                },
+            },
+            status=status.HTTP_200_OK,
+        )
+
+    
 # College Admin ViewSet
 class CollegeAdminViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
     serializer_class = CollegeAdminProfileSerializer
-    
+    permission_classes = [permissions.IsAuthenticated]
+
 # College ViewSet
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
     serializer_class = CollegeSerializer
-    
+
 # UserProfile ViewSet
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
     parser_classes = (MultiPartParser, FormParser)
+    permission_classes = [permissions.IsAuthenticated]
     
 # StudentProfile ViewSet
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
 # AlumnusProfile ViewSet
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
     queryset = AlumnusProfile.objects.all()
     serializer_class = AlumnusProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
 # CollegeStaffProfile ViewSet
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
     serializer_class = CollegeStaffProfileSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
 # Google Authentication View
 class GoogleAuthView(APIView):

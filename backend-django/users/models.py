@@ -6,7 +6,6 @@ from django.contrib.auth.models import User
 
 class CollegeAdminProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="college_admin")
-    role = 'admin'
     college = models.ForeignKey('College', on_delete=models.SET_NULL, null=True, blank=True, related_name='college_admins')
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
