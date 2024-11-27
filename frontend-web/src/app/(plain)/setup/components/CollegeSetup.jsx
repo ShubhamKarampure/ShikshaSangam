@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa"; // Import the left arrow icon from react-icons
 import SetUpLayout from "./SetUpLayout";
 
-export default function AdminSetup({ onBackClick }) {
+export default function CollegeSetup({ onBackClick }) {
   const [collegeName, setCollegeName] = useState("");
   const collegeOptions = [
     "GOVT. POLYTECHNIC COLLEGE, AJMER",
@@ -20,7 +20,6 @@ export default function AdminSetup({ onBackClick }) {
   ];
 
   return (
-    <SetUpLayout>
       <div className="card border-primary shadow-lg">
         {/* Header with the back button */}
         <div className="card-header position-relative">
@@ -31,8 +30,8 @@ export default function AdminSetup({ onBackClick }) {
           >
             <FaArrowLeft className="text-primary" size={20} />
           </button>
-          <h2 className="h5 font-weight-semibold text-primary">Admin Setup</h2>
-          <p className="text-secondary">Complete your college admin profile</p>
+          <h2 className="h5 font-weight-semibold text-primary">College Portal Setup</h2>
+          <p className="text-secondary">Create Collge Portal.</p>
         </div>
         
         {/* Card Body */}
@@ -63,7 +62,7 @@ export default function AdminSetup({ onBackClick }) {
             )}
           </div>
           <div className="mb-3">
-            <label htmlFor="collegeCode" className="form-label">College AISHE Code</label>
+            <label htmlFor="collegeCode" className="form-label">CollegeSetup AISHE Code</label>
             <input
               type="text"
               id="collegeCode"
@@ -104,6 +103,5 @@ export default function AdminSetup({ onBackClick }) {
           <button className="btn btn-primary w-100">Complete Admin Setup</button>
         </div>
       </div>
-    </SetUpLayout>
   );
 }

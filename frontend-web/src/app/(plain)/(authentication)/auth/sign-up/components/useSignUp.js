@@ -5,22 +5,25 @@ import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signup } from '@/api/auth';
+import axios from 'axios';
+import { useAuthContext } from '@/context/useAuthContext';
 
 const useSignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotificationContext();
-
+  const { saveSession } = useAuthContext();
+  
   const signUpSchema = yup.object({
     username: yup.string().required('Please enter your username'),
     email: yup.string().email('Please enter a valid email').required('Please enter your email'),
-    password1: yup
+    password: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .required('Please enter your password'),
-    password2: yup
+    password1: yup
       .string()
-      .oneOf([yup.ref('password1')], 'Passwords must match')
+      .oneOf([yup.ref('password')], 'Passwords must match')
       .required('Please confirm your password'),
   });
 
@@ -38,12 +41,23 @@ const useSignUp = () => {
     setLoading(true);
 
     try {
-      const res = await signup(data); // Call your signup API
+      const formData = {
+        username: data.username, // Extract username
+        email: data.email,       // Extract email
+        password: data.password, // Extract password (not password1)
+      };
+      
+      const res = await signup(formData); // Call your signup API
+      
+      const { access, refresh, user } = res;
+      saveSession({ access, refresh, user });
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
+
       showNotification({
         message: 'User created successfully. Redirecting....',
         variant: 'success',
       });
-
+    
       navigate('/'); // Redirect on success
     } catch (e) {
       console.error('Signup error:', e);

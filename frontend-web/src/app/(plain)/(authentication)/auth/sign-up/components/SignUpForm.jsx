@@ -6,15 +6,15 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import useSignUp from './useSignUp';
-import GoogleLoginButton from '../../components/useGoogleSignUp';
+import GoogleLoginButton from '@/components/useGoogleSignUp';
 
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState('');
   const { loading, register, control, watch, getValues } = useSignUp();
 
   useEffect(() => {
-    setFirstPassword(getValues().password1);
-  }, [watch('password1')]);
+    setFirstPassword(getValues().password);
+  }, [watch('password')]);
 
   return (
     <form className="mt-4" onSubmit={register}>
@@ -38,7 +38,7 @@ const SignUpForm = () => {
 
       <div className="mb-3">
         <PasswordFormInput
-          name="password1"
+          name="password"
           control={control}
           size="lg"
           placeholder="Enter new password"
@@ -50,7 +50,7 @@ const SignUpForm = () => {
 
       <div className="mb-3">
         <PasswordFormInput
-          name="password2"
+          name="password1"
           control={control}
           size="lg"
           placeholder="Confirm password"

@@ -1,5 +1,11 @@
  // Import the axios instance with the interceptor
 import { API_ROUTES } from '@/routes/apiRoute';
+
+const getAccessToken = () => {
+  const match = document.cookie.match(/(?:^|; )access_token=([^;]*)/);
+  return match ? match[1] : null;
+};
+
 import axios from "axios";
 export const studentProfile = async (data) => {
   try {
@@ -52,20 +58,33 @@ export const collegeStaffProfile = async (data) => {
 
 export const collegeAdminProfile = async (data) => {
   try {
-    console.log('Axios Default Headers:', axios.defaults.headers.common);
-    console.log(data)
-    const response = await axios.post('http://127.0.0.1:8000/users/college-admin/', data, {
+    let token = getAccessToken();
+    console.log(token)
+    console.log('Data being sent:', data);
+
+    const response = await fetch(API_ROUTES.COLLEGEADMINPROFILE, {
+      method: 'POST',
       headers: {
-        'Content-Type': 'application/json',  // Content-Type header
+        'Content-Type': 'application/json',  // Set the content type to JSON
+         'Authorization': `Bearer ${token}`,
       },
+      body: JSON.stringify(data),  // Convert the data object to JSON
     });
-    return response.data;
+
+    if (!response.ok) {
+      // If the response status is not OK (2xx), throw an error
+      throw new Error(`Error: ${response.status} - ${response.statusText}`);
+    }
+
+    const responseData = await response.json();  // Parse the JSON response
+    return responseData;  // Return the data from the API response
+
   } catch (error) {
-    console.log(data)
-    console.error(error.response?.data || error.message);
-    throw error;
+    console.error('Error occurred:', error.message);
+    throw error;  // Re-throw the error so it can be handled upstream
   }
 };
+
 
 export const createCollege = async (data) => {
   try {
