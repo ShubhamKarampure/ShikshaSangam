@@ -3,6 +3,8 @@ import { useNotificationContext } from '@/context/useNotificationContext';
 import { useAuthContext } from '@/context/useAuthContext';
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import axios from 'axios';
+
 const GoogleSignIn = () => {
   const [loading, setLoading] = useState(false);
   const { saveSession } = useAuthContext();
@@ -37,9 +39,10 @@ const [searchParams] = useSearchParams();
       }
 
       // Save the session/token and notify the user
-      const { access, refresh, user } = response;
-
+      console.log(data)
+      const { access, refresh, user } = data;
       saveSession({ access, refresh, user });
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
         message: 'Google login successful!',

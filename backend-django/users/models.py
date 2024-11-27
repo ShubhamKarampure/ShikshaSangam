@@ -6,13 +6,20 @@ from django.contrib.auth.models import User
 
 class CollegeAdminProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="college_admin")
-    college = models.ForeignKey('College', on_delete=models.SET_NULL, null=True, blank=True, related_name='admins')
+    role = 'admin'
+    college = models.ForeignKey('College', on_delete=models.SET_NULL, null=True, blank=True, related_name='college_admins')
     is_verified = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    # New fields for name, phone number
+    full_name = models.CharField(max_length=255)  # Full name of the admin
+    phone_number = models.CharField(max_length=15, blank=True, null=True)  # Phone number, optional
+    
+    def __str__(self):
+        return f"Admin Profile: {self.full_name} ({self.user.username})"
 
 class College(models.Model):
-    #college_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     college_name = models.CharField(max_length=255)
     college_code = models.CharField(max_length=50, unique=True, blank=True, null=True)
     contact_email = models.EmailField()
@@ -22,7 +29,14 @@ class College(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
 class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True, blank=True)
+    ROLE_CHOICES = [
+        ('student', 'Student'),
+        ('alumnus', 'Alumnus'),
+        ('staff', 'Staff'),
+    ]
+    role = models.CharField(max_length=50, choices=ROLE_CHOICES, default='student')
     full_name = models.CharField(max_length=255, null=True, blank=True)
     bio = models.TextField(blank=True, null=True)
     avatar_image = CloudinaryField('avatar', blank=True, null=True, validators=[validate_image])
@@ -31,7 +45,7 @@ class UserProfile(models.Model):
     specialization = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     social_links = models.JSONField(default=dict)  # e.g., {"linkedin": "URL", "twitter": "URL"}
-    resume_url = models.URLField(blank=True, null=True)
+    resume = CloudinaryField('resume', blank=True, null=True)
     preferences = models.JSONField(default=dict)  # {"domains": [], "roles": [], "interests": []}
     connections = models.JSONField(default=dict)  # {"followers_count": 0, "following_count": 0}
     created_at = models.DateTimeField(auto_now_add=True)

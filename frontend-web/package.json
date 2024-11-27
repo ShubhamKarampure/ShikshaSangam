@@ -15,7 +15,7 @@
     "@emoji-mart/react": "^1.1.1",
     "@hookform/resolvers": "^3.9.0",
     "@react-oauth/google": "^0.12.1",
-    "axios": "^1.7.2",
+    "axios": "^1.7.8",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^5.3.3",
     "choices.js": "^10.2.0",

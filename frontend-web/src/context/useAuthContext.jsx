@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
 
   // Save session
   const saveSession = (sessionData) => {
-    setCookie(authSessionKey, JSON.stringify(sessionData));
+    setCookie('access_token', sessionData.access);
+    setCookie('refresh_token', sessionData.refresh);
+    setCookie(authSessionKey, JSON.stringify(sessionData.user));
     setUser(sessionData.user);
   };
 
