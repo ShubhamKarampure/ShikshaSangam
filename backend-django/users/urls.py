@@ -14,13 +14,16 @@ router.register(r'alumnus-profiles', AlumnusProfileViewSet, basename='alumnus-pr
 router.register(r'college-staff-profiles', CollegeStaffProfileViewSet, basename='college-staff-profile')
 router.register(r'colleges', CollegeViewSet, basename='college')
 
+
+
 urlpatterns = [
     # Include the generated routes from the router
     path('', include(router.urls)),
     
     # Signup and profile setup routes
-    path('auth/', RegisterView.as_view(), name='registration'),
-    path('auth/registration/', RegisterView.as_view(), name='registration'),
+    #Oauth
+    path('auth/', include('dj_rest_auth.urls')),  # Login, logout, password reset
+    path('auth/registration/', include('dj_rest_auth.registration.urls')),  # Registration
     path('signup/', SignupView.as_view(), name='signup'),
     path('profile-setup/', ProfileSetupView.as_view(), name='profile-setup'),
     

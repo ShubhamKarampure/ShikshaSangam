@@ -38,6 +38,12 @@ const LoginForm = () => {
           Login
         </Button>
       </div>
+
+       <div className="or-separator text-center my-4 d-flex align-items-center">
+        <hr className="line flex-grow-1" style={{ borderColor: 'white', borderWidth: '1px' }} />
+        <span className="or-text mx-3" style={{ color: 'white', fontWeight: 'bold' }}>Or</span>
+        <hr className="line flex-grow-1" style={{ borderColor: 'white', borderWidth: '1px' }} />
+      </div>
     
       <GoogleLoginButton/>
       <p className="mb-0 mt-3">

@@ -30,9 +30,7 @@ const [searchParams] = useSearchParams();
         body: JSON.stringify({ token: googleToken }),
       });
 
-      
       const data = await res.json();
-      console.log(data)
 
       if (!res.ok) {
         throw new Error(data?.message || 'Invalid server response');

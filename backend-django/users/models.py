@@ -43,7 +43,7 @@ class StudentProfile(models.Model):
     current_program = models.CharField(max_length=100)  # Text field for program name
     expected_graduation_year = models.PositiveIntegerField()
     specialization = models.CharField(max_length=100, blank=True, null=True)
-
+    
 class AlumnusProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)  # Linked to UserProfile
     graduation_year = models.PositiveIntegerField()
