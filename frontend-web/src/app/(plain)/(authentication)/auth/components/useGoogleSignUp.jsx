@@ -13,7 +13,7 @@ const GoogleSignIn = () => {
   const [searchParams] = useSearchParams();
   const handleLoginSuccess = async (response) => {
     const googleToken = response.credential;
-    console.log(googleToken)
+   
     setLoading(true);
 
     // Redirect logic
