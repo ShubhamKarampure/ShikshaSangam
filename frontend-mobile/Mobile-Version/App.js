@@ -13,7 +13,7 @@ export default function App() {
       ) : (
         // Render a login screen or a placeholder if not logged in
         <SafeAreaView style={styles.loginContainer}>
-          <Text style={styles.welcomeText}>Welcome to the App!</Text>
+          <Text style={styles.welcomeText}>Welcome to the ShiksaSangam!</Text>
           <Button title="Login" onPress={() => setIsLoggedIn(true)} />
         </SafeAreaView>
       )}
