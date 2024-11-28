@@ -67,7 +67,7 @@ const FileUploadComponent = () => {
                 to upload your file or drag files here.
               </p>
             )}
-            <p>Supported Format: SVG, JPG, PNG (10MB each)</p>
+            <p>Supported Format: CSV (10MB each)</p>
           </div>
         </Col>
       </Row>
@@ -77,30 +77,50 @@ const FileUploadComponent = () => {
       <div
         className="p-4 text-white rounded shadow"
         style={{
-          border: "2px solid #2A2B30", 
+          border: "2px solid #2A2B30",
           boxShadow: "0 4px 8px rgba(123, 93, 251, 0.4)",
           color: "#FFFFFF",
         }}
       >
-        <Row className="mb-3">
+        <Row className="mb-3 align-items-center">
+          <Col md={3}>
+            <strong>{uploadedFiles.length} Attached Files</strong>
+          </Col>
           <Col md={6}>
-            <InputGroup>
+            <InputGroup style={{ boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)" }}>
               <Form.Control
                 type="text"
                 placeholder="Search files..."
                 aria-label="Search"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  borderRadius: "8px",
+                  padding: "10px 15px",
+                  border: "1px solid #7b5dfb",
+                  backgroundColor: "#2A2B30",
+                  color: "#fff",
+                }}
               />
             </InputGroup>
           </Col>
           <Col md={3}>
-            <Button variant="primary" className="w-100">
+            <Button
+              variant="primary"
+              className="w-100"
+              style={{
+                background: "linear-gradient(90deg, #7b5dfb, #5c44e9)",
+                border: "none",
+                borderRadius: "8px",
+                padding: "10px 15px",
+                boxShadow: "0 4px 8px rgba(123, 93, 251, 0.4)",
+                transition: "transform 0.2s",
+              }}
+              onMouseEnter={(e) => (e.target.style.transform = "scale(1.05)")}
+              onMouseLeave={(e) => (e.target.style.transform = "scale(1)")}
+            >
               Filter
             </Button>
-          </Col>
-          <Col md={3} className="text-end">
-            <strong>{uploadedFiles.length} Attached Files</strong>
           </Col>
         </Row>
 
