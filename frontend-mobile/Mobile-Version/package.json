@@ -13,9 +13,11 @@
     "@react-navigation/drawer": "^7.0.11",
     "@react-navigation/native": "^7.0.6",
     "expo": "~52.0.11",
+    "expo-image-picker": "~16.0.3",
     "expo-status-bar": "~2.0.0",
     "react": "18.3.1",
     "react-native": "0.76.3",
+    "react-native-image-picker": "^7.1.2",
     "react-native-reanimated": "^3.16.3",
     "react-native-vector-icons": "^10.2.0"
   },
