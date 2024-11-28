@@ -3,11 +3,13 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     StudentProfileViewSet, AlumnusProfileViewSet, CollegeStaffProfileViewSet, CollegeViewSet,CollegeAdminViewSet,
-    GoogleAuthView,UserRegistrationView,UserLoginView
+    GoogleAuthView,UserRegistrationView,UserLoginView,UserViewSet, UserProfileViewSet
 )
 
 # Initialize the router
 router = DefaultRouter()
+router.register(r'account', UserViewSet,basename='user')
+router.register(r'user-profile', UserProfileViewSet,basename='user-profile')
 router.register(r'student-profiles', StudentProfileViewSet, basename='student-profile')
 router.register(r'alumnus-profiles', AlumnusProfileViewSet, basename='alumnus-profile')
 router.register(r'college-staff-profiles', CollegeStaffProfileViewSet, basename='college-staff-profile')
@@ -24,10 +26,9 @@ urlpatterns = [
     path('auth/register/', UserRegistrationView.as_view(), name='register'),
     path('auth/login/token', UserLoginView.as_view(), name='login'),
 
-
     # JWT token routes for authentication
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
     # Google authentication route
-    path('google-auth/', GoogleAuthView.as_view(), name='google_auth'),
+    path('auth/google-auth/', GoogleAuthView.as_view(), name='google_auth'),
 ]

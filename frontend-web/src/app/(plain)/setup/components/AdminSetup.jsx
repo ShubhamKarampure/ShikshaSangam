@@ -1,19 +1,21 @@
 import React, { useState } from "react";
 import { FaArrowLeft } from "react-icons/fa"; // Import the left arrow icon from react-icons
-import SetUpLayout from "./SetUpLayout";
-import { collegeAdminProfile } from "@/api/setup";
+import SetUpLayout from "../SetupLayout";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useNotificationContext } from '@/context/useNotificationContext';
 import CollegeSetup from "./CollegeSetup";
+import { useProfileContext } from "@/context/useProfileContext";
+import { createCollegeAdminProfile } from "@/api/profile";
 
 export default function AdminSetup({ onBackClick }) {
   const [loading, setLoading] = useState(false);
   const { showNotification } = useNotificationContext();
   const { user } = useAuthContext();
+  const { saveProfileData } = useProfileContext();
   const [fullName, setFullName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [profileCreated, setProfileCreated] = useState(false);  // State to track profile creation
-
+  
   // Function to handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent the form from reloading the page
@@ -22,20 +24,20 @@ export default function AdminSetup({ onBackClick }) {
       full_name: fullName,
       phone_number: contactPhone,
     };
-    console.log(data);
 
     try {
       setLoading(true); // Set loading state
       // Call the API to save the data
-      const response = await collegeAdminProfile(data);
+      const response = await createCollegeAdminProfile(data);
       setLoading(false); // Stop loading
 
       // Handle success
       showNotification({
-        message: 'User created successfully. Redirecting....',
+        message: 'Admin created successfully. Redirecting....',
         variant: 'success',
       });
 
+      saveProfileData(response);
       // Update state to render the CollegeSetup component
       setProfileCreated(true);  // Set profileCreated to true
 
@@ -52,7 +54,7 @@ export default function AdminSetup({ onBackClick }) {
   return (
     <SetUpLayout>
       {profileCreated ? (  // Conditional rendering based on profileCreated state
-        <CollegeSetup />  // If profile is created, render CollegeSetup component
+        <CollegeSetup/>  // If profile is created, render CollegeSetup component
       ) : (
         <div className="card border-primary shadow-lg">
           {/* Header with the back button */}

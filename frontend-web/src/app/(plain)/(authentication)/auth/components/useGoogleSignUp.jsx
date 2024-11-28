@@ -10,9 +10,10 @@ const GoogleSignIn = () => {
   const { saveSession } = useAuthContext();
   const { showNotification } = useNotificationContext();
   const navigate = useNavigate();
-const [searchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const handleLoginSuccess = async (response) => {
     const googleToken = response.credential;
+    console.log(googleToken)
     setLoading(true);
 
     // Redirect logic
@@ -26,7 +27,7 @@ const [searchParams] = useSearchParams();
     };
     
     try {
-      const res = await fetch('http://127.0.0.1:8000/users/google-auth/', {
+      const res = await fetch('http://127.0.0.1:8000/users/auth/google-auth/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: googleToken }),

@@ -1,4 +1,4 @@
-import { API_ROUTES } from '@/routes/apiRoute';
+import { API_ROUTES } from "../routes/apiRoute";
 
 // Signup API call using fetch
 export const signup = async (data) => {
@@ -46,7 +46,6 @@ export const signin = async (data) => {
     throw error;
   }
 };
-
 
 // Refresh token API call using axios
 export const refreshToken = async (refreshToken) => {

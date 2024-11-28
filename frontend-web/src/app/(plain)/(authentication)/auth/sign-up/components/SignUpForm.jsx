@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 import useSignUp from './useSignUp';
-import GoogleLoginButton from '@/components/useGoogleSignUp';
+import GoogleLoginButton from '../../components/useGoogleSignUp';
 
 const SignUpForm = () => {
   const [firstPassword, setFirstPassword] = useState('');

@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'test_app',
 ]
 
+AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
 
 REST_FRAMEWORK = {
@@ -195,7 +196,7 @@ CLOUDINARY_STORAGE = {
 }
 
 CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Only use Cloudinary as storage if credentials are available
 if all([
     os.getenv("CLOUDINARY_CLOUD_NAME", default=None),

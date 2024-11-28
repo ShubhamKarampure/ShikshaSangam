@@ -3,7 +3,7 @@ import { Card, Button, Row, Col } from "react-bootstrap";
 import AdminSetup from "./components/AdminSetup";
 import UserSetup from "./components/UserSetup";
 import PageMetaData from "@/components/PageMetaData";
-import SetUpLayout from "./components/SetUpLayout";
+import SetUpLayout from "./SetupLayout";
 import { School, User } from "lucide-react";
 
 const RoleCard = ({ title, description, icon: Icon, onClick, buttonText }) => (

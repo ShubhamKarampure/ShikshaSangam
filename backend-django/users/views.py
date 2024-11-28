@@ -6,12 +6,12 @@ from rest_framework.exceptions import AuthenticationFailed
 from django.db import transaction
 from django.conf import settings
 import requests
-from django.contrib.auth.models import User
+from .models import User
 import string
 import secrets
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile
-from .serializers import CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer, StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer,UserRegistrationSerializer
+from .serializers import UserSerializer, CollegeSerializer, UserProfileSerializer, CollegeAdminProfileSerializer, StudentProfileSerializer, AlumnusProfileSerializer, CollegeStaffProfileSerializer,UserRegistrationSerializer
 from rest_framework import permissions
 
 class UserRegistrationView(APIView):
@@ -28,7 +28,7 @@ class UserRegistrationView(APIView):
             # Generate JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             access_token = refresh.access_token
-
+            print(user)
             # Return the JWT tokens and user details
             return Response({
                 'status': 'success',
@@ -37,6 +37,7 @@ class UserRegistrationView(APIView):
                 'access': str(access_token),
                 'user': {
                     'id': user.id,
+                    'role':user.role,
                     'email': user.email,
                     'username': user.username,
                 }
@@ -97,18 +98,21 @@ class UserLoginView(APIView):
                     "id": user.id,
                     "email": user.email,
                     "username": user.username,
+                    "role":user.role,
                 },
             },
             status=status.HTTP_200_OK,
         )
 
-    
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()  # Default queryset to fetch all users
+    serializer_class = UserSerializer
+     
 # College Admin ViewSet
 class CollegeAdminViewSet(viewsets.ModelViewSet):
-    queryset = College.objects.all()
+    queryset = CollegeAdminProfile.objects.all()
     serializer_class = CollegeAdminProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
+    
 # College ViewSet
 class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
@@ -116,29 +120,25 @@ class CollegeViewSet(viewsets.ModelViewSet):
 
 # UserProfile ViewSet
 class UserProfileViewSet(viewsets.ModelViewSet):
+    parser_classes = (MultiPartParser, FormParser)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-    parser_classes = (MultiPartParser, FormParser)
-    permission_classes = [permissions.IsAuthenticated]
-    
+  
 # StudentProfile ViewSet
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
+  
 # AlumnusProfile ViewSet
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
     queryset = AlumnusProfile.objects.all()
     serializer_class = AlumnusProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
     
 # CollegeStaffProfile ViewSet
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
     serializer_class = CollegeStaffProfileSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    
+
 # Google Authentication View
 class GoogleAuthView(APIView):
     def post(self, request):
@@ -202,6 +202,8 @@ class GoogleAuthView(APIView):
                     "user": {
                         "id": user.id,
                         "email": user.email,
+                        "username": user.username,
+                        "role":user.role,
                     },
                 },
                 status=status.HTTP_200_OK,
