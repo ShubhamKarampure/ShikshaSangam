@@ -8,6 +8,8 @@ import { HelmetProvider } from "react-helmet-async";
 import { AuthProvider } from "@/context/useAuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ProfileProvider } from "@/context/useProfileContext";
+import { SignUpPageProvider } from "@/context/useSignUpPageContext";
+
 const AppProvidersWrapper = ({ children }) => {
   const handleChangeTitle = () => {
     if (document.visibilityState === "hidden")
@@ -37,7 +39,9 @@ const AppProvidersWrapper = ({ children }) => {
             <HelmetProvider>
               <ChatProvider>
                 <NotificationProvider>
-                  {children}
+                  <SignUpPageProvider>
+                    {children}
+                  </SignUpPageProvider>
                   <ToastContainer theme="colored" />
                 </NotificationProvider>
               </ChatProvider>
