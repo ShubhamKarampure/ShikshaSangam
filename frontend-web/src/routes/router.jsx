@@ -6,6 +6,8 @@ import FeedLayout from '@/layouts/FeedLayout';
 import SocialLayout from '@/layouts/SocialLayout';
 import ProfileLayout from '@/layouts/ProfileLayout';
 import SettingLayout from '@/layouts/SettingLayout';
+import { adminRoutes } from '.';
+
 const AppRouter = props => {
   const {
     isAuthenticated
@@ -14,6 +16,10 @@ const AppRouter = props => {
       {(authRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={<OtherLayout {...props}>{route.element}</OtherLayout>} />)}
 
       {(feedRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={isAuthenticated ? <FeedLayout {...props}>{route.element}</FeedLayout> : <Navigate to={{
+      pathname: '/auth/sign-in',
+      search: 'redirectTo=' + route.path
+    }} />} />)}
+      {(adminRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={isAuthenticated ? <OtherLayout {...props}>{route.element}</OtherLayout> : <Navigate to={{
       pathname: '/auth/sign-in',
       search: 'redirectTo=' + route.path
     }} />} />)}

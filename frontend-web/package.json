@@ -31,7 +31,7 @@
     "react": "^18.3.1",
     "react-bootstrap": "^2.10.4",
     "react-dom": "^18.3.1",
-    "react-dropzone": "^14.2.3",
+    "react-dropzone": "^14.3.5",
     "react-flatpickr": "^3.10.13",
     "react-helmet-async": "^2.0.5",
     "react-hook-form": "^7.52.1",

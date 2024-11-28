@@ -27,6 +27,7 @@ const PostDetails = lazy(() => import('@/app/(social)/(with-topbar)/feed/post-de
 const VideoDetails = lazy(() => import('@/app/(social)/feed/(no-container)/videos/details/page'));
 const Blogs = lazy(() => import('@/app/(social)/(with-topbar)/blogs/page'));
 const BlogDetails = lazy(() => import('@/app/(social)/(with-topbar)/blogs/[blogId]/page'));
+const AlumniUpload = lazy(()=>import('@/app/(admin)/uploadAlumni/page'))
 
 //profile pages
 const ProfileFeed = lazy(() => import('@/app/(social)/profile/feed/page'));
@@ -263,6 +264,12 @@ export const authRoutes = [{
   path: '/auth/forgot-pass',
   name: 'Sign In',
   element: <ForgotPass />
+}];
+
+export const adminRoutes = [{
+  path: '/admin/upload-alumni',
+  name: 'Upload Alumni',
+  element: <AlumniUpload />
 }];
 export const appRoutes = [...otherRoutes];
 export const feedRoutes = [...initialRoutes, ...generalRoutes];
