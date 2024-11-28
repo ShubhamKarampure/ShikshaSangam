@@ -1,5 +1,6 @@
 from rest_framework import permissions
 from .models import CollegeAdminProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, College, UserProfile
+from .models import CollegeAdminProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, College, UserProfile
 
 class IsVerifiedUser(permissions.BasePermission):
     def has_permission(self, request, view):
@@ -52,7 +53,9 @@ class IsOwnerPermission(permissions.BasePermission):
 class IsUserOfCollege(permissions.BasePermission):
     """
     Custom permission to check if the user is a College Admin of the specific College.
+    Custom permission to check if the user is a College Admin of the specific College.
     """
+    
     
     def has_object_permission(self, request, view, obj):
         """

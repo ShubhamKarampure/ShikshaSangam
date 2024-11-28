@@ -2,10 +2,12 @@ import { currentYear, developedBy, developedByLink } from '@/context/constants';
 import { Card, CardBody, CardFooter } from 'react-bootstrap';
 import avatar7 from '@/assets/images/avatar/07.jpg';
 import bgBannerImg from '@/assets/images/bg/01.jpg';
+import { useAuthContext } from '@/context/useAuthContext'
 import { Link } from 'react-router-dom';
 const ProfilePanel = ({
   links
 }) => {
+  const { user } = useAuthContext();
   return <>
       <Card className="overflow-hidden h-100">
         <div className="h-50px" style={{
