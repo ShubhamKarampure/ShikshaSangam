@@ -41,7 +41,10 @@ const ProfileScreen = () => {
     <ScrollView style={styles.container}>
       {/* Profile Header */}
       <View style={styles.header}>
-        <Image source={{ uri: profileData.profilePicture }} style={styles.profilePicture} />
+        <Image
+          source={{ uri: profileData.profilePicture }}
+          style={styles.profilePicture}
+        />
         <View style={styles.nameContainer}>
           <Text style={styles.name}>{profileData.name}</Text>
           <Text style={styles.tagline}>{profileData.tagline}</Text>
@@ -77,28 +80,36 @@ const ProfileScreen = () => {
               <TextInput
                 style={styles.input}
                 value={profileData.email}
-                onChangeText={(text) => setProfileData({ ...profileData, email: text })}
+                onChangeText={(text) =>
+                  setProfileData({ ...profileData, email: text })
+                }
               />
             </View>
             <View style={styles.infoItem}>
               <TextInput
                 style={styles.input}
                 value={profileData.phone}
-                onChangeText={(text) => setProfileData({ ...profileData, phone: text })}
+                onChangeText={(text) =>
+                  setProfileData({ ...profileData, phone: text })
+                }
               />
             </View>
             <View style={styles.infoItem}>
               <TextInput
                 style={styles.input}
                 value={profileData.address}
-                onChangeText={(text) => setProfileData({ ...profileData, address: text })}
+                onChangeText={(text) =>
+                  setProfileData({ ...profileData, address: text })
+                }
               />
             </View>
             <View style={styles.infoItem}>
               <TextInput
                 style={styles.input}
                 value={profileData.bio}
-                onChangeText={(text) => setProfileData({ ...profileData, bio: text })}
+                onChangeText={(text) =>
+                  setProfileData({ ...profileData, bio: text })
+                }
               />
             </View>
           </>
@@ -112,21 +123,29 @@ const ProfileScreen = () => {
               <Text style={styles.infoText}>Phone: {profileData.phone}</Text>
             </View>
             <View style={styles.infoItem}>
-              <Text style={styles.infoText}>Address: {profileData.address}</Text>
+              <Text style={styles.infoText}>
+                Address: {profileData.address}
+              </Text>
             </View>
             <View style={styles.infoItem}>
               <Text style={styles.infoText}>Bio: {profileData.bio}</Text>
             </View>
           </>
         )}
-        <Button title={isEditing ? 'Save' : 'Edit'} onPress={handleEditToggle} />
+        <Button
+          title={isEditing ? "Save" : "Edit"}
+          onPress={handleEditToggle}
+          color="#0375ad"
+        />
       </View>
 
       {/* Skills Section */}
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Skills</Text>
         {profileData.skills.map((skill, index) => (
-          <Text key={index} style={styles.skillItem}>{skill}</Text>
+          <Text key={index} style={styles.skillItem}>
+            {skill}
+          </Text>
         ))}
         <View style={styles.addSkillContainer}>
           <TextInput
@@ -135,7 +154,7 @@ const ProfileScreen = () => {
             value={newSkill}
             onChangeText={setNewSkill}
           />
-          <Button title="Add" onPress={handleAddSkill} />
+          <Button title="Add" onPress={handleAddSkill} color="#0375ad"/>
         </View>
       </View>
     </ScrollView>
