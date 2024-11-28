@@ -1,24 +1,30 @@
 import { useEffect, useState } from 'react';
 import { ProgressBar } from 'react-bootstrap';
-const getProgress = progress => {
-  if (progress > 75) return {
-    variant: 'success',
-    message: 'Yeah! that password rocks ;)'
-  };else if (progress > 50) return {
-    variant: 'info',
-    message: 'That is better'
-  };else if (progress > 25) return {
-    variant: 'warning',
-    message: 'That is a simple one'
-  };else if(progress) return {
-    variant: 'danger',
-    message: 'Easy peasy!'
-  };else return {
-    variant: 'danger',
-    message: ''
-  };
+
+const getProgress = (progress) => {
+  if (progress > 75)
+    return {
+      variant: 'success',
+      message: 'Yeah! that password rocks ;)',
+    };
+  else if (progress > 50)
+    return {
+      variant: 'info',
+      message: 'That is better',
+    };
+  else if (progress > 25)
+    return {
+      variant: 'warning',
+      message: 'That is a simple one',
+    };
+  else
+    return {
+      variant: 'danger',
+      message: 'Easy peasy!',
+    };
 };
-const calculatePasswordStrength = password => {
+
+const calculatePasswordStrength = (password) => {
   let score = 0;
   const regexLower = new RegExp('(?=.*[a-z])');
   const regexUpper = new RegExp('(?=.*[A-Z])');
@@ -30,19 +36,31 @@ const calculatePasswordStrength = password => {
   if (password.match(regexLength)) score += 25;
   return score;
 };
-const PasswordStrengthMeter = ({
-  password
-}) => {
+
+const PasswordStrengthMeter = ({ password }) => {
   const [fillAmount, setFillAmount] = useState(0);
+
   useEffect(() => {
-    setFillAmount(calculatePasswordStrength(password));
+    setFillAmount(password ? calculatePasswordStrength(password) : 0);
   }, [password]);
+
+  if (!password) return null; // Don't display anything if the password is empty
+
   const progressVariant = getProgress(fillAmount);
-  return <>
-      <ProgressBar animated variant={progressVariant.variant} style={{
-      height: '9px'
-    }} now={fillAmount} />
-      <div className="mt-1 text-start">{progressVariant.message}</div>
-    </>;
+
+  return (
+    <>
+      <ProgressBar
+        animated
+        variant={progressVariant.variant}
+        style={{
+          height: '9px',
+        }}
+        now={fillAmount}
+      />
+      <div className="mt-1 text-start">Password Strength: {progressVariant.message}</div>
+    </>
+  );
 };
+
 export default PasswordStrengthMeter;

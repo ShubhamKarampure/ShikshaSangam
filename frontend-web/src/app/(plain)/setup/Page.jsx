@@ -1,41 +1,79 @@
-import React, { useState } from 'react';
-import { Container, Card, Button } from 'react-bootstrap';
-import AdminSetup from './AdminSetup';
-import UserSetup from './UserSetup';
-import PageMetaData from '@/components/PageMetaData';
+import React, { useState } from "react";
+import { Card, Button, Row, Col } from "react-bootstrap";
+import AdminSetup from "./components/AdminSetup";
+import UserSetup from "./components/UserSetup";
+import PageMetaData from "@/components/PageMetaData";
+import SetUpLayout from "./SetupLayout";
+import { School, User } from "lucide-react";
 
-const Setup = () => {
+const RoleCard = ({ title, description, icon: Icon, onClick, buttonText }) => (
+  <Col md={6}>
+    <Card className="shadow-lg border-primary h-100">
+      <Card.Header className="bg-primary text-white">
+        <h5>{title}</h5>
+      </Card.Header>
+      <Card.Body className="d-flex flex-column justify-content-center align-items-center">
+        <div className="mt-3 mb-3">
+          <Icon className="text-white" style={{ width: "80px", height: "80px" }} />
+        </div>
+        <p className="text-white">{description}</p>
+      </Card.Body>
+      <Card.Footer className="bg-transparent border-0">
+        <Button variant="primary" className="w-100" onClick={onClick}>
+          {buttonText}
+        </Button>
+      </Card.Footer>
+    </Card>
+  </Col>
+);
+
+export default function Setup() {
   const [role, setRole] = useState(null);
 
-  if (role === 'admin') {
-    return <AdminSetup />;
+  const handleBackClick = () => {
+    setRole(null); // Reset the role to null, showing the role selection page again
+  };
+
+  if (role === "admin") {
+    return (
+      <>
+        <AdminSetup onBackClick={handleBackClick} />
+      </>
+    );
   }
 
-  if (role === 'user') {
-    return <UserSetup />;
+  if (role === "student" || role === "alumni" || role === "faculty") {
+    return (
+      <>
+        <UserSetup role={role} onBackClick={handleBackClick} />
+      </>
+    );
   }
 
   return (
     <>
-      <PageMetaData title="Profile Setup" />
-      <Container className="d-flex align-items-center justify-content-center min-vh-100">
-        <Card className="w-100 p-4 p-sm-5 shadow-lg" style={{ maxWidth: '400px' }}>
-          <Card.Body className="text-center">
-            
-            <Card.Title className="mb-4" >Select Your Role</Card.Title>
-            <div className="d-grid gap-3">
-              <Button variant="primary" size="lg" onClick={() => setRole('admin')}>
-                Admin
-              </Button>
-              <Button variant="secondary" size="lg" onClick={() => setRole('user')}>
-                User
-              </Button>
-            </div>
-          </Card.Body>
+      <PageMetaData title="SetUp Page" />
+      <SetUpLayout>
+        <Card className="text-center p-4 shadow-lg border-0">
+          <h1 className="mb-4 text-white">Profile Setup</h1>
+          <Row className="g-4">
+            <RoleCard
+              title="College Admin"
+              description="Manage courses, faculty, and college resources"
+              icon={School}
+              onClick={() => setRole("admin")}
+              buttonText="Choose Admin Role"
+            />
+            <RoleCard
+              title="User"
+              description="Access courses, assignments, and resources"
+              icon={User}
+              onClick={() => setRole("student")}
+              buttonText="Choose User Role"
+            />
+          </Row>
         </Card>
-      </Container>
+      </SetUpLayout>
     </>
   );
-};
-
-export default Setup;
+}
