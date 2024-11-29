@@ -42,8 +42,10 @@ export default function CollegeSetup() {
     const redirectLink = searchParams.get("redirectTo");
     if (redirectLink) {
       navigate(redirectLink);
-    } else {
-      navigate("/");
+    } else if(user.role==='college_admin'){
+      navigate("/admin/upload-alumni");
+    }else{
+      navigate('/')
     }
   };
 
@@ -108,7 +110,6 @@ export default function CollegeSetup() {
 
       saveProfileStatus("true");
       saveProfileData(response_update_admin); // Save profile data to context
-      navigate("/feed/home");
       redirectUser();
       // Optionally redirect or show success message after successful creation
     } catch (error) {
