@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile
+from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile, UploadedFile
 from django.contrib.auth.models import User
 
 class UserSerializer(serializers.ModelSerializer):
@@ -130,3 +130,9 @@ class CollegeStaffProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = CollegeStaffProfile
         fields = '__all__'
+
+
+class UploadedFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UploadedFile
+        fields = ['id', 'file', 'file_name', 'uploaded_at']

@@ -78,3 +78,9 @@ class CollegeStaffProfile(models.Model):
     is_verified = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.profile.full_name} - {self.position}"
+    
+class UploadedFile(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="uploaded_files")
+    file = CloudinaryField(resource_type="raw")
+    file_name = models.CharField(max_length=255)
+    uploaded_at = models.DateTimeField(auto_now_add=True)
