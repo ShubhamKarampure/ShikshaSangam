@@ -1,8 +1,17 @@
 from rest_framework import permissions
 from .models import CollegeAdminProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, College, UserProfile
 
+from rest_framework.permissions import BasePermission
+
+class IsSuperUser(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+
 class IsVerifiedUser(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True  # Superuser bypas
+       
         user = request.user
         if not user.is_authenticated:
             return False
@@ -19,30 +28,42 @@ class IsVerifiedUser(permissions.BasePermission):
         return False
 class IsCollegeAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True  # Superuser bypas
+        
         userprofile = getattr(request.user, 'userprofile', None)
         admin_profile = getattr(userprofile, 'collegeadminprofile', None)
         return bool(admin_profile and admin_profile.is_verified)
 
 class IsStudent(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True  # Superuser bypas
         userprofile = getattr(request.user, 'userprofile', None)
         student_profile = getattr(userprofile, 'studentprofile', None)
         return bool(student_profile and student_profile.is_verified)
 
 class IsAlumni(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True  # Superuser bypas
         userprofile = getattr(request.user, 'userprofile', None)
         alumni_profile = getattr(userprofile, 'alumnusprofile', None)
         return bool(alumni_profile and alumni_profile.is_verified)
 
 class IsCollegeStaff(permissions.BasePermission):
     def has_permission(self, request, view):
+        if request.user.is_superuser:
+            return True  # Superuser bypas
         userprofile = getattr(request.user, 'userprofile', None)
         staff_profile = getattr(userprofile, 'collegestaffprofile', None)
         return bool(staff_profile and staff_profile.is_verified)
 
 class IsOwnerPermission(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
+
+        if request.user.is_superuser:
+            return True  # Superuser bypas
 
         if isinstance(obj, UserProfile):
             return  obj.user == request.user
@@ -58,6 +79,9 @@ class IsUserOfCollege(permissions.BasePermission):
         """
         Check if the logged-in user is a College Admin of the college associated with the given college object.
         """
+        if request.user.is_superuser:
+            return True  # Superuser bypas
+        
         # Ensure the user is authenticated and has a UserProfile linked to them
         if not request.user.is_authenticated or not hasattr(request.user, 'userprofile'):
             return False

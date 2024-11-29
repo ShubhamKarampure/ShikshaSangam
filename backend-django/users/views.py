@@ -16,6 +16,7 @@ class CollegeViewSet(viewsets.ModelViewSet):
     serializer_class = CollegeSerializer
 
     def get_permissions(self):
+        permission_classes = []
         if self.action == 'create':
             # Only College Admins can create a college
             permission_classes = [IsCollegeAdmin]
@@ -33,8 +34,9 @@ class CollegeViewSet(viewsets.ModelViewSet):
 class UserProfileViewSet(viewsets.ModelViewSet):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileSerializer
-
+    
     def get_permissions(self):
+        permission_classes = []
         if self.action == 'create':
             # Any verified user can create a UserProfile
              permission_classes = [] # [IsAuthenticated]
@@ -47,22 +49,24 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         elif self.action == 'destroy':
             # Only the owner of the profile can delete their profile
             permission_classes = [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-        return [permission() for permission in permission_classes]
+        return   [permission() for permission in permission_classes]
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
     serializer_class = StudentProfileSerializer
 
     def get_permissions(self):
+        permission_classes = []
+
         if self.action == 'create':
             
              permission_classes = [] # [IsAuthenticated]
         elif self.action in ['retrieve', 'list']:
            
-            permission_classes =  [IsVerifiedUser, IsAuthenticated]
+            permission_classes =  [IsVerifiedUser , IsAuthenticated]
         elif self.action in ['update', 'partial_update']:
             
-            permission_classes= [IsOwnerPermission | IsCollegeAdmin , IsVerifiedUser, IsAuthenticated]
+            permission_classes= [IsSuperUser | IsOwnerPermission  , IsVerifiedUser, IsAuthenticated]
         elif self.action == 'destroy':
             
             permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
@@ -74,6 +78,8 @@ class AlumnusProfileViewSet(viewsets.ModelViewSet):
     serializer_class = AlumnusProfileSerializer
 
     def get_permissions(self):
+        permission_classes = []
+
         if self.action == 'create':
             
              permission_classes = [] # [IsAuthenticated]
@@ -93,6 +99,8 @@ class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     serializer_class = CollegeStaffProfileSerializer
 
     def get_permissions(self):
+        permission_classes = []
+
         if self.action == 'create':
             
              permission_classes = [] # [IsAuthenticated]
@@ -106,6 +114,12 @@ class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
             
             permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
         return [permission() for permission in permission_classes]
+
+class UserIDView(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure only logged-in users access this
+
+    def get(self, request):
+        return Response({'id': request.user.id})
 
 class ProfileSetupView(APIView):
     def post(self, request, *args, **kwargs):
@@ -161,7 +175,6 @@ class ProfileSetupView(APIView):
                 return Response({"detail": "Profile created successfully"}, status=status.HTTP_201_CREATED)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({"detail": "Invalid role"}, status=status.HTTP_400_BAD_REQUEST)
-
 
 class CreateCollegeView(APIView):
     def post(self, request, *args, **kwargs):

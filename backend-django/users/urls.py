@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     StudentProfileViewSet, AlumnusProfileViewSet, CollegeStaffProfileViewSet, CollegeViewSet,
-    SignupView, ProfileSetupView, CreateCollegeView
+    SignupView, ProfileSetupView, CreateCollegeView, UserProfileViewSet
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -12,6 +12,7 @@ router.register(r'student-profiles', StudentProfileViewSet, basename='student-pr
 router.register(r'alumnus-profiles', AlumnusProfileViewSet, basename='alumnus-profile')
 router.register(r'college-staff-profiles', CollegeStaffProfileViewSet, basename='college-staff-profile')
 router.register(r'colleges', CollegeViewSet, basename='college')
+router.register(r'userprofiles' ,UserProfileViewSet, basename='userprofile')
 
 urlpatterns = [
     path('', include(router.urls)),  # This will include the generated routes

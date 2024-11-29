@@ -170,7 +170,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # JWT used for auth - copied from jwt website
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=150),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
     "ROTATE_REFRESH_TOKENS": True, # Generates a new refresh token each time a user logs in
     "BLACKLIST_AFTER_ROTATION": True, # Blacklists (Bans) the previous refresh token for the same user once a new one is generated

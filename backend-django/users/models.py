@@ -1,7 +1,7 @@
 from django.db import models
 import uuid
 from cloudinary.models import CloudinaryField
-from .validators import validate_image
+from .validators import validate_image, validate_pdf
 from django.contrib.auth.models import User
 
 class CollegeAdminProfile(models.Model):
@@ -31,10 +31,10 @@ class UserProfile(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     specialization = models.CharField(max_length=100, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
-    social_links = models.JSONField(default=dict)  # e.g., {"linkedin": "URL", "twitter": "URL"}
-    resume_url = models.URLField(blank=True, null=True)
-    preferences = models.JSONField(default=dict)  # {"domains": [], "roles": [], "interests": []}
-    connections = models.JSONField(default=dict)  # {"followers_count": 0, "following_count": 0}
+    social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
+    resume = CloudinaryField('resume', null=True, blank=True)
+    preferences = models.JSONField(default=dict ,null=True, blank=True)  # {"domains": [], "roles": [], "interests": []}
+    connections = models.JSONField(default=dict, null=True, blank=True)  # {"followers_count": 0, "following_count": 0}
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

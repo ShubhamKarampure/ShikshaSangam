@@ -19,12 +19,13 @@ class PostViewSet(viewsets.ModelViewSet):
         if self.action == 'create':
             
              permission_classes = [IsAuthenticated, IsVerifiedUser] # [IsAuthenticated]
+        
         elif self.action in ['retrieve', 'list']:
            
             permission_classes =  [IsVerifiedUser, IsAuthenticated]
         elif self.action in ['update', 'partial_update']:
             
-            permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+            permission_classes= [IsOwnerPermission | IsCollegeAdmin , IsVerifiedUser, IsAuthenticated]
         elif self.action == 'destroy':
             
             permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
