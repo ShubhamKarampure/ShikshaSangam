@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from .models import College, UserProfile, StudentProfile, AlumnusProfile, CollegeStaffProfile, CollegeAdminProfile
 from django.contrib.auth.models import User
+from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,10 +28,40 @@ class CollegeAdminProfileSerializer(serializers.ModelSerializer):
         model = CollegeAdminProfile
         fields = '__all__'
 
+
 class CollegeSerializer(serializers.ModelSerializer):
+    admin_user_id = serializers.IntegerField(write_only=True)  # Field to pass the admin user's ID
+
     class Meta:
         model = College
         fields = '__all__'
+
+    def create(self, validated_data):
+        # Extract the admin_user_id from the validated data
+        admin_user_id = validated_data.pop('admin_user_id')
+
+        try:
+            # Fetch the admin user
+            admin_user = User.objects.get(id=admin_user_id)
+        except User.DoesNotExist:
+            raise ValidationError({"admin_user_id": "The admin user does not exist."})
+
+        # Validate if the user has a UserProfile and is a college_admin
+        try:
+            user_profile = admin_user.user  # related_name="user" in the UserProfile model
+            if user_profile.role != 'college_admin':
+                raise ValidationError({"admin_user_id": "The user is not a college admin."})
+        except UserProfile.DoesNotExist:
+            raise ValidationError({"admin_user_id": "The admin user does not have a profile."})
+
+        # Create the College instance
+        college = College.objects.create(**validated_data)
+
+        # Assign the college to the user's profile
+        user_profile.college = college
+        user_profile.save()
+
+        return college
 
 class UserProfileSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=UserProfile.ROLE_CHOICES)

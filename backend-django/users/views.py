@@ -47,8 +47,15 @@ class UserRegistrationView(APIView):
             # Generate JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             access_token = refresh.access_token
-            print(user)
+         
             # Return the JWT tokens and user details
+            user_profile_id = None
+        try:
+            user_profile = user.user  # Accessing the related UserProfile
+            user_profile_id = user_profile.id
+        except ObjectDoesNotExist:
+            # Profile does not exist
+            pass
             return Response({
                 'status': 'success',
                 'message': 'User created successfully',
@@ -58,6 +65,7 @@ class UserRegistrationView(APIView):
                     'id': user.id,
                     'email': user.email,
                     'username': user.username,
+                    "profile_id": user_profile_id,
                 }
             }, status=status.HTTP_201_CREATED)
         
