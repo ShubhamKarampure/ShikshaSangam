@@ -1,14 +1,22 @@
 import { currentYear, developedBy, developedByLink } from '@/context/constants';
 import { Card, CardBody, CardFooter } from 'react-bootstrap';
 import avatar7 from '@/assets/images/avatar/07.jpg';
+import { useProfileContext } from "@/context/useProfileContext";
 import bgBannerImg from '@/assets/images/bg/01.jpg';
 import { useAuthContext } from '@/context/useAuthContext'
 import { Link } from 'react-router-dom';
+
 const ProfilePanel = ({
   links
 }) => {
   const { user } = useAuthContext();
-  return <>
+  const { profile } = useProfileContext();
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  console.log(user)
+ const avatarUrl = user.role !== 'college_staff' && cloudName
+  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
+  : avatar7;
+    return <>
       <Card className="overflow-hidden h-100">
         <div className="h-50px" style={{
         backgroundImage: `url(${bgBannerImg})`,
@@ -21,13 +29,21 @@ const ProfilePanel = ({
           <div className="text-center">
             <div className="avatar avatar-lg mt-n5 mb-3">
               <span role="button">
-                <img height={64} width={64} src={avatar7} alt="avatar" className="avatar-img rounded border border-white border-3" />
+                {user.role !== 'college_admin' && (
+                  <img
+                    height={64}
+                    width={64}
+                    src={avatarUrl}
+                    alt="avatar"
+                    className="avatar-img rounded border border-white border-3"
+                  />
+                )}
               </span>
             </div>
 
             <h5 className="mb-0">
               
-              <Link to="">Sam Lanson </Link>
+              <Link to="">{user.username} </Link>
             </h5>
             <small>Web Developer at Webestica</small>
             <p className="mt-3">I&apos;d love to change the world, but they won’t give me the source code.</p>

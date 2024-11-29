@@ -4,7 +4,7 @@ import { useAuthContext } from '@/context/useAuthContext';
 import { appRoutes, authRoutes, feedRoutes, profilePagesRoutes, settingPagesRoutes, socialWithTopbarRoutes } from '@/routes/index';
 import FeedLayout from '@/layouts/FeedLayout';
 import SocialLayout from '@/layouts/SocialLayout';
-import ProfileLayout from '@/layouts/ProfileLayout';
+import { ProfileLayout } from '../layouts/ProfileLayout';
 import SettingLayout from '@/layouts/SettingLayout';
 const AppRouter = props => {
   const {

@@ -22,7 +22,7 @@ export default function CollegeSetup() {
   const [isSubmitting, setIsSubmitting] = useState(false); // For handling submission state
   const [errorMessage, setErrorMessage] = useState(""); // To show errors
   const [searchParams] = useSearchParams();
-  
+
   const collegeOptions = [
     "GOVT. POLYTECHNIC COLLEGE, AJMER",
     "GOVT. POLYTECHNIC COLLEGE, ALWAR",
@@ -98,9 +98,10 @@ export default function CollegeSetup() {
         message: "College created successfully!",
         variant: "success",
       });
-
+      
       saveProfileStatus("true");
       saveProfileData(response_update_admin); // Save profile data to context
+      navigate("/feed/home");
       redirectUser();
       // Optionally redirect or show success message after successful creation
     } catch (error) {
