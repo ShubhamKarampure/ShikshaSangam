@@ -58,7 +58,6 @@ const Photos = () => {
       <CardHeader className="d-sm-flex justify-content-between border-0">
         <CardTitle>Photos</CardTitle>
         <Button variant="primary-soft" size="sm">
-          
           See all photo
         </Button>
       </CardHeader>

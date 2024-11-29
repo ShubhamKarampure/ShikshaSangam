@@ -12,14 +12,19 @@ const ProfilePanel = ({
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  console.log(user)
- const avatarUrl = user.role !== 'college_staff' && cloudName
+
+ const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
   ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
-  : avatar7;
+    : avatar7;
+
+  const bannerUrl = user.role !== 'college_staff' && profile && profile.banner_image && cloudName
+    ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
+    : bgBannerImg
+  
     return <>
       <Card className="overflow-hidden h-100">
         <div className="h-50px" style={{
-        backgroundImage: `url(${bgBannerImg})`,
+        backgroundImage: `url(${bannerUrl})`,
         backgroundPosition: 'center',
         backgroundSize: 'cover',
         backgroundRepeat: 'no-repeat'
@@ -45,8 +50,8 @@ const ProfilePanel = ({
               
               <Link to="">{user.username} </Link>
             </h5>
-            <small>Web Developer at Webestica</small>
-            <p className="mt-3">I&apos;d love to change the world, but they won’t give me the source code.</p>
+            <small>{user.role}</small>
+            <p className="mt-3">{profile.bio}</p>
 
             <div className="hstack gap-2 gap-xl-3 justify-content-center">
               <div>
