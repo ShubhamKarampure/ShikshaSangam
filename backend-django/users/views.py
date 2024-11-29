@@ -116,6 +116,13 @@ class UserLoginView(APIView):
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
 
+        profile=None
+        role=None
+        try:
+            profile=UserProfile.objects.filter(id=user_profile_id)
+            role=profile[0].role
+        except:
+            pass
         # Return the tokens and user information, including the profile ID if it exists
         return Response(
             {
@@ -128,6 +135,7 @@ class UserLoginView(APIView):
                     "email": user.email,
                     "username": user.username,
                     "profile_id": user_profile_id,  # Include the profile ID if it exists
+                    "role": role
                 },
             },
             status=status.HTTP_200_OK,
@@ -196,6 +204,17 @@ class GoogleAuthView(APIView):
             access_token = str(refresh.access_token)
             refresh_token = str(refresh)
 
+            profile = None
+            try:
+                profile=UserProfile.objects.filter(id=user_profile_id)
+                profile=profile[0]
+            except:
+                pass
+            # print(profile[0].role)
+            role=None
+            if profile:
+                print(profile.role)
+                role=profile.role
             # Step 7: Return the access, refresh, and user details (including profile ID if exists)
             return Response(
                 {
@@ -208,7 +227,8 @@ class GoogleAuthView(APIView):
                         "email": user.email,
                         "username": user.username,
                         "profile_id": user_profile_id,  
-                    },
+                        "role": role
+                    }
                 },
                 status=status.HTTP_200_OK,
             )

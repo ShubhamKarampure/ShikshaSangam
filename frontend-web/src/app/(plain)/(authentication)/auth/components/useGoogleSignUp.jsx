@@ -24,7 +24,8 @@ const GoogleSignIn = () => {
       });
 
       const data = await res.json();
-
+      console.log('google login response',data);
+      
       if (!res.ok) {
         throw new Error(data?.message || "Invalid server response");
       }
