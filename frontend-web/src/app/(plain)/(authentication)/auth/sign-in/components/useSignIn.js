@@ -12,7 +12,7 @@ import axios from 'axios';
 const useSignIn = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { saveSession } = useAuthContext();
+  const { saveSession,user } = useAuthContext();
   const [searchParams] = useSearchParams();
   const { showNotification } = useNotificationContext();
 
@@ -32,12 +32,16 @@ const useSignIn = () => {
   });
 
   // Redirect logic
-  const redirectUser = () => {
+  const redirectUser = (loggedInUser) => {
+    console.log(loggedInUser);
+    
     const redirectLink = searchParams.get('redirectTo');
     if (redirectLink) {
       navigate(redirectLink);
-    } else {
-      navigate('/');
+    } else if(loggedInUser  .role==="college_admin"){
+      navigate('/admin/upload-alumni');
+    }else{
+      navigate('/')
     }
   };
 
@@ -47,9 +51,9 @@ const useSignIn = () => {
 
     try {
       const response = await signin(data);  // Pass the form data to signin
-      const { access, refresh, user } = response;
-
-      saveSession({ access, refresh, user });
+      // const { access, refresh, user } = response;
+      const { access, refresh, user: loggedInUser } = response;
+      await saveSession({ access, refresh, user: loggedInUser});
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
@@ -58,7 +62,7 @@ const useSignIn = () => {
       });
 
       // Redirect the user after a successful login
-      redirectUser();
+      redirectUser(loggedInUser);
     } catch (e) {
       // Handle any login errors
       console.log(e)

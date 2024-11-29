@@ -38,8 +38,22 @@ export default function CollegeSetup() {
     "GOVT. POLYTECHNIC COLLEGE, SAWAIMADHOPUR",
   ];
 
+  const redirectUser = () => {
+    const redirectLink = searchParams.get("redirectTo");
+    console.log(user);
+    
+    if (redirectLink) {
+      navigate(redirectLink);
+    } else if(user.role==='college_admin'){
+      navigate("/admin/upload-alumni");
+    }else{
+      navigate('/')
+    }
+  };
+
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
+    console.log('here college');
 
     // Check if required fields are filled
     if (
@@ -72,36 +86,32 @@ export default function CollegeSetup() {
       contact_phone: contactPhone,
       address: address,
     };
-
-    const redirectUser = () => {
-      const redirectLink = searchParams.get("redirectTo");
-      if (redirectLink) {
-        navigate(redirectLink);
-      } else {
-        navigate("/");
-      }
-    };
-
+    console.log(data);
+    
     setIsSubmitting(true); // Set submitting to true
 
     try {
       // Call the API to create the college
       console.log(profile);
       const response_college_create = await createCollege(data);
-      console.log("College created:",  response_college_create);
-      const response_update_admin = await updateCollegeAdminProfile(profile.id,{college:response_college_create.id});
+      console.log("College created:", response_college_create);
+      const response_update_admin = await updateCollegeAdminProfile(
+        profile.id,
+        { college: response_college_create.id }
+      );
       console.log("Added college in admin:", response_update_admin);
-      const response_update_user = await updateUser(user.id,{role:'college_admin'});
+      const response_update_user = await updateUser(user.id, {
+        role: "college_admin",
+      });
       console.log("Updated User Profile", response_update_user);
 
       showNotification({
         message: "College created successfully!",
         variant: "success",
       });
-      
+
       saveProfileStatus("true");
       saveProfileData(response_update_admin); // Save profile data to context
-      navigate("/feed/home");
       redirectUser();
       // Optionally redirect or show success message after successful creation
     } catch (error) {

@@ -16,7 +16,7 @@ const StyledHeader = ({
       };
     }
     return {
-      header: 'navbar-light fixed-top header-static bg-mode',
+      header: 'navbar-light sticky-top header-static bg-mode',
       nav: 'navbar navbar-expand-lg'
     };
   }, [pathname]);

@@ -20,8 +20,7 @@ const ProfilePanel = ({
   const bannerUrl = user.role !== 'college_staff' && profile && profile.banner_image && cloudName
     ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
     : bgBannerImg
-  
-  const bio = user.role !== 'college_staff' && profile && profile.bio && bio
+    
   
     return <>
       <Card className="overflow-hidden h-100">
@@ -53,7 +52,7 @@ const ProfilePanel = ({
               <Link to="">{user.username} </Link>
             </h5>
             <small>{user.role}</small>
-            <p className="mt-3">{bio}</p>
+            <p className="mt-3"></p>
 
             <div className="hstack gap-2 gap-xl-3 justify-content-center">
               <div>

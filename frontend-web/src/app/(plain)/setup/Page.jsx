@@ -44,7 +44,7 @@ export default function Setup() {
     return <AdminSetup onBackClick={handleBackClick} />;
   }
 
-  if (role === "student" || role === "alumni" || role === "faculty") {
+  if (role === "student" || role === "alumni" || role === "college_staff") {
     return <UserSetup role={role} onBackClick={handleBackClick} />;
   }
 
@@ -92,7 +92,7 @@ export default function Setup() {
                   title="Faculty"
                   description="Guide students, manage assignments, and participate in alumni-student events."
                   icon={BookOpen}
-                  onClick={() => setRole("faculty")}
+                  onClick={() => setRole("college_staff")}
                   buttonText="Choose Faculty Role"
                   selected={role === "faculty"}
                 />
