@@ -21,7 +21,7 @@ const ProfilePanel = ({
     ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
     : bgBannerImg
   
-  const bio = user.role !== 'college_staff' && profile && profile.bio && bio
+  const bio = user.role !== 'college_staff' && profile && profile.bio
   
     return <>
       <Card className="overflow-hidden h-100">
