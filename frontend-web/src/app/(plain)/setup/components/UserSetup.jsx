@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { FaArrowLeft, FaUser, FaGraduationCap, FaBookOpen, FaUpload } from "react-icons/fa";
+import React, { useState, useEffect } from "react";
+import {
+  FaArrowLeft,
+  FaUser,
+  FaGraduationCap,
+  FaBookOpen,
+  FaUpload,
+} from "react-icons/fa";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { createUserProfile, createStudentProfile, createAlumnusProfile, createCollegeStaffProfile } from '@/api/profile';
+import {
+  createUserProfile,
+  createStudentProfile,
+  createAlumnusProfile,
+  createCollegeStaffProfile,
+} from "@/api/profile";
 import { updateUser } from "@/api/users";
-import { getColleges } from '@/api/college';
-import { OnboardingProfileLayout } from '@/layouts/ProfileLayout';
-import Loader from '@/components/layout/loadingAnimation';
+import { getColleges } from "@/api/college";
+import { OnboardingProfileLayout } from "@/layouts/ProfileLayout";
+import Loader from "@/components/layout/loadingAnimation";
 
 function UserSetup({ role: initialRole, onBackClick }) {
   const { user } = useAuthContext();
-  const { saveProfileData,saveProfileStatus } = useProfileContext();
+  const { saveProfileData, saveProfileStatus } = useProfileContext();
   const { showNotification } = useNotificationContext();
-  
+
   const [step, setStep] = useState(1);
   const [role, setRole] = useState(initialRole);
   const [colleges, setColleges] = useState([]);
@@ -37,7 +48,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
   const [careerPath, setCareerPath] = useState("");
   const [position, setPosition] = useState("");
   const [department, setDepartment] = useState("");
-  
+
   const [loading, setloading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -46,16 +57,16 @@ function UserSetup({ role: initialRole, onBackClick }) {
 
   // List of common specializations
   const commonSpecializations = [
-    'Software Engineering',
-    'Data Science',
-    'Artificial Intelligence',
-    'Machine Learning',
-    'Cybersecurity',
-    'Web Development',
-    'DevOps',
-    'Cloud Computing',
-    'UI/UX Design',
-    'Product Management',
+    "Software Engineering",
+    "Data Science",
+    "Artificial Intelligence",
+    "Machine Learning",
+    "Cybersecurity",
+    "Web Development",
+    "DevOps",
+    "Cloud Computing",
+    "UI/UX Design",
+    "Product Management",
   ];
 
   const handleSpecializationChange = (e) => {
@@ -63,13 +74,12 @@ function UserSetup({ role: initialRole, onBackClick }) {
     setSpecialization(value);
 
     // If 'Other' is selected, allow the user to enter their own specialization
-    if (value === 'Other') {
+    if (value === "Other") {
       setIsCustomSpecialization(true);
     } else {
       setIsCustomSpecialization(false);
     }
   };
-
 
   useEffect(() => {
     const fetchColleges = async () => {
@@ -96,108 +106,108 @@ function UserSetup({ role: initialRole, onBackClick }) {
     setSelectedCollege(e.target.value);
   };
 
-
   const handleFileChange = (e, setter) => {
     setter(e.target.files[0]);
   };
 
   const handleSocialLinksChange = (e) => {
     const { name, value } = e.target;
-    setSocialLinks(prev => ({ ...prev, [name]: value }));
+    setSocialLinks((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleCurrentEmploymentChange = (e) => {
     const { name, value } = e.target;
-    setCurrentEmployment(prev => ({ ...prev, [name]: value }));
+    setCurrentEmployment((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setloading(true)
+    setloading(true);
     try {
       const formData = new FormData();
-      formData.append('full_name', fullName);
-      if(bio)
-        formData.append('bio', bio);
-      else   formData.append('bio', "Knowledge grows when shared – let's connect, learn, and inspire each other!");
-      formData.append('user', user.id);
-      formData.append('college', selectedCollege);
-      formData.append('contact_number', phoneNumber);
-      formData.append('specialization', specialization);
-      formData.append('location', location);
-      formData.append('social_links', JSON.stringify(socialLinks));
-      formData.append('preferences', JSON.stringify(preferences));
 
-      if (avatar) {
-        formData.append('avatar_image', avatar);
-      }
-      if (bannerImage) {
-        formData.append('banner_image', bannerImage);
-      }
-      if (resume) {
-        formData.append('resume', resume);
+      // Define the common fields for all roles
+      const commonFields = {
+        full_name: fullName,
+        bio: bio,
+        user: user.id,
+        college: selectedCollege,
+        contact_number: phoneNumber,
+        specialization: specialization,
+        location: location,
+        social_links: JSON.stringify(socialLinks),
+        preferences: JSON.stringify(preferences),
+        role:role
+      };
+
+      // Loop through and append common fields
+      for (const [key, value] of Object.entries(commonFields)) {
+        formData.append(key, value);
       }
 
-      const userprofile = await createUserProfile(formData);
+      // Handle file uploads (optional fields)
+      if (avatar) formData.append("avatar_image", avatar);
+      if (bannerImage) formData.append("banner_image", bannerImage);
+      if (resume) formData.append("resume", resume);
 
+      // Handle role-specific fields
       let roleProfileData = {};
-      if (role === 'student') {
+      if (role === "student") {
         roleProfileData = {
-          profile: userprofile.id,
+         
           enrollment_year: enrollmentYear,
           current_program: currentProgram,
           expected_graduation_year: expectedGraduationYear,
           specialization: specialization,
           is_verified: false,
         };
-      } else if (role === 'alumni') {
+      } else if (role === "alumni") {
         roleProfileData = {
-          profile: userprofile.id,
+          
           graduation_year: graduationYear,
           current_employment: currentEmployment,
           career_path: careerPath,
           specialization: specialization,
           is_verified: false,
         };
-      } else if (role === 'college_staff') {
+      } else if (role === "college_staff") {
         roleProfileData = {
-          profile: userprofile.id,
+          
           position: position,
           department: department,
           is_verified: false,
         };
       }
 
-      let response;
-      if (role === 'student') {
-        response = await createStudentProfile(roleProfileData);
-      } else if (role === 'alumni') {
-        response = await createAlumnusProfile(roleProfileData);
-      } else if (role === 'college_staff') {
-        response = await createCollegeStaffProfile(roleProfileData);
+      // Loop through and append role-specific fields
+      for (const [key, value] of Object.entries(roleProfileData)) {
+        formData.append(key, value);
       }
+      for (let [key, value] of formData.entries()) {
+  console.log(key, value);
+}
 
-      // Update user role
-      const response_update_user = await updateUser(user.id, { role: role });
+
+      // Send the form data to create a user profile
+      const userprofile = await createUserProfile(formData);
 
       showNotification({
-        message: "Profile created successfully!",
+        message: "User Profile created successfully!",
         variant: "success",
       });
 
       saveProfileStatus("true");
-      saveProfileData(userprofile, response);
+      saveProfileData(userprofile);
 
       redirectUser();
-
     } catch (error) {
-      console.error('Error creating profile:', error);
+      console.error("Error creating profile:", error);
       showNotification({
         message: "There was an error creating your profile.",
         variant: "danger",
       });
     }
-    setloading(false)
+    setloading(false);
   };
 
   const renderStep = () => {
@@ -207,7 +217,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
           <>
             <h3 className="mb-4">Personal Information</h3>
             <div className="mb-3">
-              <label htmlFor="fullName" className="form-label">Full Name</label>
+              <label htmlFor="fullName" className="form-label">
+                Full Name
+              </label>
               <input
                 type="text"
                 id="fullName"
@@ -219,7 +231,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="bio" className="form-label">Bio</label>
+              <label htmlFor="bio" className="form-label">
+                Bio
+              </label>
               <textarea
                 id="bio"
                 className="form-control"
@@ -229,7 +243,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="college" className="form-label">Select College</label>
+              <label htmlFor="college" className="form-label">
+                Select College
+              </label>
               <select
                 id="college"
                 className="form-select"
@@ -246,7 +262,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
               </select>
             </div>
             <div className="mb-3">
-              <label htmlFor="phoneNumber" className="form-label">Phone Number</label>
+              <label htmlFor="phoneNumber" className="form-label">
+                Phone Number
+              </label>
               <input
                 type="tel"
                 id="phoneNumber"
@@ -262,9 +280,15 @@ function UserSetup({ role: initialRole, onBackClick }) {
         return (
           <>
             <h3 className="mb-4">Profile Details</h3>
-            <OnboardingProfileLayout name={fullName} avatar={avatar} banner = {bannerImage} />
+            <OnboardingProfileLayout
+              name={fullName}
+              avatar={avatar}
+              banner={bannerImage}
+            />
             <div className="mb-3">
-              <label htmlFor="avatar" className="form-label">Upload Avatar</label>
+              <label htmlFor="avatar" className="form-label">
+                Upload Avatar
+              </label>
               <div className="input-group">
                 <input
                   type="file"
@@ -278,7 +302,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
               </div>
             </div>
             <div className="mb-3">
-              <label htmlFor="bannerImage" className="form-label">Upload Banner Image</label>
+              <label htmlFor="bannerImage" className="form-label">
+                Upload Banner Image
+              </label>
               <div className="input-group">
                 <input
                   type="file"
@@ -292,36 +318,40 @@ function UserSetup({ role: initialRole, onBackClick }) {
               </div>
             </div>
             <div className="mb-3">
-      <label htmlFor="specialization" className="form-label">Specialization</label>
-      <select
-        id="specialization"
-        className="form-control"
-        value={specialization}
-        onChange={handleSpecializationChange}
-      >
-        <option value="">Select a specialization</option>
-        {commonSpecializations.map((spec, index) => (
-          <option key={index} value={spec}>
-            {spec}
-          </option>
-        ))}
-        <option value="Other">Other</option>
-      </select>
+              <label htmlFor="specialization" className="form-label">
+                Specialization
+              </label>
+              <select
+                id="specialization"
+                className="form-control"
+                value={specialization}
+                onChange={handleSpecializationChange}
+              >
+                <option value="">Select a specialization</option>
+                {commonSpecializations.map((spec, index) => (
+                  <option key={index} value={spec}>
+                    {spec}
+                  </option>
+                ))}
+                <option value="Other">Other</option>
+              </select>
 
-      {/* If 'Other' is selected, show the custom specialization input */}
-      {isCustomSpecialization && (
-        <input
-          type="text"
-          id="customSpecialization"
-          className="form-control mt-3"
-          placeholder="Enter your specialization"
-          value={specialization}
-          onChange={(e) => setSpecialization(e.target.value)}
-        />
-      )}
-    </div>
+              {/* If 'Other' is selected, show the custom specialization input */}
+              {isCustomSpecialization && (
+                <input
+                  type="text"
+                  id="customSpecialization"
+                  className="form-control mt-3"
+                  placeholder="Enter your specialization"
+                  value={specialization}
+                  onChange={(e) => setSpecialization(e.target.value)}
+                />
+              )}
+            </div>
             <div className="mb-3">
-              <label htmlFor="location" className="form-label">Location</label>
+              <label htmlFor="location" className="form-label">
+                Location
+              </label>
               <input
                 type="text"
                 id="location"
@@ -362,7 +392,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="resume" className="form-label">Upload Resume</label>
+              <label htmlFor="resume" className="form-label">
+                Upload Resume
+              </label>
               <div className="input-group">
                 <input
                   type="file"
@@ -378,12 +410,14 @@ function UserSetup({ role: initialRole, onBackClick }) {
           </>
         );
       case 4:
-        if (role === 'student') {
+        if (role === "student") {
           return (
             <>
               <h3 className="mb-4">Student Information</h3>
               <div className="mb-3">
-                <label htmlFor="enrollmentYear" className="form-label">Enrollment Year</label>
+                <label htmlFor="enrollmentYear" className="form-label">
+                  Enrollment Year
+                </label>
                 <input
                   type="number"
                   id="enrollmentYear"
@@ -394,7 +428,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="currentProgram" className="form-label">Current Program</label>
+                <label htmlFor="currentProgram" className="form-label">
+                  Current Program
+                </label>
                 <input
                   type="text"
                   id="currentProgram"
@@ -406,7 +442,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="expectedGraduationYear" className="form-label">Expected Graduation Year</label>
+                <label htmlFor="expectedGraduationYear" className="form-label">
+                  Expected Graduation Year
+                </label>
                 <input
                   type="number"
                   id="expectedGraduationYear"
@@ -419,12 +457,14 @@ function UserSetup({ role: initialRole, onBackClick }) {
               </div>
             </>
           );
-        } else if (role === 'alumni') {
+        } else if (role === "alumni") {
           return (
             <>
               <h3 className="mb-4">Alumni Information</h3>
               <div className="mb-3">
-                <label htmlFor="graduationYear" className="form-label">Graduation Year</label>
+                <label htmlFor="graduationYear" className="form-label">
+                  Graduation Year
+                </label>
                 <input
                   type="number"
                   id="graduationYear"
@@ -460,7 +500,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="careerPath" className="form-label">Career Path</label>
+                <label htmlFor="careerPath" className="form-label">
+                  Career Path
+                </label>
                 <textarea
                   id="careerPath"
                   className="form-control"
@@ -471,12 +513,14 @@ function UserSetup({ role: initialRole, onBackClick }) {
               </div>
             </>
           );
-        } else if (role === 'college_staff') {
+        } else if (role === "college_staff") {
           return (
             <>
               <h3 className="mb-4">Faculty Information</h3>
               <div className="mb-3">
-                <label htmlFor="position" className="form-label">Position</label>
+                <label htmlFor="position" className="form-label">
+                  Position
+                </label>
                 <input
                   type="text"
                   id="position"
@@ -488,14 +532,17 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 />
               </div>
               <div className="mb-3">
-                <label htmlFor="department" className="form-label">Department</label>
+                <label htmlFor="department" className="form-label">
+                  Department
+                </label>
                 <input
                   type="text"
                   id="department"
                   className="form-control"
                   placeholder="Enter your department"
                   value={department}
-                  onChange={(e) => setDepartment(e.target.v)} />
+                  onChange={(e) => setDepartment(e.target.v)}
+                />
               </div>
             </>
           );
@@ -506,8 +553,9 @@ function UserSetup({ role: initialRole, onBackClick }) {
     }
   };
 
-  return (
-    loading === true ? (<Loader/> ): (
+  return loading === true ? (
+    <Loader />
+  ) : (
     <div className="container py-5">
       <div className="row justify-content-center">
         <div className="col-md-8">
@@ -560,8 +608,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
         </div>
       </div>
     </div>
-  ));
+  );
 }
 
 export default UserSetup;
-
