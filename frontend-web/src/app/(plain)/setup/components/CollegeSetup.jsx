@@ -40,6 +40,8 @@ export default function CollegeSetup() {
 
   const redirectUser = () => {
     const redirectLink = searchParams.get("redirectTo");
+    console.log(user);
+    
     if (redirectLink) {
       navigate(redirectLink);
     } else if(user.role==='college_admin'){
