@@ -10,7 +10,7 @@ import { adminRoutes } from '.';
 
 const AppRouter = props => {
   const {
-    isAuthenticated
+    isAuthenticated,user
   } = useAuthContext();
   return <Routes>
       {(authRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={<OtherLayout {...props}>{route.element}</OtherLayout>} />)}
@@ -19,7 +19,7 @@ const AppRouter = props => {
       pathname: '/auth/sign-in',
       search: 'redirectTo=' + route.path
     }} />} />)}
-      {(adminRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={isAuthenticated ? <OtherLayout {...props}>{route.element}</OtherLayout> : <Navigate to={{
+      {(adminRoutes || []).map((route, idx) => <Route key={idx + route.name} path={route.path} element={isAuthenticated && user.role==='college_admin'? <OtherLayout {...props}>{route.element}</OtherLayout> : <Navigate to={{
       pathname: '/auth/sign-in',
       search: 'redirectTo=' + route.path
     }} />} />)}

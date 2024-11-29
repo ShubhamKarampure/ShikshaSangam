@@ -33,7 +33,7 @@ const SideBar = () => {
       }}
     >
       {/* SideBar Options */}
-      <div className="flex-grow-1 py-3" style={{padding:'100px 0px'}}>
+      <div className="flex-grow-1" style={{padding:'100px 0px'}}>
         <SideBarOption
           Icon={FiHome}
           title="Dashboard"
@@ -124,7 +124,7 @@ const SideBarOption = ({
   <Link to={link} className="text-decoration-none">
     <button
       className={`btn w-100 d-flex align-items-center ${
-        selected === title ? "bg-light text-primary" : "text-dark"
+        selected === title ? "bg-light text-primary" : "text-dark text-white"
       }`}
       onClick={() => setSelected(title)}
       style={{
@@ -138,9 +138,9 @@ const SideBarOption = ({
         <Icon size={20} />
         {open && <span className="ms-2">{title}</span>}
       </span>
-      {notifs && open && (
+      {/* {notifs && open && (
         <span className="badge bg-primary ms-auto">{notifs}</span>
-      )}
+      )} */}
     </button>
   </Link>
 );
