@@ -59,7 +59,6 @@ INSTALLED_APPS = [
     'social',
 ]
 
-AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
 
 REST_FRAMEWORK = {
