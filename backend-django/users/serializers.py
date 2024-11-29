@@ -75,7 +75,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user','role', 'college_id', 'full_name', 'bio', 'avatar_image', 'contact_number', 'location', 'social_links', 
+        fields = ['user','role', 'college_id', 'full_name', 'bio', 'avatar_image','banner_image', 'contact_number', 'location', 'social_links', 
                   'enrollment_year', 'current_program', 'expected_graduation_year', 'specialization']
 
     def validate(self, data):
@@ -111,6 +111,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
             full_name=validated_data.get('full_name'),
             bio=validated_data.get('bio'),
             avatar_image=validated_data.get('avatar_image'),
+            banner_image=validated_data.get('banner_image'),
             contact_number=validated_data.get('contact_number'),
             location=validated_data.get('location'),
             social_links=validated_data.get('social_links', {}),
