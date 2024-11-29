@@ -22,7 +22,7 @@ def process_user_data(file_url, college):
         for _, row in df.iterrows():
             username = row['username']
             email = row['email']
-            password = row.get('password', User.objects.make_random_password())
+            password =  row['password'] if row['password'] else username # row.get('password', User.objects.make_random_password())
             role = row['role']
 
             # Create User
@@ -38,11 +38,11 @@ def process_user_data(file_url, college):
 
                 # Create role-specific profiles
                 if role == 'student':
-                    StudentProfile.objects.create(userprofile=user_profile, additional_data=row.get('additional_data', ''))
+                    StudentProfile.objects.create(userprofile=user_profile)
                 elif role == 'alumnus':
-                    AlumnusProfile.objects.create(userprofile=user_profile, additional_data=row.get('additional_data', ''))
+                    AlumnusProfile.objects.create(userprofile=user_profile)
                 elif role == 'staff':
-                    CollegeStaffProfile.objects.create(userprofile=user_profile, additional_data=row.get('additional_data', ''))
+                    CollegeStaffProfile.objects.create(userprofile=user_profile)
                 else:
                     raise ValueError(f"Unsupported role: {role}")
 
@@ -57,7 +57,7 @@ def upload_csv_files(request):
     Handle CSV file uploads, store them in Cloudinary, and process user data.
     """
     user = request.user
-    user_profile = user.userprofile
+    user_profile = user.user
 
     # Ensure only admins can upload
     if not hasattr(user_profile, "collegeadminprofile"):
@@ -87,3 +87,6 @@ def upload_csv_files(request):
         return JsonResponse({"results": results}, status=200)
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+
+
