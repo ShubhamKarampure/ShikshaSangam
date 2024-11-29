@@ -5,6 +5,8 @@ from .validators import validate_image
 from django.contrib.auth.models import User
 from django.core.validators import RegexValidator
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class College(models.Model):
     college_name = models.CharField(max_length=255, unique=True)
