@@ -10,6 +10,7 @@ import postImg3 from '@/assets/images/post/1by1/03.jpg';
 import postImg1 from '@/assets/images/post/3by2/01.jpg';
 import postImg2 from '@/assets/images/post/3by2/02.jpg';
 import VideoPlayer from './components/VideoPlayer';
+
 const ActionMenu = ({
   name
 }) => {

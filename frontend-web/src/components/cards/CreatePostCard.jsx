@@ -17,8 +17,19 @@ import avatar6 from '@/assets/images/avatar/06.jpg';
 import avatar7 from '@/assets/images/avatar/07.jpg';
 import ChoicesFormInput from '../form/ChoicesFormInput';
 import { Link } from 'react-router-dom';
+import { useProfileContext } from "@/context/useProfileContext";
+import { useAuthContext } from '@/context/useAuthContext'
 const CreatePostCard = () => {
+    const { user } = useAuthContext();
+  const { profile } = useProfileContext();
+   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+  const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
+  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
+    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
+
   const guests = [avatar1, avatar2, avatar3, avatar4, avatar5, avatar6, avatar7];
+
   const {
     isTrue: isOpenPhoto,
     toggle: togglePhotoModel
@@ -54,7 +65,7 @@ const CreatePostCard = () => {
           <div className="avatar avatar-xs me-2">
             <span role="button">
               
-              <img className="avatar-img rounded-circle" src={avatar3} alt="avatar3" />
+              <img className="avatar-img rounded-circle" src={avatarUrl} alt="avatar3" />
             </span>
           </div>
 

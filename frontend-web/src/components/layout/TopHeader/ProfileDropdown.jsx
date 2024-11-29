@@ -7,7 +7,21 @@ import { useLayoutContext } from '@/context/useLayoutContext';
 import { toSentenceCase } from '@/utils/change-casing';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
+import { useProfileContext } from "@/context/useProfileContext";
+
 const ProfileDropdown = () => {
+
+    const { user } = useAuthContext();
+  const { profile } = useProfileContext();
+   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+  const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
+  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
+    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
+ const full_name = profile && profile.full_name ?
+     profile.full_name : 'No username'
+  
+  
   const themeModes = [{
     icon: BsSun,
     theme: 'light'
@@ -33,11 +47,11 @@ const ProfileDropdown = () => {
         <li className="px-3">
           <div className="d-flex align-items-center position-relative">
             <div className="avatar me-3">
-              <img className="avatar-img rounded-circle" src={avatar7} alt="avatar" />
+              <img className="avatar-img rounded-circle" src={avatarUrl} alt="avatar" />
             </div>
             <div>
               <Link className="h6 stretched-link" to="">
-                Lori Ferguson
+                {profile.full_name}
               </Link>
               <p className="small m-0">Web Developer</p>
             </div>

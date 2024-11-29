@@ -46,6 +46,8 @@ export const ProfileProvider = ({ children }) => {
         console.log(data);
         
         saveProfileData(data); // Save the fetched profile data to cookies
+        setCookie("_PROFILE_SETUP_", "true");
+        setIsProfileSetUp("true")
         return data;
       } catch (error) {
         console.error("Error fetching profile data:", error);

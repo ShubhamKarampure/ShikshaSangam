@@ -20,6 +20,8 @@ import { experienceData } from "@/assets/data/layout";
 import { Link, useLocation } from "react-router-dom";
 import FallbackLoading from "@/components/FallbackLoading";
 import Preloader from "@/components/Preloader";
+import { useAuthContext } from '@/context/useAuthContext'
+import { useProfileContext } from "@/context/useProfileContext";
 
 const Experience = () => {
   return <Card>
@@ -220,6 +222,30 @@ const ProfileLayout = ({
   const {
     pathname
   } = useLocation();
+  const { user } = useAuthContext();
+  const { profile } = useProfileContext();
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+ const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
+  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
+    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
+
+  const bannerUrl = user.role !== 'college_staff' && profile && profile.banner_image && cloudName
+    ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
+    : background5
+  
+  const bio = user.role !== 'college_staff' && profile && profile.bio ? 
+    profile.bio : 'Here to connect, learn, and grow.'
+  
+  const full_name = profile && profile.full_name ?
+     profile.full_name : 'No username'
+  
+  const specilizatoin = user.role !== 'college_staff' && profile && profile.specilizatoin ?
+    profile.specilizatoin : user.role;
+  
+  const location = user.role !== 'college_staff' && profile && profile.location ?
+    profile.location : '';
+  
   return <>
       <Suspense fallback={<Preloader />}>
         <TopHeader />
@@ -231,7 +257,7 @@ const ProfileLayout = ({
             <Col lg={8} className="vstack gap-4">
               <Card>
                 <div className="h-200px rounded-top" style={{
-                backgroundImage: `url(${background5})`,
+                backgroundImage: `url(${bannerUrl})`,
                 backgroundPosition: 'center',
                 backgroundSize: 'cover',
                 backgroundRepeat: 'no-repeat'
@@ -240,12 +266,12 @@ const ProfileLayout = ({
                   <div className="d-sm-flex align-items-start text-center text-sm-start">
                     <div>
                       <div className="avatar avatar-xxl mt-n5 mb-3">
-                        <img className="avatar-img rounded-circle border border-white border-3" src={avatar7} alt="avatar" />
+                        <img className="avatar-img rounded-circle border border-white border-3" src={avatarUrl} alt="avatar" />
                       </div>
                     </div>
                     <div className="ms-sm-4 mt-sm-3">
                       <h1 className="mb-0 h5">
-                        Sam Lanson <BsPatchCheckFill className="text-success small" />
+                        {full_name} <BsPatchCheckFill className="text-success small" />
                       </h1>
                       <p>250 connections</p>
                     </div>
@@ -299,10 +325,10 @@ const ProfileLayout = ({
                   </div>
                   <ul className="list-inline mb-0 text-center text-sm-start mt-3 mt-sm-0">
                     <li className="list-inline-item">
-                      <BsBriefcase className="me-1" /> Lead Developer
+                    <BsBriefcase className="me-1" /> {user.role}
                     </li>
                     <li className="list-inline-item">
-                      <BsGeoAlt className="me-1" /> New Hampshire
+                      <BsGeoAlt className="me-1" />{location}
                     </li>
                     <li className="list-inline-item">
                       <BsCalendar2Plus className="me-1" /> Joined on Nov 26, 2019
@@ -333,19 +359,15 @@ const ProfileLayout = ({
                       <CardTitle>About</CardTitle>
                     </CardHeader>
                     <CardBody className="position-relative pt-0">
-                      <p>He moonlights difficult engrossed it, sportsmen. Interested has all Devonshire difficulty gay assistance joy.</p>
+                    <p>{bio}</p>
                       <ul className="list-unstyled mt-3 mb-0">
                         <li className="mb-2">
                           
                           <BsCalendarDate size={18} className="fa-fw pe-1" /> Born: <strong> October 20, 1990 </strong>
                         </li>
-                        <li className="mb-2">
-                          
-                          <BsHeart size={18} className="fa-fw pe-1" /> Status: <strong> Single </strong>
-                        </li>
                         <li>
-                          
-                          <BsEnvelope size={18} className="fa-fw pe-1" /> Email: <strong> webestica@gmail.com </strong>
+                      
+                          <BsEnvelope size={18} className="fa-fw pe-1" /> Email: <strong> {user.email} </strong>
                         </li>
                       </ul>
                     </CardBody>

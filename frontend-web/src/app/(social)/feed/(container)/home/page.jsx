@@ -6,9 +6,10 @@ import CreatePostCard from '@/components/cards/CreatePostCard';
 import { Link } from 'react-router-dom';
 import LoadContentButton from '@/components/LoadContentButton';
 const Home = () => {
+  
   return <>
-      <Col md={8} lg={6} className="vstack gap-4">
-        <Stories />
+    <Col md={8} lg={6} className="vstack gap-4">
+        
         <CreatePostCard />
         <Feeds />
       </Col>
