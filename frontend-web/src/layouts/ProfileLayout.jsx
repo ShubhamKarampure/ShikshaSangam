@@ -15,10 +15,12 @@ import album2 from '@/assets/images/albums/02.jpg';
 import album3 from '@/assets/images/albums/03.jpg';
 import album4 from '@/assets/images/albums/04.jpg';
 import album5 from '@/assets/images/albums/05.jpg';
+import React, { useState, useEffect } from 'react';
 import { experienceData } from "@/assets/data/layout";
 import { Link, useLocation } from "react-router-dom";
 import FallbackLoading from "@/components/FallbackLoading";
 import Preloader from "@/components/Preloader";
+
 const Experience = () => {
   return <Card>
       <CardHeader className="d-flex justify-content-between border-0">
@@ -56,7 +58,6 @@ const Photos = () => {
       <CardHeader className="d-sm-flex justify-content-between border-0">
         <CardTitle>Photos</CardTitle>
         <Button variant="primary-soft" size="sm">
-          
           See all photo
         </Button>
       </CardHeader>
@@ -91,6 +92,8 @@ const Photos = () => {
       </CardBody>
     </Card>;
 };
+
+
 const Friends = () => {
   const allFriends = useFetchData(getAllUsers);
   return <Card>
@@ -137,6 +140,80 @@ const Friends = () => {
       </CardBody>
     </Card>;
 };
+
+const OnboardingProfileLayout = ({ name, avatar, banner }) => {
+  const [avatarUrl, setAvatarUrl] = useState(null);
+  const [bannerUrl, setBannerUrl] = useState(null);
+
+  // Convert file to base64 when avatar and banner props are passed
+  useEffect(() => {
+    if (avatar) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarUrl(reader.result); // Update state with base64 image data
+      };
+      reader.readAsDataURL(avatar); // Convert the file to base64
+    }
+    if (banner) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setBannerUrl(reader.result); // Update state with base64 image data
+      };
+      reader.readAsDataURL(banner); // Convert the file to base64
+    }
+  }, [avatar, banner]); // This will run whenever the avatar or banner prop changes
+
+  return (
+    <main>
+      <Card className="mb-4">
+        <div
+          className="h-200px rounded-top"
+          style={{
+            backgroundImage: bannerUrl
+              ? `url(${bannerUrl})`
+              : `url(${background5})`, // Fallback to background5 if no banner URL
+            backgroundPosition: 'center',
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+          }}
+        />
+        <CardBody className="py-0">
+          <div className="d-sm-flex align-items-start text-center text-sm-start">
+            <div>
+              <div className="avatar avatar-xxl mt-n5 mb-3">
+                {avatarUrl ? (
+                  <img
+                    className="avatar-img rounded-circle border border-white border-3"
+                    src={avatarUrl} // Use the base64 string if available
+                    alt="avatar"
+                  />
+                ) : (
+                  <img
+                    className="avatar-img rounded-circle border border-white border-3"
+                    src={`https://ui-avatars.com/api/?name=${name}&background=0D8ABC&color=fff`} // Default avatar
+                    alt="avatar"
+                  />
+                )}
+              </div>
+            </div>
+            <div className="ms-sm-4 mt-sm-3">
+              <h1 className="mb-0 h5">
+                {name ? name : 'Sam Lanson'} <BsPatchCheckFill className="text-success small" />
+              </h1>
+            </div>
+          </div>
+        </CardBody>
+      </Card>
+    </main>
+  );
+};
+
+
+// Default props in case any prop is not passed
+OnboardingProfileLayout.defaultProps = {
+  banner: background5, // Fallback banner image
+};
+
 const ProfileLayout = ({
   children
 }) => {
@@ -290,4 +367,4 @@ const ProfileLayout = ({
       </main>
     </>;
 };
-export default ProfileLayout;
+export { ProfileLayout, OnboardingProfileLayout };

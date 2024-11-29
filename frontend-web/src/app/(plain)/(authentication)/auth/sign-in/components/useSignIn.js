@@ -6,6 +6,8 @@ import * as yup from 'yup';
 import { useAuthContext } from '@/context/useAuthContext';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signin } from '@/api/auth';
+import axios from 'axios';
+
 
 const useSignIn = () => {
   const [loading, setLoading] = useState(false);
@@ -48,16 +50,18 @@ const useSignIn = () => {
       const { access, refresh, user } = response;
 
       saveSession({ access, refresh, user });
-
-      // Redirect the user after a successful login
-      redirectUser();
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
         message: 'Successfully logged in. Redirecting....',
         variant: 'success'
       });
+
+      // Redirect the user after a successful login
+      redirectUser();
     } catch (e) {
       // Handle any login errors
+      console.log(e)
       const message = e.response?.data?.detail || 'Login failed. Please try again.';
       showNotification({ message, variant: 'danger' });
     } finally {

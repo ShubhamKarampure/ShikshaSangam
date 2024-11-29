@@ -1,28 +1,29 @@
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signup } from '@/api/auth';
-import useSignUpPageContext from '@/context/useSignUpPageContext';
+import axios from 'axios';
+import { useAuthContext } from '@/context/useAuthContext';
 
 const useSignUp = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { showNotification } = useNotificationContext();
-  const {increaseStep} = useSignUpPageContext();
-
+  const { saveSession } = useAuthContext();
+  
   const signUpSchema = yup.object({
     username: yup.string().required('Please enter your username'),
     email: yup.string().email('Please enter a valid email').required('Please enter your email'),
-    password1: yup
+    password: yup
       .string()
       .min(8, 'Password must be at least 8 characters')
       .required('Please enter your password'),
-    password2: yup
+    password1: yup
       .string()
-      .oneOf([yup.ref('password1')], 'Passwords must match')
+      .oneOf([yup.ref('password')], 'Passwords must match')
       .required('Please confirm your password'),
   });
 
@@ -31,61 +32,43 @@ const useSignUp = () => {
     handleSubmit,
     watch,
     getValues,
+    setValue,
   } = useForm({
     resolver: yupResolver(signUpSchema),
   });
-const register = handleSubmit(async (data) => {
-  setLoading(true); // Set loading to true when the form is submitted
-  
-  try {
-    const res = await signup(data); // Pass the form data to signup API
-    
-    showNotification({
-      message: 'User created successfully. Redirecting....',
-      variant: 'success'
-    });
-    increaseStep();
-    
-  } catch (e) {
-    console.error('Signup error:', e); // Log the error to the console for debugging
 
-    // Check if e.response exists before trying to access it
-    if (e && e.response && e.response.data && (e.response.data.email || e.response.data.username)) {
+  const register = handleSubmit(async (data) => {
+    setLoading(true);
 
-      // Customize the error message based on the response
-      if (e.response.data.email && e.response.data.username) {
-        showNotification({
-          message: 'An account with these credentials already exists. Please sign in.',
-          variant: 'danger',
-        });
-      } else if (e.response.data.username) {
-        showNotification({
-          message: 'Username already exists. Please choose a different one.',
-          variant: 'danger',
-        });
-      } else if (e.response.data.email) {
-        showNotification({
-          message: 'Email already exists. Please use a different one.',
-          variant: 'danger',
-        });
-      } else {
-        showNotification({
-          message: errorMessage,
-          variant: 'danger',
-        });
-      }
-    } else {
-      // Handle other error types (e.g., network errors)
+    try {
+      const formData = {
+        username: data.username, // Extract username
+        email: data.email,       // Extract email
+        password: data.password, // Extract password (not password1)
+      };
+      
+      const res = await signup(formData); // Call your signup API
+      
+      const { access, refresh, user } = res;
+      saveSession({ access, refresh, user });
+      axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
+
       showNotification({
-        message: 'An unexpected error occurred. Please try again later.',
+        message: 'User created successfully. Redirecting....',
+        variant: 'success',
+      });
+    
+      navigate('/'); // Redirect on success
+    } catch (e) {
+      console.error('Signup error:', e);
+      showNotification({
+        message: 'Error occurred during signup.',
         variant: 'danger',
       });
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setLoading(false); // Ensure loading is set to false after completion
-  }
-});
-
+  });
 
   return {
     loading,
@@ -93,6 +76,7 @@ const register = handleSubmit(async (data) => {
     control,
     watch,
     getValues,
+    setValue, // Expose setValue to update form fields when Google sign-in is used
   };
 };
 

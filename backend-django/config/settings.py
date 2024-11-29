@@ -10,8 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-## aj1 -> aj123
-
 from pathlib import Path
 from datetime import timedelta
 import os
@@ -24,7 +22,6 @@ import cloudinary.api
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv()
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
@@ -36,9 +33,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -49,31 +44,23 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
    
     # Manual_additions
-    'django.contrib.sites',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
     'corsheaders',
 
-    
-    
     'dj_rest_auth',
-    'dj_rest_auth.registration',
     
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.socialaccount.providers.google',
-    
-    'cloudinary', 'cloudinary_storage',
+    'cloudinary',
+    'cloudinary_storage',
 
     'users',
     'test_app',
     'social',
 ]
 
+AUTH_USER_MODEL = 'users.User'
 REST_USE_JWT = True
-# AUTH_USER_MODEL = 'users.User'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -90,8 +77,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'allauth.account.middleware.AccountMiddleware', # allauth middle
-
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -115,7 +100,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'config.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
@@ -125,7 +109,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -145,7 +128,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -156,7 +138,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
@@ -170,14 +151,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # JWT used for auth - copied from jwt website
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=150),
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=10),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=10),
-    "ROTATE_REFRESH_TOKENS": True, # Generates a new refresh token each time a user logs in
-    "BLACKLIST_AFTER_ROTATION": True, # Blacklists (Bans) the previous refresh token for the same user once a new one is generated
+    "ROTATE_REFRESH_TOKENS": True,  # Generates a new refresh token each time a user logs in
+    "BLACKLIST_AFTER_ROTATION": True,  # Blacklists (Bans) the previous refresh token for the same user once a new one is generated
     "UPDATE_LAST_LOGIN": False,
 
     "ALGORITHM": "HS256",
-    # "SIGNING_KEY": settings.SECRET_KEY, # removed but exists by default....
     "VERIFYING_KEY": "",
     "AUDIENCE": None,
     "ISSUER": None,
@@ -198,7 +178,7 @@ SIMPLE_JWT = {
     "JTI_CLAIM": "jti",
 
     "SLIDING_TOKEN_REFRESH_EXP_CLAIM": "refresh_exp",
-    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5), # access token lifetime
+    "SLIDING_TOKEN_LIFETIME": timedelta(minutes=5),  # access token lifetime
     "SLIDING_TOKEN_REFRESH_LIFETIME": timedelta(days=1),
 
     "TOKEN_OBTAIN_SERIALIZER": "rest_framework_simplejwt.serializers.TokenObtainPairSerializer",
@@ -209,38 +189,6 @@ SIMPLE_JWT = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
 }
 
-
-
-ACCOUNT_AUTHENTICATION_METHOD = "email"  # Use Email / Password authentication
-ACCOUNT_USERNAME_REQUIRED = False
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "none" # Do not require email confirmation
-
-
-AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
-)
-
-SITE_ID = 2
-# SOCIALACCOUNT_SIGNUP_REDIRECT_URL = ''
-LOGIN_REDIRECT_URL = '/accounts/password/change/'  # or your desired path
-ACCOUNT_SIGNUP_REDIRECT_URL = "/auth/login/"
-
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-        'SCOPE': ['profile', 'email'],
-        'AUTH_PARAMS': {'access_type': 'online'},
-        'METHOD': 'oauth2',
-            'client_id': os.getenv('GOOGLE_CLIENT_ID'),
-            'secret': os.getenv('GOOGLE_CLIENT_SECRET'),
-            'key': ''
-        }
-    }
-}
-
-
 # Cloudinary
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.getenv('CLOUDINARY_CLOUD_NAME'),
@@ -249,7 +197,7 @@ CLOUDINARY_STORAGE = {
 }
 
 CLOUDINARY_URL = os.getenv('CLOUDINARY_URL')
-
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
 # Only use Cloudinary as storage if credentials are available
 if all([
     os.getenv("CLOUDINARY_CLOUD_NAME", default=None),
@@ -257,3 +205,7 @@ if all([
     os.getenv("CLOUDINARY_API_SECRET", default=None)
 ]):
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+
+# Social Account settings have been removed completely as allauth is no longer in use
+
+GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
