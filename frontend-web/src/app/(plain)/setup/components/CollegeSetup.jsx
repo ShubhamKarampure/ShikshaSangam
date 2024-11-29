@@ -108,8 +108,8 @@ export default function CollegeSetup() {
 
       saveProfileStatus("true");
       saveProfileData(response_update_admin); // Save profile data to context
-      // navigate("/feed/home");
-      // redirectUser();
+      navigate("/feed/home");
+      redirectUser();
       // Optionally redirect or show success message after successful creation
     } catch (error) {
       console.error("Error creating college:", error);
