@@ -56,7 +56,7 @@ const SideBar = () => {
         {user.role === "Student" && (
           <SideBarOption
             Icon={MdOutlineMenuBook}
-            title="My Courses"
+            title="MyCourses"
             selected={selected}
             setSelected={setSelected}
             link="/home/mycourses"
