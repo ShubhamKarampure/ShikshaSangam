@@ -88,7 +88,7 @@ const ApprovalCard = ({ users, handleApprove }) => {
                       {user.email || "123@123.com"}
                     </TableCell>
                     <TableCell align="left">{user.role}</TableCell>
-                    <TableCell align="left">{user.year || "N/A"}</TableCell>
+                    <TableCell align="left">{user.year || "2024"}</TableCell>
                     <TableCell align="left">{user.status}</TableCell>
                     <TableCell align="center">
                       <IconButton
