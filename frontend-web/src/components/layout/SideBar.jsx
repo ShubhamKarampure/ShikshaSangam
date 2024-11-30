@@ -4,6 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdAssignment, MdOutlineMenuBook } from "react-icons/md";
 import { FaBlog, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "@/context/useAuthContext";
 
 export const Example = () => {
   return (
@@ -17,7 +18,7 @@ export const Example = () => {
 const SideBar = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const user = JSON.parse(localStorage.getItem("user"));
+  const { user } = useAuthContext();
 
   return (
     <nav
@@ -25,15 +26,19 @@ const SideBar = () => {
         open ? "sidebar-expanded" : "sidebar-collapsed"
       }`}
       style={{
+        position: "fixed", // Make the sidebar fixed
+        top: 0,
+        left: 0,
         backgroundColor: "#0F0F10",
         height: "100vh",
         width: open ? "225px" : "60px",
         transition: "width 0.3s",
         color: "#fff",
+        zIndex: 1000, // Ensures it stays above other elements
       }}
     >
       {/* SideBar Options */}
-      <div className="flex-grow-1" style={{padding:'100px 0px'}}>
+      <div className="flex-grow-1" style={{ padding: "100px 0px" }}>
         <SideBarOption
           Icon={FiHome}
           title="Dashboard"
@@ -111,6 +116,7 @@ const SideBar = () => {
     </nav>
   );
 };
+
 
 const SideBarOption = ({
   Icon,
