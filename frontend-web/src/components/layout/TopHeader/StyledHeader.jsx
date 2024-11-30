@@ -1,9 +1,11 @@
 import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useAuthContext } from '@/context/useAuthContext';
 const StyledHeader = ({
   children,
   ...restProps
 }) => {
+  const {user} = useAuthContext()
   const transparentPages = ['/event', '/events/details'];
   const {
     pathname
@@ -16,7 +18,7 @@ const StyledHeader = ({
       };
     }
     return {
-      header: 'navbar-light sticky-top header-static bg-mode',
+      header: `navbar-light ${user.role==='college_admin'? "sticky-top":"fixed-top"} header-static bg-mode`,
       nav: 'navbar navbar-expand-lg'
     };
   }, [pathname]);
