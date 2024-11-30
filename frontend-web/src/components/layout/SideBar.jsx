@@ -19,22 +19,26 @@ const SideBar = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
   const { user } = useAuthContext();
-  
+
   return (
     <nav
       className={`d-flex flex-column border-end ${
         open ? "sidebar-expanded" : "sidebar-collapsed"
       }`}
       style={{
+        position: "fixed", // Make the sidebar fixed
+        top: 0,
+        left: 0,
         backgroundColor: "#0F0F10",
         height: "100vh",
         width: open ? "225px" : "60px",
         transition: "width 0.3s",
         color: "#fff",
+        zIndex: 1000, // Ensures it stays above other elements
       }}
     >
       {/* SideBar Options */}
-      <div className="flex-grow-1" style={{padding:'100px 0px'}}>
+      <div className="flex-grow-1" style={{ padding: "100px 0px" }}>
         <SideBarOption
           Icon={FiHome}
           title="Dashboard"
@@ -112,6 +116,7 @@ const SideBar = () => {
     </nav>
   );
 };
+
 
 const SideBarOption = ({
   Icon,
