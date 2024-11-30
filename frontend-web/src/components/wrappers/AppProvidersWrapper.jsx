@@ -9,6 +9,7 @@ import { AuthProvider } from "@/context/useAuthContext";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { ProfileProvider } from "@/context/useProfileContext";
 import { SignUpPageProvider } from "@/context/useSignUpPageContext";
+import { SideBarProvider } from "../../context/useSideBarContext";
 
 const AppProvidersWrapper = ({ children }) => {
   const handleChangeTitle = () => {
@@ -40,7 +41,9 @@ const AppProvidersWrapper = ({ children }) => {
               <ChatProvider>
                 <NotificationProvider>
                   <SignUpPageProvider>
-                    {children}
+                    <SideBarProvider>
+                      {children}
+                    </SideBarProvider>
                   </SignUpPageProvider>
                   <ToastContainer theme="colored" />
                 </NotificationProvider>

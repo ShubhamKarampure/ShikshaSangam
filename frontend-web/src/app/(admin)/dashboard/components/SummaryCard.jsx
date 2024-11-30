@@ -27,7 +27,7 @@ function SummaryCard({ title, value, percentage, icon }) {
           <Typography variant="subtitle1" style={{ color: "#94a3b8" }}>
             {title}
           </Typography>
-          {icon ? icon : <PersonIcon style={{ color: "#94a3b8" }} />}
+          {icon ? icon : <></>}
         </Box>
 
         {/* Value and percentage */}

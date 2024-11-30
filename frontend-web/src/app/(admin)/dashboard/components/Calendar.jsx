@@ -107,6 +107,13 @@ export default function Calendar() {
             highlightedDays,
           },
         }}
+        sx={
+            {
+                borderRadius: '8px',
+                border: '1px solid #1E1E1E',
+                boxShadow: '0px 4px 12px rgba(250, 250, 250, 0.05)',
+            }
+        }
       />
     </LocalizationProvider>
   );

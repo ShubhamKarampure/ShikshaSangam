@@ -5,6 +5,7 @@ import { MdAssignment, MdOutlineMenuBook } from "react-icons/md";
 import { FaBlog, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useAuthContext } from "@/context/useAuthContext";
+import useSideBarContext from "../../context/useSideBarContext";
 
 export const Example = () => {
   return (
@@ -17,7 +18,7 @@ export const Example = () => {
 
 const SideBar = () => {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState("Dashboard");
+  const {selected, setSelected} = useSideBarContext();
   const { user } = useAuthContext();
 
   return (
@@ -44,37 +45,27 @@ const SideBar = () => {
           title="Dashboard"
           selected={selected}
           setSelected={setSelected}
-          link={user.role === "Student" ? "/home" : "/home/teacher"}
+          link="/admin/dashboard"
           open={open}
         />
 
         <SideBarOption
           Icon={MdAssignment}
-          title={user.role === "Student" ? "Assignments" : "Add Courses"}
+          title="Upload"
           selected={selected}
           setSelected={setSelected}
-          link={user.role === "Student" ? "/home" : "/home/teacher-add-course"}
+          link={"/admin/upload"}
           open={open}
           notifs={3}
         />
 
-        {user.role === "Student" && (
-          <SideBarOption
-            Icon={MdOutlineMenuBook}
-            title="MyCourses"
-            selected={selected}
-            setSelected={setSelected}
-            link="/home/mycourses"
-            open={open}
-          />
-        )}
 
         <SideBarOption
           Icon={FaCalendarAlt}
           title="Calendar"
           selected={selected}
           setSelected={setSelected}
-          link="/home/calendar"
+          link="/admin/eventschedule"
           open={open}
         />
 
@@ -83,7 +74,7 @@ const SideBar = () => {
           title="Blog"
           selected={selected}
           setSelected={setSelected}
-          link="/home/blog"
+          link="/admin/donations"
           open={open}
         />
 
@@ -92,7 +83,7 @@ const SideBar = () => {
           title="Profile"
           selected={selected}
           setSelected={setSelected}
-          link={user.role === "Student" ? "/profile" : "/teacherProfile"}
+          link="/profile/about"
           open={open}
         />
       </div>
@@ -144,9 +135,6 @@ const SideBarOption = ({
         <Icon size={20} />
         {open && <span className="ms-2">{title}</span>}
       </span>
-      {/* {notifs && open && (
-        <span className="badge bg-primary ms-auto">{notifs}</span>
-      )} */}
     </button>
   </Link>
 );

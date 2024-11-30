@@ -39,11 +39,10 @@ const AdminDashboard = () => {
   const approvedStudents = users.filter(
     (user) => user.status === "Approved" && user.role === "Student"
   ).length;
-
   return (
     <div className="py-4 w-100">
       <h1 className="mb-4">Admin Dashboard</h1>
-
+    
       {/* Summary Cards */}
       <Row className="mb-4">
         <Col md={3}>
