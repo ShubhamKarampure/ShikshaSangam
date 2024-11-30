@@ -74,7 +74,7 @@ const SideBar = () => {
           title="Blog"
           selected={selected}
           setSelected={setSelected}
-          link="/home/blog"
+          link="/admin/donations"
           open={open}
         />
 
@@ -83,7 +83,7 @@ const SideBar = () => {
           title="Profile"
           selected={selected}
           setSelected={setSelected}
-          link={user.role === "Student" ? "/profile" : "/teacherProfile"}
+          link="/profile/about"
           open={open}
         />
       </div>
