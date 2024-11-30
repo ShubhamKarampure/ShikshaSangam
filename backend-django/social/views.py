@@ -26,41 +26,13 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(college_posts, many=True)
         return Response(serializer.data)
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [IsAuthenticated, IsVerifiedUser] # [IsAuthenticated]
-        
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission | IsCollegeAdmin , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Comment model
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [IsVerifiedUser, IsAuthenticated] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
 
 
 
@@ -69,21 +41,8 @@ class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [IsAuthenticated, IsVerifiedUser] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
 
+   
 class FollowViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Follow model
     queryset = Follow.objects.all()
@@ -120,20 +79,7 @@ class FollowViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(userstofollow, many=True, context={'request': request})
         return Response(serializer.data)
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
+ 
 
 class ShareViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Share model
@@ -163,16 +109,26 @@ class PollViewSet(viewsets.ModelViewSet):
 
     # def get_permissions(self):
     #     if self.action == 'create':
+    # def get_permissions(self):
+    #     if self.action == 'create':
             
+    #          permission_classes = [] # [IsAuthenticated]
+    #     elif self.action in ['retrieve', 'list']:
     #          permission_classes = [] # [IsAuthenticated]
     #     elif self.action in ['retrieve', 'list']:
            
     #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
     #     elif self.action in ['update', 'partial_update']:
+    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
+    #     elif self.action in ['update', 'partial_update']:
             
     #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
     #     elif self.action == 'destroy':
+    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+    #     elif self.action == 'destroy':
             
+    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
+    #     return [permission() for permission in permission_classes]
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
 
@@ -183,16 +139,26 @@ class PollOptionViewSet(viewsets.ModelViewSet):
     serializer_class = PollOptionSerializer
     # def get_permissions(self):
     #     if self.action == 'create':
+    # def get_permissions(self):
+    #     if self.action == 'create':
             
+    #          permission_classes = [] # [IsAuthenticated]
+    #     elif self.action in ['retrieve', 'list']:
     #          permission_classes = [] # [IsAuthenticated]
     #     elif self.action in ['retrieve', 'list']:
            
     #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
     #     elif self.action in ['update', 'partial_update']:
+    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
+    #     elif self.action in ['update', 'partial_update']:
             
     #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
     #     elif self.action == 'destroy':
+    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+    #     elif self.action == 'destroy':
             
+    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
+    #     return [permission() for permission in permission_classes]
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
 
@@ -202,13 +168,21 @@ class PollVoteViewSet(viewsets.ModelViewSet):
     serializer_class = PollVoteSerializer
     # def get_permissions(self):
     #     if self.action == 'create':
+    # def get_permissions(self):
+    #     if self.action == 'create':
             
+    #          permission_classes = [IsAuthenticated,] # [IsAuthenticated]
+    #     elif self.action in ['retrieve', 'list']:
     #          permission_classes = [IsAuthenticated,] # [IsAuthenticated]
     #     elif self.action in ['retrieve', 'list']:
            
     #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
     #     elif self.action in ['update', 'partial_update']:
+    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
+    #     elif self.action in ['update', 'partial_update']:
             
+    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
+    #     elif self.action == 'destroy':
     #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
     #     elif self.action == 'destroy':
             

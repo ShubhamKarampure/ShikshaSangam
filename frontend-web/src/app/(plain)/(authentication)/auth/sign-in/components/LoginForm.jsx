@@ -17,7 +17,6 @@ const LoginForm = () => {
   return (
     <form className="mt-sm-4" onSubmit={login}>
       <Form.Group className="mb-3">
-        <Form.Label>Select your email</Form.Label>
         <Form.Control as="select" onChange={handleEmailChange} defaultValue={emailOptions[0]}>
           {emailOptions.map((email, index) => (
             <option key={index} value={email}>

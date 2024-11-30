@@ -5,6 +5,8 @@ import { Button, Card, CardBody, CardHeader, CardTitle } from 'react-bootstrap';
 import { BsPersonCheckFill } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { useFetchData } from '@/hooks/useFetchData';
+import { getAllUserProfile } from '@/api/profile';
+
 const Followers = () => {
   const allFollowers = useFetchData(getAllUsers);
   return <Card>
