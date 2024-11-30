@@ -1,3 +1,4 @@
+import path from 'path';
 import { lazy } from 'react';
 import { Navigate } from 'react-router-dom';
 
@@ -32,6 +33,7 @@ const BlogDetails = lazy(() => import('@/app/(social)/(with-topbar)/blogs/[blogI
 const AlumniUpload = lazy(()=>import('@/app/(admin)/uploadAlumni/page'))
 const AdminDashboard = lazy(()=>import('@/app/(admin)/dashboard/page'))
 const EventSchedule = lazy(()=>import('@/app/(admin)/eventschedule/page') )
+const DonationsPage = lazy(()=>import('@/app/(admin)/donation/page'))
 
 //profile pages
 const ProfileFeed = lazy(() => import('@/app/(social)/profile/feed/page'));
@@ -283,6 +285,10 @@ export const adminRoutes = [{
   path: '/admin/eventschedule',
   name: 'Event schedule',
   element: <EventSchedule/>
+},{
+  path: '/admin/donations',
+  name: 'Donations',
+  element: <DonationsPage/>
 }];
 export const appRoutes = [...otherRoutes];
 export const feedRoutes = [...initialRoutes, ...generalRoutes];
