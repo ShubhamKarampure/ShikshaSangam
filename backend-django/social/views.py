@@ -10,7 +10,7 @@ from .serializers import (
     ShareSerializer, PollSerializer, PollOptionSerializer, PollVoteSerializer
 )
 from users.permissions import IsVerifiedUser, IsCollegeAdmin, IsOwnerPermission
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, UserProfileSerializer
 from users.models import UserProfile
 
 class PostViewSet(viewsets.ModelViewSet):
@@ -21,7 +21,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get']) # GET /posts/college_posts/
     def college_posts(self, request):
         """Get posts from the same college as the current user."""
-        user_college = request.user.userprofile.college
+        user_college = request.user.user.college
         college_posts = Post.objects.filter(userprofile__college=user_college)
         serializer = self.get_serializer(college_posts, many=True)
         return Response(serializer.data)
@@ -51,7 +51,7 @@ class FollowViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get']) # GET /follows/followers/ → Returns all followers of the current user.
     def followers(self, request):
         """Get all followers of the current user."""
-        userprofile = request.user.userprofile
+        userprofile = request.user.user
         followers = Follow.objects.filter(followed=userprofile)  # People following the user
         serializer = FollowSerializer(followers, many=True)
         return Response(serializer.data)
@@ -59,15 +59,15 @@ class FollowViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get']) # GET /follows/following/ → Returns all users followed by the current user
     def following(self, request):
         """Get all users followed by the current user."""
-        userprofile = request.user.userprofile
+        userprofile = request.user.user
         following = Follow.objects.filter(follower=userprofile)  # People the user follows
         serializer = FollowSerializer(following, many=True)
         return Response(serializer.data)
     
-    @action(detail=False, methods=['get'])  # GET /follows/userstofollow/
+    @action(detail=False, methods=['get'])  # GET /followers/userstofollow/
     def userstofollow(self, request):
         """Get all users the current user has NOT followed."""
-        userprofile = request.user.userprofile
+        userprofile = request.user.user
 
         # Get all users that the current user has already followed
         followed_userprofiles = Follow.objects.filter(follower=userprofile).values_list('followed', flat=True)
@@ -76,7 +76,7 @@ class FollowViewSet(viewsets.ModelViewSet):
         userstofollow = UserProfile.objects.exclude(id__in=followed_userprofiles).exclude(id=userprofile.id)
         
         # Serialize the result
-        serializer = UserSerializer(userstofollow, many=True, context={'request': request})
+        serializer = UserProfileSerializer(userstofollow, many=True, context={'request': request})
         return Response(serializer.data)
 
  
