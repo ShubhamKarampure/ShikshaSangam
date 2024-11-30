@@ -39,7 +39,7 @@ const useSignIn = () => {
     if (redirectLink) {
       navigate(redirectLink);
     } else if(loggedInUser.role==="college_admin"){
-      navigate('/admin/upload-alumni');
+      navigate('/admin/dashboard');
     }else{
       navigate('/')
     }

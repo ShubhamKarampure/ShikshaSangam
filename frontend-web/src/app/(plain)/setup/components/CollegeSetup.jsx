@@ -43,7 +43,7 @@ export default function CollegeSetup() {
     if (redirectLink) {
       navigate(redirectLink);
     } else if(user.role==='college_admin'){
-      navigate("/admin/upload-alumni");
+      navigate("/admin/dashboard");
     }else{
       navigate('/')
     }

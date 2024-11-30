@@ -271,8 +271,8 @@ export const authRoutes = [{
 }];
 
 export const adminRoutes = [{
-  path: '/admin/upload-alumni',
-  name: 'Upload Alumni',
+  path: '/admin/upload',
+  name: 'Upload data',
   element: <AlumniUpload />
 },{
   path: '/admin/dashboard',

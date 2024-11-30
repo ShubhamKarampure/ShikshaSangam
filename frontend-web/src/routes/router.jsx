@@ -34,7 +34,7 @@ const AppRouter = (props) => {
           element={
             isAuthenticated ? (
               user.role === "college_admin" ? ( // Restrict access to admins
-                <Navigate to="/admin/upload-alumni" />
+                <Navigate to="/admin/dashboard" />
               ) : (
                 <FeedLayout {...props}>{route.element}</FeedLayout>
               )

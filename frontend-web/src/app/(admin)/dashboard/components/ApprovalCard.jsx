@@ -48,7 +48,7 @@ const ApprovalCard = ({ users, handleApprove }) => {
           />
           <Button
             variant="contained"
-            onClick={() => navigate("/admin/upload-alumni")}
+            onClick={() => navigate("/admin/upload")}
           >
             Add Bulk
           </Button>
