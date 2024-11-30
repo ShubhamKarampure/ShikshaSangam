@@ -51,8 +51,9 @@ class UserRegistrationView(APIView):
             # Return the JWT tokens and user details
             user_profile_id = None
         try:
-            user_profile = user.user  # Accessing the related UserProfile
-            user_profile_id = user_profile.id
+            # user_profile = user.user  # Accessing the related UserProfile (But how does it get created for new user?)
+            # user_profile_id = user_profile.id
+            pass
         except ObjectDoesNotExist:
             # Profile does not exist
             pass

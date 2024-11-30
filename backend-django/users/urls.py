@@ -27,7 +27,7 @@ urlpatterns = [
     path('auth/', include('dj_rest_auth.urls')),  # Login, logout, password reset
     path('auth/register/', UserRegistrationView.as_view(), name='register'),
     path('auth/login/token', UserLoginView.as_view(), name='login'),
-
+    
     # JWT token routes for authentication
     path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     
