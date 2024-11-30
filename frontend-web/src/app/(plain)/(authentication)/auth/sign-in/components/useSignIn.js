@@ -6,13 +6,12 @@ import * as yup from 'yup';
 import { useAuthContext } from '@/context/useAuthContext';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signin } from '@/api/auth';
-import axios from 'axios';  
+import axios from 'axios';
 
-
-const useSignIn = () => {
+const useSignIn = (emailOptions) => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { saveSession,user } = useAuthContext();
+  const { saveSession } = useAuthContext();
   const [searchParams] = useSearchParams();
   const { showNotification } = useNotificationContext();
 
@@ -23,39 +22,33 @@ const useSignIn = () => {
   });
 
   // React Hook Form setup
-  const { control, handleSubmit } = useForm({
+  const { control, handleSubmit, setValue } = useForm({
     resolver: yupResolver(loginFormSchema),
     defaultValues: {
-      email: 'user@demo.com',
-      password: 'Qwerty@123'
+      email: emailOptions[0] || '',  // Set the default email to the first option
+      password: 'password'
     }
   });
 
   // Redirect logic
   const redirectUser = (loggedInUser) => {
-    console.log(loggedInUser);
-    
     const redirectLink = searchParams.get('redirectTo');
     if (redirectLink) {
       navigate(redirectLink);
-    } else if(loggedInUser.role==="college_admin"){
+    } else if (loggedInUser.role === "college_admin") {
       navigate('/admin/upload-alumni');
-    }else{
-      navigate('/')
+    } else {
+      navigate('/');
     }
   };
 
   // Handle the login process
   const login = handleSubmit(async (data) => {
-    setLoading(true);  // Set loading state to true while processing the login
-
+    setLoading(true);
     try {
-      const response = await signin(data);  // Pass the form data to signin
-      // const { access, refresh, user } = response;
-      console.log('login response',response);
-      
+      const response = await signin(data);
       const { access, refresh, user: loggedInUser } = response;
-      await saveSession({ access, refresh, user: loggedInUser});
+      await saveSession({ access, refresh, user: loggedInUser });
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
@@ -63,22 +56,20 @@ const useSignIn = () => {
         variant: 'success'
       });
 
-      // Redirect the user after a successful login
       redirectUser(loggedInUser);
     } catch (e) {
-      // Handle any login errors
-      console.log(e)
       const message = e.response?.data?.detail || 'Login failed. Please try again.';
       showNotification({ message, variant: 'danger' });
     } finally {
-      setLoading(false);  // Reset loading state
+      setLoading(false);
     }
   });
 
   return {
     loading,
     login,
-    control
+    control,
+    setValue
   };
 };
 

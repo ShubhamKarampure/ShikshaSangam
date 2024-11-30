@@ -19,7 +19,6 @@ class College(models.Model):
         return self.college_name
 
 class UserProfile(models.Model):
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     ROLE_CHOICES = (
         ('student', 'Student'),
         ('alumni', 'Alumni'),

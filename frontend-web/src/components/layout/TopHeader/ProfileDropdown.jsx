@@ -18,7 +18,8 @@ const ProfileDropdown = () => {
   const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
   ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
     : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
- const full_name = profile && profile.full_name ?
+  
+ const full_name =   profile && profile.full_name ?
      profile.full_name : 'No username'
   
   
@@ -51,7 +52,7 @@ const ProfileDropdown = () => {
             </div>
             <div>
               <Link className="h6 stretched-link" to="">
-                {profile.full_name}
+                {full_name}
               </Link>
               <p className="small m-0">Web Developer</p>
             </div>

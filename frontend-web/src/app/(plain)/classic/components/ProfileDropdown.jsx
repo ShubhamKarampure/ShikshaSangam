@@ -7,7 +7,6 @@ import { BsCardText, BsCircleHalf, BsGear, BsLifePreserver, BsMoonStars, BsPower
 import { Link } from 'react-router-dom';
 import avatar7 from '@/assets/images/avatar/07.jpg';
 import { useAuthContext } from '@/context/useAuthContext';
-import { useAuthContext } from '@/context/useAuthContext'
 import { useProfileContext } from "@/context/useProfileContext";
 
 
