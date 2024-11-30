@@ -27,7 +27,11 @@ const PostDetails = lazy(() => import('@/app/(social)/(with-topbar)/feed/post-de
 const VideoDetails = lazy(() => import('@/app/(social)/feed/(no-container)/videos/details/page'));
 const Blogs = lazy(() => import('@/app/(social)/(with-topbar)/blogs/page'));
 const BlogDetails = lazy(() => import('@/app/(social)/(with-topbar)/blogs/[blogId]/page'));
+
+//admin pages
 const AlumniUpload = lazy(()=>import('@/app/(admin)/uploadAlumni/page'))
+const AdminDashboard = lazy(()=>import('@/app/(admin)/dashboard/page'))
+const EventSchedule = lazy(()=>import('@/app/(admin)/eventschedule/page') )
 
 //profile pages
 const ProfileFeed = lazy(() => import('@/app/(social)/profile/feed/page'));
@@ -268,9 +272,17 @@ export const authRoutes = [{
 }];
 
 export const adminRoutes = [{
-  path: '/admin/upload-alumni',
-  name: 'Upload Alumni',
+  path: '/admin/upload',
+  name: 'Upload data',
   element: <AlumniUpload />
+},{
+  path: '/admin/dashboard',
+  name: 'Dashboard',
+  element: <AdminDashboard />
+},{
+  path: '/admin/eventschedule',
+  name: 'Event schedule',
+  element: <EventSchedule/>
 }];
 export const appRoutes = [...otherRoutes];
 export const feedRoutes = [...initialRoutes, ...generalRoutes];

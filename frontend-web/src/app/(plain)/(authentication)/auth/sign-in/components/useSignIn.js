@@ -35,10 +35,10 @@ const useSignIn = (emailOptions) => {
     const redirectLink = searchParams.get('redirectTo');
     if (redirectLink) {
       navigate(redirectLink);
-    } else if (loggedInUser.role === "college_admin") {
-      navigate('/admin/upload-alumni');
-    } else {
-      navigate('/');
+    } else if(loggedInUser.role==="college_admin"){
+      navigate('/admin/dashboard');
+    }else{
+      navigate('/')
     }
   };
 
