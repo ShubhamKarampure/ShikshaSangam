@@ -41,7 +41,7 @@ const ProfileDropdown = () => {
   } = useAuthContext();
   return <Dropdown as="li" className="nav-item ms-2" drop="down" align="end">
       <DropdownToggle className="nav-link btn icon-md p-0 content-none" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-        <img className="avatar-img rounded-2" src={avatar7} alt="avatar" />
+        <img className="avatar-img rounded-2" src={avatarUrl} alt="avatar" />
       </DropdownToggle>
       <DropdownMenu className="dropdown-animation dropdown-menu-end pt-3 small me-md-n3" aria-labelledby="profileDropdown">
         <li className="px-3">

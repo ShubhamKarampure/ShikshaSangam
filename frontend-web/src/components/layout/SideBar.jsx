@@ -4,6 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { MdAssignment, MdOutlineMenuBook } from "react-icons/md";
 import { FaBlog, FaCalendarAlt } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useAuthContext } from "@/context/useAuthContext";
 
 export const Example = () => {
   return (
@@ -17,8 +18,8 @@ export const Example = () => {
 const SideBar = () => {
   const [open, setOpen] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
-  const user = JSON.parse(localStorage.getItem("user"));
-
+  const { user } = useAuthContext();
+  
   return (
     <nav
       className={`d-flex flex-column border-end ${
