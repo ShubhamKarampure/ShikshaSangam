@@ -30,8 +30,8 @@ const ApprovalCard = ({ users, handleApprove }) => {
 
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
-      <div className="d-flex gap-3 justify-content-between px-5 pt-2 align-items-center">
-        <h1 className="mb-0">Users</h1>
+      <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
+        <h2 className="mb-0">Users</h2>
         <div className="d-flex gap-3 align-items-center">
           <TextField
             variant="outlined"
@@ -47,7 +47,7 @@ const ApprovalCard = ({ users, handleApprove }) => {
             }}
           />
           <Button
-            variant="contained"
+            variant="outlined"
             onClick={() => navigate("/admin/upload")}
           >
             Add Bulk
