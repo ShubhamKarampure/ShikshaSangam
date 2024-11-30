@@ -21,6 +21,9 @@ const ProfilePanel = ({
     ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
     : bgBannerImg
   
+   const full_name = profile && profile.full_name ?
+     profile.full_name : 'No username'
+  
   const bio = user.role !== 'college_staff' && profile && profile.bio ? 
     profile.bio : 'Here to connect, learn, and grow.'
   
@@ -51,7 +54,7 @@ const ProfilePanel = ({
 
             <h5 className="mb-0">
               
-              <Link to="">{user.username} </Link>
+              <Link to="">{full_name} </Link>
             </h5>
             <small>{user.role}</small>
             <p className="mt-3">{bio}</p>

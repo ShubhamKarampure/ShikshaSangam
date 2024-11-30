@@ -43,7 +43,6 @@ export const ProfileProvider = ({ children }) => {
         }
 
         const data = await response.json(); // Parse the JSON response
-        console.log(data);
         
         saveProfileData(data); // Save the fetched profile data to cookies
         setCookie("_PROFILE_SETUP_", "true");

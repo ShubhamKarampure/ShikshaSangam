@@ -42,6 +42,42 @@ export const createStudentProfile = async (profileData) => {
   return await response.json();
 };
 
+export const getUserProfile = async (profileId) => {
+  const token = getTokenFromCookie();
+  if (!token) throw new Error('Token not found');
+
+  const response = await fetch(`${API_ROUTES.USERPROFILE}${profileId}/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+};
+
+export const getAllUserProfile = async () => {
+  const token = getTokenFromCookie();
+  if (!token) throw new Error('Token not found');
+
+  const response = await fetch(`${API_ROUTES.USERPROFILE}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+};
+
 // Get Student Profile
 export const getStudentProfile = async (profileId) => {
   const token = getTokenFromCookie();
