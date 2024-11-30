@@ -3,8 +3,6 @@ import { useNotificationContext } from "@/context/useNotificationContext";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { createCollege } from "@/api/college";
-import { updateCollegeAdminProfile } from "@/api/profile";
-import { updateUser } from "@/api/users";
 import { useAuthContext } from "@/context/useAuthContext";
 
 export default function CollegeSetup() {
@@ -45,7 +43,7 @@ export default function CollegeSetup() {
     if (redirectLink) {
       navigate(redirectLink);
     } else if(user.role==='college_admin'){
-      navigate("/admin/upload-alumni");
+      navigate("/admin/dashboard");
     }else{
       navigate('/')
     }
@@ -53,7 +51,6 @@ export default function CollegeSetup() {
 
   const handleSubmit = async (event) => {
     event.preventDefault(); // Prevent default form submission
-    console.log('here college');
 
     // Check if required fields are filled
     if (
@@ -85,6 +82,7 @@ export default function CollegeSetup() {
       contact_email: contactEmail,
       contact_phone: contactPhone,
       address: address,
+      admin_user_id:user.id
     };
     console.log(data);
     
@@ -92,26 +90,13 @@ export default function CollegeSetup() {
 
     try {
       // Call the API to create the college
-      console.log(profile);
-      const response_college_create = await createCollege(data);
-      console.log("College created:", response_college_create);
-      const response_update_admin = await updateCollegeAdminProfile(
-        profile.id,
-        { college: response_college_create.id }
-      );
-      console.log("Added college in admin:", response_update_admin);
-      const response_update_user = await updateUser(user.id, {
-        role: "college_admin",
-      });
-      console.log("Updated User Profile", response_update_user);
-
+      const response = await createCollege(data);
+      console.log("College created:", response);
+      
       showNotification({
         message: "College created successfully!",
         variant: "success",
       });
-
-      saveProfileStatus("true");
-      saveProfileData(response_update_admin); // Save profile data to context
       redirectUser();
       // Optionally redirect or show success message after successful creation
     } catch (error) {
@@ -128,13 +113,6 @@ export default function CollegeSetup() {
 
   return (
     <div className="card border-primary shadow-lg">
-      <div className="card-header position-relative">
-        <h2 className="h5 font-weight-semibold text-primary">
-          College Portal Setup
-        </h2>
-        <p className="text-secondary">Create College Portal.</p>
-      </div>
-
       <div className="card-body">
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

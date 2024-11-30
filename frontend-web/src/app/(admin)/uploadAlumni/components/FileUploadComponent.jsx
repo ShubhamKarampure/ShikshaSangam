@@ -13,37 +13,51 @@ import { useDropzone } from "react-dropzone";
 const FileUploadComponent = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  // Function to handle file upload
-  const onDrop = useCallback((acceptedFiles) => {
-    const newFiles = acceptedFiles.map((file) => ({
+  const onDrop = useCallback((acceptedFiles, rejectedFiles) => {
+    // Clear previous errors
+    setErrorMessage("");
+
+    // Filter out files that are not CSV
+    const csvFiles = acceptedFiles.filter(
+      (file) => file.type === "text/csv" || file.name.endsWith(".csv")
+    );
+
+    // Set error message for rejected files
+    if (rejectedFiles.length > 0 || csvFiles.length < acceptedFiles.length) {
+      setErrorMessage("Only CSV files are supported.");
+    }
+
+    // Process accepted CSV files
+    const newFiles = csvFiles.map((file) => ({
       name: file.name,
-      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`, // Convert size to MB
+      size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
       date: new Date().toLocaleDateString(),
     }));
+
     setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles]);
   }, []);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+  });
 
-  // Filter uploaded files based on the search query
   const filteredFiles = uploadedFiles.filter((file) =>
     file.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <Container fluid className="py-4 text-light">
-      {/* Header */}
       <h2 className="mb-4">Upload Alumni Data</h2>
 
-      {/* Drag-and-Drop Upload Section */}
       <Row className="mb-4">
         <Col>
           <div
             {...getRootProps()}
             style={{
               border: "2px dashed #7b5dfb",
-              borderRadius: "16px", // Rounded border
+              borderRadius: "16px",
               padding: "20px",
               textAlign: "center",
               backgroundColor: isDragActive ? "#7b5dfb" : "#2A2B30",
@@ -69,10 +83,11 @@ const FileUploadComponent = () => {
             )}
             <p>Supported Format: CSV (10MB each)</p>
           </div>
+          {errorMessage && (
+            <p style={{ color: "red", marginTop: "10px" }}>{errorMessage}</p>
+          )}
         </Col>
       </Row>
-
-      {/* Search and Filter Toolbar */}
 
       <div
         className="p-4 text-white rounded shadow"
@@ -124,7 +139,6 @@ const FileUploadComponent = () => {
           </Col>
         </Row>
 
-        {/* Uploaded Files Table */}
         <Row>
           <Col>
             {filteredFiles.length > 0 ? (
@@ -172,3 +186,4 @@ const FileUploadComponent = () => {
 };
 
 export default FileUploadComponent;
+

@@ -1,10 +1,10 @@
 import { currentYear, developedBy, developedByLink } from '@/context/constants';
 import { Card, CardBody, CardFooter } from 'react-bootstrap';
 import avatar7 from '@/assets/images/avatar/07.jpg';
-import { useProfileContext } from "@/context/useProfileContext";
 import bgBannerImg from '@/assets/images/bg/01.jpg';
-import { useAuthContext } from '@/context/useAuthContext'
 import { Link } from 'react-router-dom';
+import { useAuthContext } from '@/context/useAuthContext'
+import { useProfileContext } from "@/context/useProfileContext";
 
 const ProfilePanel = ({
   links
@@ -15,12 +15,14 @@ const ProfilePanel = ({
 
  const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
   ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
-    : avatar7;
+    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
 
   const bannerUrl = user.role !== 'college_staff' && profile && profile.banner_image && cloudName
     ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
     : bgBannerImg
-    
+  
+  const bio = user.role !== 'college_staff' && profile && profile.bio ? 
+    profile.bio : 'Here to connect, learn, and grow.'
   
     return <>
       <Card className="overflow-hidden h-100">
@@ -52,7 +54,7 @@ const ProfilePanel = ({
               <Link to="">{user.username} </Link>
             </h5>
             <small>{user.role}</small>
-            <p className="mt-3"></p>
+            <p className="mt-3">{bio}</p>
 
             <div className="hstack gap-2 gap-xl-3 justify-content-center">
               <div>

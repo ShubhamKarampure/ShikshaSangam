@@ -7,7 +7,22 @@ import { useLayoutContext } from '@/context/useLayoutContext';
 import { toSentenceCase } from '@/utils/change-casing';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
+import { useProfileContext } from "@/context/useProfileContext";
+
 const ProfileDropdown = () => {
+
+    const { user } = useAuthContext();
+  const { profile } = useProfileContext();
+   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
+  const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
+  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
+    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
+  
+ const full_name =   profile && profile.full_name ?
+     profile.full_name : 'No username'
+  
+  
   const themeModes = [{
     icon: BsSun,
     theme: 'light'
@@ -27,17 +42,17 @@ const ProfileDropdown = () => {
   } = useAuthContext();
   return <Dropdown as="li" className="nav-item ms-2" drop="down" align="end">
       <DropdownToggle className="nav-link btn icon-md p-0 content-none" role="button" data-bs-auto-close="outside" data-bs-display="static" data-bs-toggle="dropdown" aria-expanded="false">
-        <img className="avatar-img rounded-2" src={avatar7} alt="avatar" />
+        <img className="avatar-img rounded-2" src={avatarUrl} alt="avatar" />
       </DropdownToggle>
       <DropdownMenu className="dropdown-animation dropdown-menu-end pt-3 small me-md-n3" aria-labelledby="profileDropdown">
         <li className="px-3">
           <div className="d-flex align-items-center position-relative">
             <div className="avatar me-3">
-              <img className="avatar-img rounded-circle" src={avatar7} alt="avatar" />
+              <img className="avatar-img rounded-circle" src={avatarUrl} alt="avatar" />
             </div>
             <div>
               <Link className="h6 stretched-link" to="">
-                Lori Ferguson
+                {full_name}
               </Link>
               <p className="small m-0">Web Developer</p>
             </div>

@@ -85,6 +85,8 @@ function UserSetup({ role: initialRole, onBackClick }) {
     const fetchColleges = async () => {
       try {
         const response = await getColleges();
+        console.log(response);
+
         setColleges(response);
       } catch (error) {
         console.error("Error fetching colleges:", error);
@@ -103,7 +105,10 @@ function UserSetup({ role: initialRole, onBackClick }) {
   };
 
   const handleCollegeChange = (e) => {
-    setSelectedCollege(e.target.value);
+    console.log("here");
+
+    setSelectedCollege(() => e.target.value);
+    console.log(selectedCollege);
   };
 
   const handleFileChange = (e, setter) => {
@@ -131,14 +136,15 @@ function UserSetup({ role: initialRole, onBackClick }) {
         full_name: fullName,
         bio: bio,
         user: user.id,
-        college: selectedCollege,
+        college_id: selectedCollege,
         contact_number: phoneNumber,
         specialization: specialization,
         location: location,
         social_links: JSON.stringify(socialLinks),
         preferences: JSON.stringify(preferences),
-        role:role
+        role: role,
       };
+      console.log(commonFields);
 
       // Loop through and append common fields
       for (const [key, value] of Object.entries(commonFields)) {
@@ -154,7 +160,6 @@ function UserSetup({ role: initialRole, onBackClick }) {
       let roleProfileData = {};
       if (role === "student") {
         roleProfileData = {
-         
           enrollment_year: enrollmentYear,
           current_program: currentProgram,
           expected_graduation_year: expectedGraduationYear,
@@ -163,7 +168,6 @@ function UserSetup({ role: initialRole, onBackClick }) {
         };
       } else if (role === "alumni") {
         roleProfileData = {
-          
           graduation_year: graduationYear,
           current_employment: currentEmployment,
           career_path: careerPath,
@@ -172,7 +176,6 @@ function UserSetup({ role: initialRole, onBackClick }) {
         };
       } else if (role === "college_staff") {
         roleProfileData = {
-          
           position: position,
           department: department,
           is_verified: false,
@@ -184,10 +187,10 @@ function UserSetup({ role: initialRole, onBackClick }) {
         formData.append(key, value);
       }
       for (let [key, value] of formData.entries()) {
-  console.log(key, value);
-}
-
-
+        console.log(key, value);
+      }
+      console.log(formData);
+      
       // Send the form data to create a user profile
       const userprofile = await createUserProfile(formData);
 
