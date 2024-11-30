@@ -5,8 +5,24 @@ import { Button, Card, CardBody, CardHeader, CardTitle } from 'react-bootstrap';
 import { BsPersonCheckFill } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { useFetchData } from '@/hooks/useFetchData';
+import { fetchUsersToFollow } from '@/api/social';
+
 const Followers = () => {
   const allFollowers = useFetchData(getAllUsers);
+  const [usersToFollow, setUsersToFollow] = useState([]);
+useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUsersToFollow();
+        console.log(data);
+        setUsersToFollow(data);
+      } catch (error) {
+        console.error('Error fetching users to follow:', error);
+      }
+    };
+    fetchData();
+  }, []);
+    
   return <Card>
       <CardHeader className="pb-0 border-0">
         <CardTitle className="mb-0">Who to follow</CardTitle>

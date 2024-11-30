@@ -6,8 +6,23 @@ import { BsPersonCheckFill } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { useFetchData } from '@/hooks/useFetchData';
 import { getAllUserProfile } from '@/api/profile';
-
+import { fetchUsersToFollow } from '@/api/social';
+import { useState,useEffect } from 'react';
 const Followers = () => {
+    const [usersToFollow, setUsersToFollow] = useState([]);
+useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await fetchUsersToFollow();
+        console.log(data);
+        setUsersToFollow(data);
+      } catch (error) {
+        console.error('Error fetching users to follow:', error);
+      }
+    };
+    fetchData();
+  }, []);
+    
   const allFollowers = useFetchData(getAllUsers);
   return <Card>
       <CardHeader className="pb-0 border-0">
