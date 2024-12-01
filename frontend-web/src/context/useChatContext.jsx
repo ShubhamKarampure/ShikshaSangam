@@ -1,5 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { getUserById } from '@/helpers/data';
+import { fetchChats } from '@/api/multimedia'
+
 const ChatContext = createContext(undefined);
 export const useChatContext = () => {
   const context = useContext(ChatContext);
@@ -16,9 +18,12 @@ export const ChatProvider = ({
     showChatList: false,
     showMessageToast: false
   });
-  const changeActiveChat = async userId => {
-    const user = await getUserById(userId);
-    if (user) setActiveChat(user);
+  const changeActiveChat = async chatId => {
+   
+    const chat = await fetchChats(chatId);
+   
+    /*get user profile with who we are chatting*/
+    if (chat) setActiveChat(chat[0]);
   };
   const toggleChatList = () => {
     setOffcanvasStates({
@@ -41,7 +46,7 @@ export const ChatProvider = ({
     toggle: toggleMessageToast
   };
   useEffect(() => {
-    changeActiveChat('102');
+    changeActiveChat();
   }, []);
   return <ChatContext.Provider value={{
     activeChat,

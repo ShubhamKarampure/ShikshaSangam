@@ -1,9 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   FaArrowLeft,
-  FaUser,
-  FaGraduationCap,
-  FaBookOpen,
   FaUpload,
 } from "react-icons/fa";
 import { useAuthContext } from "@/context/useAuthContext";
@@ -12,11 +9,7 @@ import { useProfileContext } from "@/context/useProfileContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import {
   createUserProfile,
-  createStudentProfile,
-  createAlumnusProfile,
-  createCollegeStaffProfile,
 } from "@/api/profile";
-import { updateUser } from "@/api/users";
 import { getColleges } from "@/api/college";
 import { OnboardingProfileLayout } from "@/layouts/ProfileLayout";
 import Loader from "@/components/layout/loadingAnimation";

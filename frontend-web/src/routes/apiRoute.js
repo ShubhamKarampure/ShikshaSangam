@@ -30,4 +30,9 @@ export const API_ROUTES = {
   POLLS: `${API_BASE_URL}/social/polls/`,
   POLL_OPTIONS: `${API_BASE_URL}/social/polls/options/`,
   POLL_VOTES: `${API_BASE_URL}/social/polls/votes/`,
+
+  CHAT_LIST: `${API_BASE_URL}/multimedia/chats/`, // List all chats for the user
+  CHAT_CREATE: `${API_BASE_URL}/multimedia/chats/create/`, // Create a new chat
+  MESSAGE_LIST: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/`, // List messages for a specific chat
+  MESSAGE_CREATE: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message in a chat
 }
