@@ -26,6 +26,8 @@ class PostViewSet(viewsets.ModelViewSet):
         college_posts = Post.objects.filter(userprofile__college=user_college)
         serializer = self.get_serializer(college_posts, many=True)
         return Response(serializer.data)
+    
+    
 
 
 
