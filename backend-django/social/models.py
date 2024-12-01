@@ -5,6 +5,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
 
+
 class Post(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
     content = models.TextField(blank=True, null=True)
