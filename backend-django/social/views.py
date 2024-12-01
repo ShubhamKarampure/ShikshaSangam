@@ -27,22 +27,15 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(college_posts, many=True)
         return Response(serializer.data)
 
-
-
 class CommentViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Comment model
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
-
-
-
 class LikeViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Like model
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
-
-
    
 class FollowViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Follow model
