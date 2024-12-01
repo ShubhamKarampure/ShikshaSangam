@@ -9,12 +9,10 @@ import { fetchUsersToFollow } from '@/api/social';
 
 const Followers = () => {
   const allFollowers = useFetchData(getAllUsers);
-  const [usersToFollow, setUsersToFollow] = useState([]);
 useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await fetchUsersToFollow();
-        console.log(data);
         setUsersToFollow(data);
       } catch (error) {
         console.error('Error fetching users to follow:', error);

@@ -18,17 +18,16 @@ export const API_ROUTES = {
   COLLEGEADMINPROFILE: `${API_BASE_URL}/users/college-admin/`, // College Admin Profile CRUD
   COLLEGESTAFFPROFILE: `${API_BASE_URL}/users/college-staff-profiles/`, // College Staff Profile CRUD
 
-  // social-related routes
-  POSTS: `${API_BASE_URL}/posts/`,
-  COLLEGE_POSTS: `${API_BASE_URL}/posts/college_posts/`,
-  COMMENTS: `${API_BASE_URL}/comments/`,
-  LIKES: `${API_BASE_URL}/likes/`,
-  FOLLOWS: `${API_BASE_URL}/follows/`,
-  FOLLOWERS: `${API_BASE_URL}/follows/followers/`,
-  FOLLOWING: `${API_BASE_URL}/follows/following/`,
-  USERS_TO_FOLLOW: `${API_BASE_URL}/follows/userstofollow/`,
-  SHARES: `${API_BASE_URL}/shares/`,
-  POLLS: `${API_BASE_URL}/polls/`,
-  POLL_OPTIONS: `${API_BASE_URL}/polloptions/`,
-  POLL_VOTES: `${API_BASE_URL}/pollvotes/`,
-};
+  POSTS: `${API_BASE_URL}/social/posts/`,
+  COLLEGE_POSTS: `${API_BASE_URL}/social/posts/college_posts/`,
+  COMMENTS: `${API_BASE_URL}/social/comments/`,
+  LIKES: `${API_BASE_URL}/social/likes/`,
+  FOLLOWS: `${API_BASE_URL}/social/followers/`,
+  FOLLOWERS: `${API_BASE_URL}/social/follows/followers/`,
+  FOLLOWING: `${API_BASE_URL}/social/follows/following/`,
+  USERS_TO_FOLLOW: `${API_BASE_URL}/social/followers/userstofollow/`,
+  SHARES: `${API_BASE_URL}/social/shares/`,
+  POLLS: `${API_BASE_URL}/social/polls/`,
+  POLL_OPTIONS: `${API_BASE_URL}/social/polls/options/`,
+  POLL_VOTES: `${API_BASE_URL}/social/polls/votes/`,
+}

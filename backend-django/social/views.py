@@ -12,6 +12,7 @@ from .serializers import (
 from users.permissions import IsVerifiedUser, IsCollegeAdmin, IsOwnerPermission
 from users.serializers import UserSerializer, UserProfileSerializer
 from users.models import UserProfile
+from django.db.models import Q
 
 class PostViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Post model
@@ -66,20 +67,51 @@ class FollowViewSet(viewsets.ModelViewSet):
     
     @action(detail=False, methods=['get'])  # GET /followers/userstofollow/
     def userstofollow(self, request):
-        """Get all users the current user has NOT followed."""
+        """
+        Get all users the current user has NOT followed, 
+        excluding college_admins and the current user.
+        Return alumni and students with relevant details.
+        """
         userprofile = request.user.user
 
         # Get all users that the current user has already followed
-        followed_userprofiles = Follow.objects.filter(follower=userprofile).values_list('followed', flat=True)
+        followed_userprofiles = Follow.objects.filter(
+            follower=userprofile
+        ).values_list('followed', flat=True)
 
-        # Exclude those users from the total UserProfiles
-        userstofollow = UserProfile.objects.exclude(id__in=followed_userprofiles).exclude(id=userprofile.id)
-        
-        # Serialize the result
-        serializer = UserProfileSerializer(userstofollow, many=True, context={'request': request})
-        return Response(serializer.data)
+        # Exclude users already followed, the requesting user (self), and college_admins
+        userstofollow = UserProfile.objects.exclude(
+            id__in=followed_userprofiles
+        ).exclude(
+            id=userprofile.id
+        ).filter(
+            Q(role='student') | Q(role='alumni')  # Only students and alumni
+        )
 
- 
+        # Fetch relevant fields based on role
+        response_data = []
+        for user in userstofollow:
+            if user.role == 'student' and hasattr(user, 'studentprofile'):
+                response_data.append({
+                    'id':user.id,
+                    'full_name': user.full_name,
+                    'avatar_image': user.avatar_image.url if user.avatar_image else None,
+                    'current_program': user.studentprofile.current_program,
+                    'specialization': user.studentprofile.specialization,
+                    'expected_graduation_year': user.studentprofile.expected_graduation_year,
+                    'role': user.role,
+                })
+            elif user.role == 'alumni' and hasattr(user, 'alumnusprofile'):
+                response_data.append({
+                    'id':user.id,
+                    'full_name': user.full_name,
+                    'avatar_image': user.avatar_image.url if user.avatar_image else None,
+                    'specialization': user.alumnusprofile.specialization,
+                    'graduation_year': user.alumnusprofile.graduation_year,
+                    'role': user.role,
+                })
+
+        return Response(response_data)
 
 class ShareViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Share model
