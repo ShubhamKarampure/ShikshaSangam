@@ -32,17 +32,21 @@ def process_user_data(file_url, college):
                 defaults={'password': password}
             )
 
+
+
             if created:
                 # Create UserProfile
+                user.set_password(password)
+                user.save()
                 user_profile = UserProfile.objects.create(user=user, college=college)
 
                 # Create role-specific profiles
                 if role == 'student':
-                    StudentProfile.objects.create(userprofile=user_profile)
-                elif role == 'alumnus':
-                    AlumnusProfile.objects.create(userprofile=user_profile)
-                elif role == 'staff':
-                    CollegeStaffProfile.objects.create(userprofile=user_profile)
+                    StudentProfile.objects.create(profile=user_profile)
+                elif role == 'alumni':
+                    AlumnusProfile.objects.create(profile=user_profile)
+                elif role == 'college_staff':
+                    CollegeStaffProfile.objects.create(profile=user_profile)
                 else:
                     raise ValueError(f"Unsupported role: {role}")
 
@@ -73,12 +77,16 @@ def upload_csv_files(request):
 
     try:
         for file in files:
+             # Validate file format
+            if not (file.name.endswith('.csv') or file.name.endswith(('.xls', '.xlsx'))):
+                return JsonResponse({"error": f"Unsupported file format: {file.name}"}, status=400)
             # Save to Cloudinary
             uploaded_file = UploadedFile.objects.create(
                 user=user,
                 file=file,
                 file_name=file.name
             )
+            uploaded_file.save() # Ensure Cloudinary upload is triggered.
 
             # Process the file to create users and profiles
             result = process_user_data(uploaded_file.file.url, college)

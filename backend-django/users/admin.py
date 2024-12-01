@@ -28,5 +28,4 @@ admin.site.register(StudentProfile)
 admin.site.register(CollegeStaffProfile)
 admin.site.register(AlumnusProfile)
 admin.site.register(CollegeAdminProfile)
-
-# admin.site.register()
+admin.site.register(UploadedFile)

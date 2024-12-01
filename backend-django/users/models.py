@@ -1,9 +1,10 @@
 from django.db import models
 from cloudinary.models import CloudinaryField
-from .validators import validate_image, validate_pdf
+from .validators import validate_image, validate_pdf, validate_csv_or_excel
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from cloudinary import uploader
 
 class College(models.Model):
     college_name = models.CharField(max_length=255, unique=True)
@@ -34,7 +35,7 @@ class UserProfile(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
-    resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
+    resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True )
     preferences = models.JSONField(default=dict, null=True, blank=True)  # {"domains": [], "roles": [], "interests": []}
     connections = models.JSONField(default=dict, null=True, blank=True)  # {"followers_count": 0, "following_count": 0}
     created_at = models.DateTimeField(auto_now_add=True)
@@ -87,9 +88,16 @@ class CollegeStaffProfile(models.Model):
 
 class UploadedFile(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="uploaded_files")
-    file = CloudinaryField(resource_type="raw", folder='shikshasangam/uploads')
+    file = CloudinaryField(resource_type="raw", folder='shikshasangam/uploads', validators=[validate_csv_or_excel])
     file_name = models.CharField(max_length=255)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    def __str__(self) -> str:
+       return f"{self.file_name} , {self.user.user.college}"
+    
+    def delete(self, *args, **kwargs):
+        # Delete the file from Cloudinary
+        uploader.destroy(self.file.public_id)
+        super().delete(*args, **kwargs)  # Call the parent class delete method
 
     '''
 from social.models import Follow

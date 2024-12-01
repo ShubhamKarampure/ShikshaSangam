@@ -5,7 +5,7 @@ from .views import (
     StudentProfileViewSet, AlumnusProfileViewSet, CollegeStaffProfileViewSet, CollegeViewSet,CollegeAdminViewSet,
     GoogleAuthView,UserRegistrationView,UserLoginView,UserViewSet, UserProfileViewSet
 )
-
+from .csv_views import upload_csv_files
 
 # Initialize the router
 router = DefaultRouter()
@@ -33,4 +33,9 @@ urlpatterns = [
     
     # Google authentication route
     path('auth/google-auth/', GoogleAuthView.as_view(), name='google_auth'),
+  
+    # csv views
+    path('upload-user-data/', upload_csv_files, name='upload_user_data'),
+
+
 ]
