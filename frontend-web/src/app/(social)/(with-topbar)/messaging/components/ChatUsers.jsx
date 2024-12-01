@@ -1,49 +1,63 @@
 import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient';
-import { useChatContext } from '@/context/useChatContext';
-import clsx from 'clsx';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { BsSearch } from 'react-icons/bs';
-const ChatItem = ({
-  id,
-  avatar,
-  lastMessage,
-  name,
-  status,
-  isStory
-}) => {
-  const {
-    changeActiveChat,
-    activeChat
-  } = useChatContext();
-  return <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
-      <div className={clsx('nav-link text-start', {
-      active: activeChat?.id === id
-    })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
+import clsx from 'clsx';
+import { useChatContext } from '@/context/useChatContext';
+
+const ChatItem = ({ id, participants, last_message, status = 'online', isStory }) => {
+  const { changeActiveChat, activeChat } = useChatContext();
+
+  // Access the first participant's full_name and avatar_image
+  const participant = participants[0];  // Assuming there's at least one participant
+  const full_name = participant?.full_name;
+  const avatar_image = participant?.avatar_image;
+
+  // Extract last_message content safely (could also check if it's empty)
+  const lastMessageContent = last_message ? last_message.content : 'No recent messages';
+
+  return (
+    <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
+      <div className={clsx('nav-link text-start', { active: activeChat?.id === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
         <div className="d-flex">
-          <div className={clsx('flex-shrink-0 avatar  me-2', status === 'online' ? 'status-online' : 'status-offline', {
-          'avatar-story': isStory
-        })}>
-            <img className="avatar-img rounded-circle" src={avatar} alt="" />
+          <div className={clsx('flex-shrink-0 avatar me-2', status === 'online' ? 'status-online' : 'status-offline', { 'avatar-story': isStory })}>
+            <img className="avatar-img rounded-circle" src={avatar_image} alt={full_name || "Avatar"} />
           </div>
           <div className="flex-grow-1 d-block">
-            <h6 className="mb-0 mt-1">{name}</h6>
-            <div className="small text-secondary">{lastMessage}</div>
+            <h6 className="mb-0 mt-1">{full_name}</h6>
+            <div className="small text-secondary">{lastMessageContent}</div>
           </div>
         </div>
       </div>
-    </li>;
+    </li>
+  );
 };
-const ChatUsers = ({
-  chats
-}) => {
-  const [users, setUser] = useState([...chats]);
-  const search = text => {
-    setUser(text ? [...chats].filter(u => u.name.toLowerCase().indexOf(text.toLowerCase()) >= 0) : [...chats]);
+
+const ChatUsers = ({ chats }) => {
+  const [users, setUsers] = useState(chats);
+
+  useEffect(() => {
+    setUsers(chats);
+  }, [chats]);
+
+  const search = (text) => {
+    setUsers(
+      text
+        ? chats.filter((u) => u.participants[0].full_name.toLowerCase().includes(text.toLowerCase()))
+        : chats
+    );
   };
-  return <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0  overflow-hidden">
+
+  return (
+    <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0 overflow-hidden">
       <form className="position-relative">
-        <input className="form-control py-2" type="search" placeholder="Search for chats" aria-label="Search" onKeyUp={e => search(e.target.value)} />
+        <input
+          className="form-control py-2"
+          type="search"
+          placeholder="Search for chats"
+          aria-label="Search"
+          onKeyUp={(e) => search(e.target.value)}
+        />
         <button className="btn bg-transparent text-secondary px-2 py-0 position-absolute top-50 end-0 translate-middle-y" type="button">
           <BsSearch className="fs-5" />
         </button>
@@ -51,10 +65,14 @@ const ChatUsers = ({
       <div className="mt-4 h-100">
         <SimplebarReactClient className="chat-tab-list custom-scrollbar">
           <ul className="nav flex-column nav-pills nav-pills-soft">
-            {users.slice(0, 5).map((chat, idx) => <ChatItem {...chat} key={idx} />)}
+            {users.slice(0, 5).map((chat, idx) => (
+              <ChatItem {...chat} key={idx} last_message={chat.last_message} />
+            ))}
           </ul>
         </SimplebarReactClient>
       </div>
-    </Card>;
+    </Card>
+  );
 };
+
 export default ChatUsers;

@@ -2,54 +2,71 @@ import clsx from "clsx";
 import { Link } from "react-router-dom";
 import { Button, Card, CardBody, CardHeader, CardTitle } from "react-bootstrap";
 import { FaPlus } from "react-icons/fa";
-import { fetchUsersToFollow, followUser } from "@/api/social";  // Import followUser
-import { useState, useEffect } from "react";
+import { fetchUsersToFollow, followUser } from "@/api/social";
+import { useState, useEffect,useRef } from "react";
 import { useAuthContext } from "@/context/useAuthContext";
-
+import { createChat } from "@/api/multimedia";
+import { useNotificationContext } from "@/context/useNotificationContext";
+import FollowSound from '@/assets/audio/follow-sound.wav'
+  
 const Followers = () => {
   const [usersToFollow, setUsersToFollow] = useState([]);
-  const [followedUsers, setFollowedUsers] = useState(new Set()); // Track followed users by their ID
-  const [visibleCount, setVisibleCount] = useState(5);  // Track number of visible users
-  const [isExpanded, setIsExpanded] = useState(false); // Track whether users list is expanded or collapsed
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [isExpanded, setIsExpanded] = useState(false);
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-
+  const { showNotification } = useNotificationContext();
   const { user } = useAuthContext();
-  const currentUserId = user.id;
+  const audioPlayer = useRef(null);
+
+  function playAudio() {
+    audioPlayer.current.play();
+  }
+
+  const currentUserId = user.profile_id;
+
+  const fetchData = async () => {
+    try {
+      const data = await fetchUsersToFollow();
+      console.log("Fetched users to follow:", data);
+      setUsersToFollow(data);
+    } catch (error) {
+      console.error("Error fetching users to follow:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchUsersToFollow();
-        console.log("Fetched users to follow:", data);
-        setUsersToFollow(data);
-      } catch (error) {
-        console.error("Error fetching users to follow:", error);
-      }
-    };
     fetchData();
   }, []);
 
-  // Handle "View more" button click
   const handleViewMore = () => {
-    setIsExpanded(true); // Set expanded state to true
-    setVisibleCount(usersToFollow.length); // Show all users
+    setIsExpanded(true);
+    setVisibleCount(usersToFollow.length);
   };
 
-  // Handle "View less" button click
   const handleViewLess = () => {
-    setIsExpanded(false); // Set expanded state to false
-    setVisibleCount(5); // Reset to initial number of users
+    setIsExpanded(false);
+    setVisibleCount(5);
   };
 
-  // Handle follow button click
-  const handleFollow = async (followerId) => {
+
+  const handleFollow = async ({ followerId, followerName }) => {
     try {
       const followData = {
-        follower: currentUserId, // Current user's ID
-        followed: followerId,    // The ID of the user to follow
+        follower: currentUserId,
+        followed: followerId,
       };
-      await followUser(followData);  // API call to follow the user
-      setFollowedUsers((prev) => new Set(prev).add(followerId)); // Update followed users
+      console.log(followData);
+      await followUser(followData);
+      await createChat(followerId);
+
+      // Remove followed user from the list
+      setUsersToFollow((prev) => prev.filter((user) => user.id !== followerId));
+      playAudio()
+      showNotification({
+        message: `You started following ${followerName}.`,
+        variant: "success",
+      });
+
       console.log(`Followed user with ID: ${followerId}`);
     } catch (error) {
       console.error("Error following user:", error);
@@ -72,16 +89,21 @@ const Followers = () => {
           const fullName = follower.full_name || "No username";
           const specialization = follower.specialization || follower.role;
 
-          const isFollowed = followedUsers.has(follower.id); // Check if the user is followed
-
           return (
             <div className="d-flex gap-3 mb-3" key={idx}>
               <div
                 className={clsx("avatar", {
                   "border-primary": follower.role === "student",
                   "border-success": follower.role === "alumni",
-                  "border-danger": ["college_admin", "college_staff"].includes(follower.role),
-                  "border-secondary": !["student", "alumni", "college_admin", "college_staff"].includes(follower.role),
+                  "border-danger": ["college_admin", "college_staff"].includes(
+                    follower.role
+                  ),
+                  "border-secondary": ![
+                    "student",
+                    "alumni",
+                    "college_admin",
+                    "college_staff",
+                  ].includes(follower.role),
                 })}
                 style={{
                   borderRadius: "50%",
@@ -110,22 +132,28 @@ const Followers = () => {
                       Batch of {follower.graduation_year}
                     </p>
                   )}
-                  {follower.role === "student" && follower.expected_graduation_year && (
-                    <p className="small text-muted">
-                      Batch of {follower.expected_graduation_year}
-                    </p>
-                  )}
+                  {follower.role === "student" &&
+                    follower.expected_graduation_year && (
+                      <p className="small text-muted">
+                        Batch of {follower.expected_graduation_year}
+                      </p>
+                    )}
                 </div>
               </div>
 
-              {/* Follow button */}
               <Button
-                variant={isFollowed ? "success" : "primary-soft"} // Change button color to green when followed
+                variant="primary-soft"
                 className="rounded-circle icon-md ms-auto flex-centered"
-                onClick={() => handleFollow(follower.id)}  // Trigger follow on click
+                onClick={() =>
+                  handleFollow({
+                    followerId: follower.id,
+                    followerName: follower.full_name,
+                  })
+                }
               >
                 <FaPlus />
               </Button>
+              <audio ref={audioPlayer} src={FollowSound } />
             </div>
           );
         })}
