@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { getUserById } from '@/helpers/data';
 import { fetchChats } from '@/api/multimedia'
 
 const ChatContext = createContext(undefined);

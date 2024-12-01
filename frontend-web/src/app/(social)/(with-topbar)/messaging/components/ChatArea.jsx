@@ -1,49 +1,81 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { Button, Card, CardBody, CardFooter, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import clsx from 'clsx';
-import { FaCircle, FaPaperclip, FaPaperPlane } from 'react-icons/fa';
-import { BsCameraVideoFill, BsPersonCheck, BsThreeDotsVertical, BsTelephoneFill, BsTrash } from 'react-icons/bs';
-import { FaCheck, FaCheckDouble, FaFaceSmile } from 'react-icons/fa6';
-import data from '@emoji-mart/data';
-import EmojiPicker from '@emoji-mart/react';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  OverlayTrigger,
+  Tooltip,
+} from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import clsx from "clsx";
+import { FaCircle, FaPaperclip, FaPaperPlane } from "react-icons/fa";
+import {
+  BsCameraVideoFill,
+  BsPersonCheck,
+  BsThreeDotsVertical,
+  BsTelephoneFill,
+  BsTrash,
+} from "react-icons/bs";
+import { FaCheck, FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
+import data from "@emoji-mart/data";
+import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
-import { useChatContext } from '@/context/useChatContext';
-import { useLayoutContext } from '@/context/useLayoutContext';
-import TextFormInput from '@/components/form/TextFormInput';
-import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient';
-import { fetchMessages, sendMessage } from '@/api/multimedia';
+import { useChatContext } from "@/context/useChatContext";
+import { useLayoutContext } from "@/context/useLayoutContext";
+import TextFormInput from "@/components/form/TextFormInput";
+import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
+import { fetchMessages, sendMessage } from "@/api/multimedia";
+import { FaUserFriends, FaCommentDots } from "react-icons/fa";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef(null);
   useEffect(() => {
-    if (elementRef?.current?.scrollIntoView) elementRef.current.scrollIntoView({
-      behavior: 'smooth'
-    });
+    if (elementRef?.current?.scrollIntoView)
+      elementRef.current.scrollIntoView({
+        behavior: "smooth",
+      });
   });
   return <div ref={elementRef} />;
 };
 
 const UserMessage = ({ message, isCurrentUser }) => {
-  
   return (
-    <div className={clsx('d-flex mb-1', {
-      'justify-content-end text-end': isCurrentUser
-    })}>
+    <div
+      className={clsx("d-flex mb-1", {
+        "justify-content-end text-end": isCurrentUser,
+      })}
+    >
       <div className="flex-grow-1">
         <div className="w-100">
-          <div className={clsx('d-flex flex-column', isCurrentUser ? 'align-items-end' : 'align-items-start')}>
-            <div className={clsx('p-2 px-3 rounded-2', isCurrentUser ? 'bg-primary text-white' : 'bg-light text-secondary')}>
+          <div
+            className={clsx(
+              "d-flex flex-column",
+              isCurrentUser ? "align-items-end" : "align-items-start"
+            )}
+          >
+            <div
+              className={clsx(
+                "p-2 px-3 rounded-2",
+                isCurrentUser
+                  ? "bg-primary text-white"
+                  : "bg-light text-secondary"
+              )}
+            >
               {message.content}
             </div>
             <div className="d-flex my-2">
               <div className="small text-secondary">
-                {new Date(message.timestamp).toLocaleTimeString('en-US', {
-                  hour: 'numeric',
-                  minute: 'numeric',
-                  hour12: true
+                {new Date(message.timestamp).toLocaleTimeString("en-US", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
                 })}
               </div>
               {message.is_read && (
@@ -67,7 +99,7 @@ const ChatArea = () => {
   const { profile } = useProfileContext();
 
   const messageSchema = yup.object({
-    newMessage: yup.string().required('Please enter a message'),
+    newMessage: yup.string().required("Please enter a message"),
   });
 
   const { reset, handleSubmit, control } = useForm({
@@ -88,7 +120,7 @@ const ChatArea = () => {
       setMessages(response);
     } catch (err) {
       setError(err.message);
-      console.error('Error fetching messages:', err);
+      console.error("Error fetching messages:", err);
     } finally {
       setIsLoading(false);
     }
@@ -101,7 +133,7 @@ const ChatArea = () => {
   // Send a new message
   const sendChatMessage = async (values) => {
     if (!activeChat) {
-      alert('Please start following someone to chat.');
+      alert("Please start following someone to chat.");
       return;
     }
 
@@ -109,7 +141,7 @@ const ChatArea = () => {
       const newMessage = await sendMessage(activeChat.id, values.newMessage);
 
       if (!newMessage) {
-        throw new Error('Failed to send message');
+        throw new Error("Failed to send message");
       }
 
       // Append the new message to the messages list
@@ -119,21 +151,30 @@ const ChatArea = () => {
       reset();
 
       // Optional: Scroll to the bottom
-      const element = document.querySelector('.chat-conversation-content');
+      const element = document.querySelector(".chat-conversation-content");
       if (element) {
         element.scrollTop = element.scrollHeight;
       }
     } catch (err) {
-      console.error('Error sending message:', err);
+      console.error("Error sending message:", err);
     }
   };
 
   // Inform the user to follow someone if no active chat
   if (!activeChat) {
     return (
-      <Card className="card-chat rounded-start-lg-0 border-start-lg-0 text-center">
-        <CardBody>
-          <h5>Please start following someone to chat</h5>
+      <Card
+        className="card-chat rounded-start-lg-0 border-start-lg-0 text-center d-flex justify-content-center align-items-center p-4"
+        style={{ width: "100%", height: "100%" }} // Full viewport height to center vertically
+      >
+        <CardBody className="d-flex flex-column justify-content-center align-items-center text-center">
+          <div className="mb-4">
+            <FaUserFriends
+              className="text-primary"
+              style={{ fontSize: "8rem", opacity: 0.6 }}
+            />
+          </div>
+          <h2 className="mb-3">Follow to Chat</h2>
         </CardBody>
       </Card>
     );
@@ -142,7 +183,10 @@ const ChatArea = () => {
   const { full_name, avatar_image } = activeChat.participants[0];
 
   return (
-    <Card className="card-chat rounded-start-lg-0 border-start-lg-0">
+    <Card
+      className="card-chat rounded-start-lg-0 border-start-lg-0"
+      style={{ width: "100%", height: "100%" }}
+    >
       <CardBody className="h-100">
         <div className="h-100">
           {/* Chat Header */}
@@ -150,25 +194,38 @@ const ChatArea = () => {
             <div className="d-flex mb-2 mb-sm-0">
               <div className="flex-shrink-0 avatar me-2">
                 <img
-                  className="avatar-img rounded-circle"
-                  src={avatar_image || '/default-avatar.png'}
+                  className="img-fluid" // Ensures image is responsive
+                  src={avatar_image || "path/to/placeholder-image.jpg"} // Fallback to placeholder if image is unavailable
                   alt={full_name}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    objectFit: "cover", // Ensures the image covers the container without distortion
+                    borderRadius: "50%", // Makes the avatar round
+                  }}
                 />
               </div>
+
               <div className="d-block flex-grow-1">
-                <h6 className="mb-0 mt-1">{full_name}</h6>
+                <h6 className="mb-0 mt-1">{full_name || ""}</h6>
                 <div className="small text-secondary">
                   <FaCircle
-                    className={`text-${activeChat.status === 'offline' ? 'danger' : 'success'} me-1`}
+                    className={`text-${activeChat.status === "offline" ? "danger" : "success"} me-1`}
                   />
-                  {activeChat.status === 'offline' ? 'Offline' : 'Online'}
+                  {activeChat.status === "offline" ? "Offline" : "Online"}
                 </div>
               </div>
             </div>
             {/* Chat Actions */}
             <div className="d-flex align-items-center">
-              <OverlayTrigger placement="top" overlay={<Tooltip>Audio call</Tooltip>}>
-                <Button variant="primary-soft" className="icon-md rounded-circle me-2 px-2">
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Audio call</Tooltip>}
+              >
+                <Button
+                  variant="primary-soft"
+                  className="icon-md rounded-circle me-2 px-2"
+                >
                   <BsTelephoneFill />
                 </Button>
               </OverlayTrigger>
@@ -220,7 +277,10 @@ const ChatArea = () => {
 
       {/* Message Input */}
       <CardFooter>
-        <form onSubmit={handleSubmit(sendChatMessage)} className="d-sm-flex align-items-end">
+        <form
+          onSubmit={handleSubmit(sendChatMessage)}
+          className="d-sm-flex align-items-end"
+        >
           <TextFormInput
             className="mb-sm-0 mb-3"
             name="newMessage"

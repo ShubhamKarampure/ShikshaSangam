@@ -5,6 +5,7 @@ import Followers from './components/Followers';
 import CreatePostCard from '@/components/cards/CreatePostCard';
 import { Link } from 'react-router-dom';
 import LoadContentButton from '@/components/LoadContentButton';
+
 const Home = () => {
   
   return <>

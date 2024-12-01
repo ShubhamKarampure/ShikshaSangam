@@ -1,5 +1,6 @@
 import { createContext, useContext, useMemo, useState } from 'react';
 import { toggleDocumentAttribute } from '@/utils/layout';
+
 const LayoutContext = createContext(undefined);
 function useLayoutContext() {
   const context = useContext(LayoutContext);
