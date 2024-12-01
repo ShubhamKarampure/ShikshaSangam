@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "#121212", // Dark background for header
     paddingTop: 20,
-    marginTop:40
+    marginTop:30,
   },
   appName: {
     fontSize: 20,

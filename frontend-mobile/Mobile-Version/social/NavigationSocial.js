@@ -2,14 +2,16 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer"; // For Drawer Navigation
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // For Tab Navigation
+import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons"; // For Tab Icons
 import HomeScreen from "./Screens/HomeScreen";
 import ProfileScreen from "./Screens/ProfileScreen";
-import MessageScreen from "./Screens/MessageScreen";
+import MessageScreen from "./Chats/Screens/MessageScreen";
 import NotificationScreen from "./Screens/NotificationScreen";
 import SettingScreen from "./Screens/SettingScreen";
 import NewPostScreen from "./Screens/NewPostScreen";
 import Header from "./Components/Header";
+import GroupChatScreen from "./Chats/Screens/GroupChatScreen";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,12 +36,13 @@ export default function NavigationSocial() {
         }}
       >
         {/* Drawer Screen with Tabs */}
-        <Drawer.Screen name="Back"
-        options={{
-          drawerIcon: ({ color, size }) => (
-            <Icon name="arrow-back" size={size} color={color} />
-          )
-        }}
+        <Drawer.Screen
+          name="Back"
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="arrow-back" size={size} color={color} />
+            ),
+          }}
         >
           {() => (
             <Tab.Navigator
@@ -48,7 +51,6 @@ export default function NavigationSocial() {
                 tabBarInactiveTintColor: "gray",
                 tabBarStyle: {
                   backgroundColor: isDarkMode ? "#121212" : "#fff", // Dark Mode Tab Bar
-                  
                 },
                 headerShown: false,
               }}
@@ -58,7 +60,11 @@ export default function NavigationSocial() {
                 component={HomeScreen}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Icon name={focused ? "home" : "home-outline"} size={size} color={color} />
+                    <Icon
+                      name={focused ? "home" : "home-outline"}
+                      size={size}
+                      color={color}
+                    />
                   ),
                 }}
               />
@@ -67,27 +73,39 @@ export default function NavigationSocial() {
                 component={NotificationScreen}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Icon name={focused ? "notifications" : "notifications-outline"} size={size} color={color} />
+                    <Icon
+                      name={focused ? "notifications" : "notifications-outline"}
+                      size={size}
+                      color={color}
+                    />
                   ),
                 }}
               />
-              
+
               <Tab.Screen
                 name="Messages"
                 component={MessageScreen}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Icon name={focused ? "chatbubbles" : "chatbubbles-outline"} size={size} color={color} />
+                    <Icon
+                      name={focused ? "chatbubbles" : "chatbubbles-outline"}
+                      size={size}
+                      color={color}
+                    />
                   ),
                 }}
               />
-              
+
               <Tab.Screen
                 name="Profile"
                 component={ProfileScreen}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
-                    <Icon name={focused ? "person" : "person-outline"} size={size} color={color} />
+                    <Icon
+                      name={focused ? "person" : "person-outline"}
+                      size={size}
+                      color={color}
+                    />
                   ),
                 }}
               />
@@ -106,6 +124,15 @@ export default function NavigationSocial() {
           }}
         />
         <Drawer.Screen
+          name="Group Chat"
+          component={GroupChatScreen}
+          options={{
+            drawerIcon: ({ color, size }) => (
+              <Icon name="chatbubbles-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Drawer.Screen
           name="Settings"
           component={SettingScreen}
           options={{
@@ -118,3 +145,4 @@ export default function NavigationSocial() {
     </NavigationContainer>
   );
 }
+NavigationSocial.js
