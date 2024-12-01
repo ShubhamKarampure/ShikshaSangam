@@ -40,7 +40,10 @@ class Follow(models.Model):
     follower = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='following')
     followed = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='followers')
     created_at = models.DateTimeField(auto_now_add=True)
-
+    class Meta:
+        constraints = [
+                models.UniqueConstraint(fields=['follower', 'followed'], name='unique_follower_followed')
+            ]
 # Polls
 class Poll(models.Model):
     post = models.OneToOneField(Post, on_delete=models.CASCADE, related_name='poll')

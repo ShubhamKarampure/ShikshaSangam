@@ -90,3 +90,38 @@ class UploadedFile(models.Model):
     file = CloudinaryField(resource_type="raw", folder='shikshasangam/uploads')
     file_name = models.CharField(max_length=255)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    '''
+from social.models import Follow
+from django.db.models import Count
+
+duplicates = (
+    Follow.objects.values('follower', 'followed')
+    .annotate(count=Count('id'))
+    .filter(count__gt=1)
+)
+
+print(f"Found {len(duplicates)} duplicate pairs.")
+
+for duplicate in duplicates:
+    Follow.objects.filter(
+        follower=duplicate['follower'],
+        followed=duplicate['followed']
+    ).exclude(
+        id=Follow.objects.filter(
+            follower=duplicate['follower'],
+            followed=duplicate['followed']
+        ).first().id
+    ).delete()
+
+duplicates = (
+    Follow.objects.values('follower', 'followed')
+    .annotate(count=Count('id'))
+    .filter(count__gt=1)
+)
+
+print(f"Remaining duplicates: {len(duplicates)}")  # Should be 0
+
+    
+    
+    '''
