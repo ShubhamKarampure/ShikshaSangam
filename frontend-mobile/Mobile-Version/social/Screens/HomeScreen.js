@@ -1,52 +1,24 @@
 import React from "react";
 import { View, FlatList, StyleSheet, SafeAreaView, Image, Text, TouchableOpacity } from "react-native";
+import { useState } from "react";
 import { posts } from "../data/postsdata"; // Import your updated dummy data
+import LikeButton from "../Components/LikeButton";
+import CommentButton from "../Components/CommentButton";
+import ShareButton from "../Components/ShareButton";
+import PostCard from "../Components/PostCard";
 
 export default function HomeScreen() {
   const isDarkMode = true; // Enforce dark mode by default
-
+  
   const renderPost = ({ item }) => (
-    <View style={[styles.post, isDarkMode && styles.postDark]}>
-      {/* Header with author's profile image and information */}
-      <View style={styles.header}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
-        <View>
-          <Text style={[styles.author, isDarkMode && styles.textDark]}>{item.author}</Text>
-          <Text style={[styles.timestamp, isDarkMode && styles.textDarkSecondary]}>{item.timestamp}</Text>
-        </View>
-      </View>
-      {/* Post Title */}
-      <Text style={[styles.title, isDarkMode && styles.textDark]}>{item.title}</Text>
-      {/* Post Content */}
-      <Text style={[styles.content, isDarkMode && styles.textDarkSecondary]}>{item.content}</Text>
-      {/* Post Image */}
-      <Image source={{ uri: item.image }} style={styles.postImage} />
-      {/* Actions: Like, Comment, Share */}
-      <View style={styles.actions}>
-        <TouchableOpacity>
-          <Text style={[styles.actionText, isDarkMode && styles.textDarkSecondary]}>
-            👍 Like ({item.likes})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={[styles.actionText, isDarkMode && styles.textDarkSecondary]}>
-            💬 Comment ({item.comments})
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <Text style={[styles.actionText, isDarkMode && styles.textDarkSecondary]}>
-            🔄 Share
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+    <PostCard item={item} isDarkMode={isDarkMode}/>
   );
 
   return (
     <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.post_id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.feed}
       />

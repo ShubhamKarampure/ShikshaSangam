@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import PageTitleText from '../Components/PageTitleText';
 // Dummy Notification Data
 const notifications = [
     {
@@ -44,7 +45,7 @@ function NotificationScreen(){
     
       return (
         <View style={styles.container}>
-          <Text style={styles.pageTitle}>Notifications</Text>
+          <PageTitleText>Notifications</PageTitleText>
           <FlatList
             data={notifications}
             keyExtractor={(item) => item.id}
@@ -66,13 +67,6 @@ const styles = StyleSheet.create({
       backgroundColor: '#121212', // Dark theme background
       paddingHorizontal: 20,
       paddingTop: 10,
-    },
-    pageTitle: {
-      fontSize: 24,
-      fontWeight: 'bold',
-      color: '#fff',
-      marginBottom: 20,
-      textAlign: 'center',
     },
     listContent: {
       paddingBottom: 20,
