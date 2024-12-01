@@ -4,15 +4,32 @@ from rest_framework.response import Response
 # Create your views here.
 from rest_framework import viewsets
 from rest_framework.decorators import action
-from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote
+from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply
 from .serializers import (
-    PostSerializer, CommentSerializer, LikeSerializer, FollowSerializer,
+    PostSerializer, CommentSerializer, LikeSerializer, FollowSerializer,ReplySerializer,
     ShareSerializer, PollSerializer, PollOptionSerializer, PollVoteSerializer
 )
 from users.permissions import IsVerifiedUser, IsCollegeAdmin, IsOwnerPermission
 from users.serializers import UserSerializer, UserProfileSerializer
 from users.models import UserProfile
 from django.db.models import Q
+from rest_framework.pagination import PageNumberPagination
+from django.utils.timesince import timesince
+
+class PostPagination(PageNumberPagination):
+    page_size = 10  # Number of posts per page
+    page_size_query_param = 'page_size'
+    max_page_size = 100
+
+class CommentPagination(PageNumberPagination):
+    page_size = 5  # Number of comments per page (adjust as necessary)
+    page_size_query_param = 'page_size' # ?page_size = x
+
+class ReplyPagination(PageNumberPagination):
+    page_size = 3  # Number of replies per page (adjust as necessary)
+    page_size_query_param = 'page_size'
+
+
 
 class PostViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Post model
@@ -24,41 +41,322 @@ class PostViewSet(viewsets.ModelViewSet):
         """Get posts from the same college as the current user."""
         user_college = request.user.user.college
         college_posts = Post.objects.filter(userprofile__college=user_college)
-        serializer = self.get_serializer(college_posts, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(college_posts)
+        
+        if page is not None:
+            response_data = []
+
+            for post in page:
+                user = post.userprofile.user
+                num_likes = Like.objects.filter(post=post).count()
+                num_comments = Comment.objects.filter(post=post).count()
+                num_shares = Share.objects.filter(post=post).count()
+                num_followers = Follow.objects.filter(followed=user).count()
+                time_since_post = timesince(post.created_at)
+
+                post_serializer = self.get_serializer(post)
+
+                response_data.append({
+                    'post': post_serializer.data,
+                    'user': {
+                        'username': user.username,
+                        'profile_id': user.id,
+                        'num_followers': num_followers,
+                    },
+                    'post_stats': {
+                        'likes': num_likes,
+                        'comments': num_comments,
+                        'shares': num_shares,
+                        'time_since_post': time_since_post,
+                    },
+                    'comments_count': num_comments,
+                })
+
+            return Response(response_data)
+        
+        return Response({
+            'detail': 'No posts available.'
+        })
     
+
+    @action(detail=True, methods=['get'])  # GET /posts/{post_id}/details/ (for single post)
+    def post_details(self, request, pk=None):
+        """
+        Fetch detailed information about a single post, including:
+        - Username of the user who posted it
+        - Number of likes, comments, shares, followers
+        - Time since post was made
+        - Number of comments (pagination handled in CommentViewSet)
+        """
+        post = self.get_object()  # Get the requested post
+        user = post.userprofile.user  # The user who posted the post
+
+        # Fetch number of likes, comments, shares, and followers
+        num_likes = Like.objects.filter(post=post).count()
+        num_comments = Comment.objects.filter(post=post).count()  # Total number of comments
+        num_shares = Share.objects.filter(post=post).count()
+        num_followers = Follow.objects.filter(followed=user).count()
+
+        # Time since the post was made
+        time_since_post = timesince(post.created_at)[0]  # e.g., "2 hours ago"
+
+        # Serialize the post content
+        post_serializer = self.get_serializer(post)
+
+        # Return the full post details, including the number of comments
+        return Response({
+            'post': post_serializer.data,
+            'user': {
+                'username': user.username,
+                'num_followers': num_followers,
+            },
+            'post_stats': {
+                'likes': num_likes,
+                'comments': num_comments,  # Just the number of comments
+                'shares': num_shares,
+                'time_since_post': time_since_post,
+            },
+            'comments_count': num_comments  # Number of comments, can be used for pagination link
+        })
+    @action(detail=False, methods=['get'])  # GET /posts/list_posts/ # all posts, with additional data
+    def list_posts(self, request):
+        """
+        List all posts with detailed data:
+        - Post details
+        - User's username and followers count
+        - Post statistics: likes, comments, shares, time since posted
+        """
+        posts = self.queryset
+        page = self.paginate_queryset(posts)
+        
+        if page is not None:
+            response_data = []
+
+            for post in page:
+                user = post.userprofile.user
+                num_likes = Like.objects.filter(post=post).count()
+                num_comments = Comment.objects.filter(post=post).count()
+                num_shares = Share.objects.filter(post=post).count()
+                num_followers = Follow.objects.filter(followed=user).count()
+                time_since_post = timesince(post.created_at)
+
+                post_serializer = self.get_serializer(post)
+
+                response_data.append({
+                    'post': post_serializer.data,
+                    'user': {
+                        'username': user.username,
+                        'profile_id': user.id,
+                        'num_followers': num_followers,
+                    },
+                    'post_stats': {
+                        'likes': num_likes,
+                        'comments': num_comments,
+                        'shares': num_shares,
+                        'time_since_post': time_since_post,
+                    },
+                    'comments_count': num_comments,
+                })
+
+            return Response(response_data)
+        
+        return Response({
+            'detail': 'No posts available.'
+        })
     
+    @action(detail=False, methods=['get'])  # GET /posts/shared_with_me/
+    def shared_with_me(self, request):
+        """Get all posts shared with the current user."""
+        userprofile = request.user.userprofile
+
+        # Fetch all shares where the current user is the recipient
+        shared_posts = Share.objects.filter(shared_with=userprofile)
+        page = self.paginate_queryset(shared_posts)
+        if page is not None:
+            response_data = []
+            for share in page:
+                shared_post = share.post
+                original_poster = shared_post.userprofile
+                sharer = share.shared_by
+
+                response_data.append({
+                    'post': {
+                        'id': shared_post.id,
+                        'content': shared_post.content,
+                        'media': shared_post.media.url if shared_post.media else None,
+                        # 'time_since_post': humanize.naturaltime(shared_post.created_at), # can handle in frontend as per clients time..??
+                        'likes_count': shared_post.likes.count(),
+                        'comments_count': shared_post.comments.count(),
+                        'shares_count': shared_post.shares.count(),
+                    },
+                    'sharer': {
+                        'id': sharer.id,
+                        'username': sharer.user.username,
+                        'avatar': sharer.avatar_image.url if sharer.avatar_image else None,
+                        'role': sharer.role,
+                    },
+                    'original_poster': {
+                        'id': original_poster.id,
+                        'username': original_poster.user.username,
+                        'avatar': original_poster.avatar_image.url if original_poster.avatar_image else None,
+                        'role': original_poster.role,
+                    },
+                })
+
+            return Response(response_data)
+        return Response({
+            'detail': 'No posts available.'
+        })
+        
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Comment model
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
+    pagination_class = CommentPagination
+
+    @action(detail=False, methods=['get'])  # GET /comments/post_comments/{post_pk}/ # Comments for a particular post
+    def post_comments(self, request, post_pk=None):
+        """
+        Paginated comments for a specific post.
+        - Includes username, avatar, profile ID, and role for each commenter
+        """
+        comments = Comment.objects.filter(post__id=post_pk)
+        page = self.paginate_queryset(comments)
+        if page is not None:
+            response_data = [
+                {
+                    'comment': self.get_serializer(comment).data,
+                    'user': {
+                        'username': comment.userprofile.user.username,
+                        'avatar': comment.userprofile.avatar.url,
+                        'profile_id': comment.userprofile.id,
+                        'role': comment.userprofile.role,
+                    }
+                }
+                for comment in page
+            ]
+            return self.get_paginated_response(response_data)
+
+        return Response({
+            'detail': 'No comments found for this post.'
+        })
+
+
+class ReplyViewSet(viewsets.ModelViewSet):
+    queryset = Reply.objects.all()
+    serializer_class = ReplySerializer
+    pagination_class = ReplyPagination
+
+    @action(detail=False, methods=['get'])  # GET /replies/comment_replies/{comment_pk}/
+    def comment_replies(self, request, comment_pk=None):
+        """
+        Paginated replies for a specific comment.
+        - Includes username, avatar, profile ID, and role for each replier
+        """
+        replies = Reply.objects.filter(comment__id=comment_pk)
+        page = self.paginate_queryset(replies)
+        if page is not None:
+            response_data = [
+                {
+                    'reply': self.get_serializer(reply).data,
+                    'user': {
+                        'username': reply.userprofile.user.username,
+                        'avatar': reply.userprofile.avatar.url,
+                        'profile_id': reply.userprofile.id,
+                        'role': reply.userprofile.role,
+                    }
+                }
+                for reply in page
+            ]
+            return self.get_paginated_response(response_data)
+
+        return Response({
+            'detail': 'No replies found for this comment.'
+        })
+
 
 class LikeViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Like model
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
+
    
 class FollowViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Follow model
     queryset = Follow.objects.all()
     serializer_class = FollowSerializer
+    
 
-    @action(detail=False, methods=['get']) # GET /follows/followers/ → Returns all followers of the current user.
+
+    @action(detail=False, methods=['get'])  # GET /followers/followers/
     def followers(self, request):
-        """Get all followers of the current user."""
+        """
+        Get all followers of the current user.
+        Includes additional details based on role.
+        """
         userprofile = request.user.user
-        followers = Follow.objects.filter(followed=userprofile)  # People following the user
-        serializer = FollowSerializer(followers, many=True)
-        return Response(serializer.data)
+        followers = Follow.objects.filter(followed=userprofile)
 
-    @action(detail=False, methods=['get']) # GET /follows/following/ → Returns all users followed by the current user
+        response_data = []
+        for follow in followers:
+            follower = follow.follower
+            if follower.role == 'student' and hasattr(follower, 'studentprofile'):
+                response_data.append({
+                    'id': follower.id,
+                    'full_name': follower.full_name,
+                    'avatar_image': follower.avatar_image.url if follower.avatar_image else None,
+                    'current_program': follower.studentprofile.current_program,
+                    'specialization': follower.studentprofile.specialization,
+                    'expected_graduation_year': follower.studentprofile.expected_graduation_year,
+                    'role': follower.role,
+                })
+            elif follower.role == 'alumni' and hasattr(follower, 'alumnusprofile'):
+                response_data.append({
+                    'id': follower.id,
+                    'full_name': follower.full_name,
+                    'avatar_image': follower.avatar_image.url if follower.avatar_image else None,
+                    'specialization': follower.alumnusprofile.specialization,
+                    'graduation_year': follower.alumnusprofile.graduation_year,
+                    'role': follower.role,
+                })
+
+        return Response(response_data)
+
+    @action(detail=False, methods=['get'])  # GET /followers/following/
     def following(self, request):
-        """Get all users followed by the current user."""
+        """
+        Get all users followed by the current user.
+        Includes additional details based on role.
+        """
         userprofile = request.user.user
-        following = Follow.objects.filter(follower=userprofile)  # People the user follows
-        serializer = FollowSerializer(following, many=True)
-        return Response(serializer.data)
+        following = Follow.objects.filter(follower=userprofile)
+
+        response_data = []
+        for follow in following:
+            followed = follow.followed
+            if followed.role == 'student' and hasattr(followed, 'studentprofile'):
+                response_data.append({
+                    'id': followed.id,
+                    'full_name': followed.full_name,
+                    'avatar_image': followed.avatar_image.url if followed.avatar_image else None,
+                    'current_program': followed.studentprofile.current_program,
+                    'specialization': followed.studentprofile.specialization,
+                    'expected_graduation_year': followed.studentprofile.expected_graduation_year,
+                    'role': followed.role,
+                })
+            elif followed.role == 'alumni' and hasattr(followed, 'alumnusprofile'):
+                response_data.append({
+                    'id': followed.id,
+                    'full_name': followed.full_name,
+                    'avatar_image': followed.avatar_image.url if followed.avatar_image else None,
+                    'specialization': followed.alumnusprofile.specialization,
+                    'graduation_year': followed.alumnusprofile.graduation_year,
+                    'role': followed.role,
+                })
+
+        return Response(response_data)
     
     @action(detail=False, methods=['get'])  # GET /followers/userstofollow/
     def userstofollow(self, request):
@@ -105,6 +403,75 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'graduation_year': user.alumnusprofile.graduation_year,
                     'role': user.role,
                 })
+
+        return Response(response_data)
+    
+    @action(detail=False, methods=['get'])  # GET /followers/connections/ # follower + following = connection
+    def connections(self, request):
+        """
+        Get all mutual connections (friends) for the current user.
+        A connection is defined as someone the user follows AND is followed back by.
+        """
+        userprofile = request.user.user
+
+        # Get users followed by the current user
+        following = Follow.objects.filter(follower=userprofile).values_list('followed', flat=True)
+
+        # Get users who follow the current user
+        followers = Follow.objects.filter(followed=userprofile).values_list('follower', flat=True)
+
+        # Find mutual connections (intersection of following and followers)
+        mutual_connections = UserProfile.objects.filter(id__in=set(following).intersection(followers))
+
+        # Prepare response data with additional details
+        response_data = []
+        for user in mutual_connections:
+            if user.role == 'student' and hasattr(user, 'studentprofile'):
+                response_data.append({
+                    'id': user.id,
+                    'full_name': user.full_name,
+                    'avatar_image': user.avatar_image.url if user.avatar_image else None,
+                    'current_program': user.studentprofile.current_program,
+                    'specialization': user.studentprofile.specialization,
+                    'expected_graduation_year': user.studentprofile.expected_graduation_year,
+                    'role': user.role,
+                })
+            elif user.role == 'alumni' and hasattr(user, 'alumnusprofile'):
+                response_data.append({
+                    'id': user.id,
+                    'full_name': user.full_name,
+                    'avatar_image': user.avatar_image.url if user.avatar_image else None,
+                    'specialization': user.alumnusprofile.specialization,
+                    'graduation_year': user.alumnusprofile.graduation_year,
+                    'role': user.role,
+                })
+
+        return Response(response_data)
+    
+    @action(detail=False, methods=['get'])  # GET /follows/summary/ # returns no of followers, following, and connections
+    def summary(self, request):
+        """
+        Get counts of followers, following, and connections for the current user.
+        """
+        userprofile = request.user.user
+
+        # Count followers
+        followers_count = Follow.objects.filter(followed=userprofile).count()
+
+        # Count following
+        following_count = Follow.objects.filter(follower=userprofile).count()
+
+        # Count connections (mutual follows)
+        following = Follow.objects.filter(follower=userprofile).values_list('followed', flat=True)
+        followers = Follow.objects.filter(followed=userprofile).values_list('follower', flat=True)
+        connections_count = len(set(following).intersection(followers))
+
+        # Prepare response
+        response_data = {
+            'followers_count': followers_count,
+            'following_count': following_count,
+            'connections_count': connections_count,
+        }
 
         return Response(response_data)
 

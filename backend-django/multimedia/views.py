@@ -55,7 +55,6 @@ class MessageListView(ListAPIView):
         chat = get_object_or_404(Chat, id=chat_id, participants=user_profile)
         return Message.objects.filter(chat=chat)
 
-
 class MessageCreateView(CreateAPIView):
     """Send a message in a chat."""
     serializer_class = MessageSerializer
@@ -65,3 +64,4 @@ class MessageCreateView(CreateAPIView):
         user_profile = self.request.user.user
         chat = get_object_or_404(Chat, id=chat_id, participants=user_profile)
         serializer.save(chat=chat, sender=user_profile)
+

@@ -1,16 +1,36 @@
 from rest_framework import serializers
-from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote
+from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply
+from users.models import UserProfile
+from users.serializers import UserProfileSerializer
+
+class SocialUserProfileSerializer(serializers.ModelSerializer): # Can be used to avoid writing long views, Still working on it....
+    """Serializer for UserProfile to include basic user details."""
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'full_name', 'avatar_image', 'role', 'profile_link']
+        # Add other fields if required
 
 class PostSerializer(serializers.ModelSerializer):
     # Includes all fields in Post model
+    userprofile = SocialUserProfileSerializer()
     class Meta:
         model = Post
         fields = '__all__'
 
 class CommentSerializer(serializers.ModelSerializer):
     # Includes all fields in Comment model
+    # userprofile = SocialUserProfileSerializer()
+
     class Meta:
         model = Comment
+        fields = '__all__'
+
+class ReplySerializer(serializers.ModelSerializer):
+    # Includes all fields in Comment model
+    # userprofile = SocialUserProfileSerializer()
+
+    class Meta:
+        model = Reply
         fields = '__all__'
 
 class LikeSerializer(serializers.ModelSerializer):
@@ -21,6 +41,7 @@ class LikeSerializer(serializers.ModelSerializer):
 
 class FollowSerializer(serializers.ModelSerializer):
     # Includes all fields in Follow model
+    
     class Meta:
         model = Follow
         fields = '__all__'
