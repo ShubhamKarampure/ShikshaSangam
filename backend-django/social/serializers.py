@@ -12,7 +12,7 @@ class SocialUserProfileSerializer(serializers.ModelSerializer): # Can be used to
 
 class PostSerializer(serializers.ModelSerializer):
     # Includes all fields in Post model
-    userprofile = SocialUserProfileSerializer()
+    # userprofile = SocialUserProfileSerializer()
     class Meta:
         model = Post
         fields = '__all__'
