@@ -170,6 +170,10 @@ export default function CommentSectionScreen({ navigation, route, item, isDarkMo
             <Pressable
               style={styles.commentSectionHeader}
               onPress={modalCloseHandler}
+              android_ripple={{
+                color: "#1f3636",
+                radius: styles.commentSectionHeader.borderRadius,
+              }}
             >
               <Text
                 style={[
@@ -229,6 +233,9 @@ const styles = StyleSheet.create({
     elevation: 2,
   },
   commentSectionHeader: {
+    //flex:1,
+    width:360,
+    flexDirection:'row',
     backgroundColor: "#0c2e2e",
     borderWidth: 1,
     borderColor: "#030d0d",
@@ -236,6 +243,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     paddingTop: 6,
+    overflow:'hidden',
   },
   darkModeBackground: {
     backgroundColor: "#1c1c1c",

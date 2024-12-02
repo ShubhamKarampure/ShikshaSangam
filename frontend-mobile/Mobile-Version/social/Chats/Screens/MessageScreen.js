@@ -4,23 +4,10 @@ import { useNavigation } from "@react-navigation/native";
 import MessageCard from "../Components/MessageCard";
 import PageTitleText from "../../Components/PageTitleText";
 import ChatScreen from "./ChatScreen";
+import { messagesData } from "../../data/messagesData";
 
 const MessageScreen = ({navigation}) => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      name: "Alice",
-      message: "Hey, how are you?",
-      timestamp: "10:45 AM",
-    },
-    { id: 2, name: "Bob", message: "Meeting at 2 PM?", timestamp: "09:30 AM" },
-    {
-      id: 3,
-      name: "Charlie",
-      message: "Let’s catch up later!",
-      timestamp: "Yesterday",
-    },
-  ]);
+  const [messages, setMessages] = useState(messagesData);
   const [isMessageScreen, setIsMessageScreen] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState(null); // State to store selected message
 
@@ -39,7 +26,7 @@ const MessageScreen = ({navigation}) => {
   
   let screen = (
     <View style={styles.container}>
-      <PageTitleText>Messages</PageTitleText>
+      {/* <PageTitleText>Messages</PageTitleText> */}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id.toString()}

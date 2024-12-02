@@ -156,6 +156,7 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 import React from "react";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer"; // For Drawer Navigation
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // For Tab Navigation
@@ -169,10 +170,16 @@ import MessageScreen from "./Chats/Screens/MessageScreen";
 import NotificationScreen from "./Screens/NotificationScreen";
 import SettingScreen from "./Screens/SettingScreen";
 import NewPostScreen from "./Screens/NewPostScreen";
-import Header from "./Components/Header";
+import Header from "./Components/Navigation/Header";
 import GroupChatScreen from "./Chats/Screens/GroupChatScreen";
 import ChatScreen from "./Chats/Screens/ChatScreen";
 import CommentSectionScreen from "./Screens/CommentSectionScreen";
+
+import HomeHeader from "./Components/Navigation/HomeHeader";
+import NotificationsHeader from "./Components/Navigation/NotificationsHeader";
+import MessagesHeader from "./Components/Navigation/MessagesHeader";
+import ProfileHeader from "./Components/Navigation/ProfileHeader";
+import {View} from "react-native"
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -184,12 +191,16 @@ function MessageStack() {
       <Stack.Screen
         name="Message"
         component={MessageScreen}
-        options={{ headerShown: false }} // Hide the header for MessageScreen
+        options={{
+          header: () => <MessagesHeader />,
+        }}
       />
       <Stack.Screen
         name="Chat"
         component={ChatScreen}
-        options={{ title: "Chat"}} // Set the title for ChatScreen
+        options={{
+          // header: () => <Header>Chats</Header>,
+        }} // Set the title for ChatScreen
       />
     </Stack.Navigator>
   );
@@ -219,7 +230,8 @@ export default function NavigationSocial() {
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
-          header: ({ navigation }) => <Header navigation={navigation} />, // Use the custom header for all screens
+          //header: () => <Header>ShikshaSangam</Header>, // Use the custom header
+          headerShown: false,
           drawerStyle: {
             backgroundColor: isDarkMode ? "#121212" : "#fff", // Dark mode for the drawer background
             width: 240, // Smaller drawer size
@@ -238,6 +250,9 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="arrow-back" size={size} color={color} />
             ),
+            // headerTitle:'Drawer Screen',
+            // headerTitleAlign:'center',
+            headerShown: false,
           }}
         >
           {() => (
@@ -252,7 +267,7 @@ export default function NavigationSocial() {
               }}
             >
               <Tab.Screen
-                name="Home"
+                name="HomeStack"
                 component={HomeStack}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
@@ -261,6 +276,10 @@ export default function NavigationSocial() {
                       size={size}
                       color={color}
                     />
+                  ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <HomeHeader navigation={navigation} />
                   ),
                 }}
               />
@@ -274,6 +293,10 @@ export default function NavigationSocial() {
                       size={size}
                       color={color}
                     />
+                  ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <NotificationsHeader navigation={navigation} />
                   ),
                 }}
               />
@@ -289,6 +312,10 @@ export default function NavigationSocial() {
                       color={color}
                     />
                   ),
+                  //headerShown: true,
+                  // header: (navigation) => (
+                  //   <MessagesHeader navigation={navigation} />
+                  // ),
                 }}
               />
 
@@ -302,6 +329,10 @@ export default function NavigationSocial() {
                       size={size}
                       color={color}
                     />
+                  ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <ProfileHeader navigation={navigation} />
                   ),
                 }}
               />
@@ -317,6 +348,8 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="add-circle-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>ShikshaSangam</Header>,
           }}
         />
         <Drawer.Screen
@@ -326,6 +359,8 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="chatbubbles-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>Group Chats</Header>,
           }}
         />
         <Drawer.Screen
@@ -335,6 +370,8 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="settings-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>Settings</Header>,
           }}
         />
         {/* <Stack.Navigator>
