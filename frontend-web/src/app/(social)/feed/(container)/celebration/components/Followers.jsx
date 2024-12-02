@@ -9,17 +9,7 @@ import { fetchUsersToFollow } from '@/api/social';
 
 const Followers = () => {
   const allFollowers = useFetchData(getAllUsers);
-useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const data = await fetchUsersToFollow();
-        setUsersToFollow(data);
-      } catch (error) {
-        console.error('Error fetching users to follow:', error);
-      }
-    };
-    fetchData();
-  }, []);
+
     
   return <Card>
       <CardHeader className="pb-0 border-0">

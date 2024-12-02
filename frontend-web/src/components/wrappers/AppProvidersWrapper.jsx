@@ -13,9 +13,7 @@ import { SideBarProvider } from "../../context/useSideBarContext";
 
 const AppProvidersWrapper = ({ children }) => {
   const handleChangeTitle = () => {
-    if (document.visibilityState === "hidden")
-      document.title = "Please come back 🥺";
-    else document.title = DEFAULT_PAGE_TITLE;
+     document.title = DEFAULT_PAGE_TITLE;
   };
   useEffect(() => {
     if (document) {
