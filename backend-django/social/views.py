@@ -38,6 +38,76 @@ class PostViewSet(viewsets.ModelViewSet):
     serializer_class = PostSerializer
     pagination_class = PostPagination
 
+    @action(detail=False, methods=['get'])  # GET /social/posts/list_posts/
+    def list_posts(self, request):
+        """List all posts with their related data."""
+        all_posts = Post.objects.all()
+        page = self.paginate_queryset(all_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No posts available."})
+
+    @action(detail=False, methods=['get'])  # GET /social/posts/shared_to_me/
+    def shared_to_me(self, request):
+        """List posts shared to the current user."""
+        user_profile = request.user.userprofile
+        shared_to_me_posts = Post.objects.filter(
+            shares__shared_to=user_profile
+        ).distinct()
+        page = self.paginate_queryset(shared_to_me_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No shared posts available."})
+
+    @action(detail=False, methods=['get'])  # GET /social/posts/shared_by_me/
+    def shared_by_me(self, request):
+        """List posts shared by the current user."""
+        user_profile = request.user.userprofile
+        shared_by_me_posts = Post.objects.filter(
+            shares__shared_by=user_profile
+        ).distinct()
+        page = self.paginate_queryset(shared_by_me_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No shared posts available."})
+
+    def _get_paginated_post_data(self, posts):
+        """Helper function to format paginated post data."""
+        response_data = []
+        post_content_type = ContentType.objects.get_for_model(Post)
+
+        for post in posts:
+            user = post.userprofile
+            num_likes = Like.objects.filter(content_type=post_content_type, object_id=post.id).count()
+            num_comments = Comment.objects.filter(post=post).count()
+            num_shares = Share.objects.filter(post=post).count()
+            time_since_post = timesince(post.created_at)
+
+            post_serializer = self.get_serializer(post)
+
+            response_data.append({
+                'post': post_serializer.data,
+                'user': {
+                    'username': user.user.username,
+                    'profile_id': user.id,
+                },
+                'post_stats': {
+                    'likes': num_likes,
+                    'comments': num_comments,
+                    'shares': num_shares,
+                    'time_since_post': time_since_post,
+                },
+                'comments_count': num_comments,
+            })
+
+        return Response(response_data)
+
     @action(detail=False, methods=['get']) # GET /posts/college_posts/
     def college_posts(self, request):
         """Get posts from the same college as the current user."""
@@ -51,7 +121,7 @@ class PostViewSet(viewsets.ModelViewSet):
             
             for post in page:
                 
-                print(post)
+                # print(post)
                 user = post.userprofile
                 num_likes =  Like.objects.filter( content_type=post_content_type,object_id=post.id).count()
                 num_comments = Comment.objects.filter(post=post).count()
