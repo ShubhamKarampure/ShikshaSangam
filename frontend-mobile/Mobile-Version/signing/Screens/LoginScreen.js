@@ -7,14 +7,41 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NavigationSocial from "../../social/NavigationSocial";
+import signin from "../../api/auth";
 
 export default function LoginScreen(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
+  const [usernameOrEmail, setUsernameOrEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSignIn = async () => {
+    try {
+      const data = {
+        username: usernameOrEmail, // or email
+       password: password,
+      };
+      const response = await signin(data);
+      console.log("Login Response:", response);
+
+      // Save tokens or user info as needed
+      // Example: AsyncStorage.setItem("accessToken", response.access);
+
+      setIsSignedIn(true); // Navigate to next screen
+    } catch (error) {
+      console.error("Login Error:", error);
+      Alert.alert(
+        "Login Failed",
+        error.response?.data?.detail || "Something went wrong."
+      );
+    }
+  };
+
   return isSignedIn ? (
     <NavigationSocial />
   ) : (
@@ -42,6 +69,8 @@ export default function LoginScreen(props) {
                 style={styles.input}
                 placeholder="Enter your username or email"
                 placeholderTextColor="#888"
+                value={usernameOrEmail}
+                onChangeText={setUsernameOrEmail}
               />
               <View style={styles.passwordContainer}>
                 <TextInput
@@ -49,6 +78,8 @@ export default function LoginScreen(props) {
                   placeholder="Enter your password"
                   secureTextEntry={!showPassword}
                   placeholderTextColor="#888"
+                  value={password}
+                  onChangeText={setPassword}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -74,10 +105,7 @@ export default function LoginScreen(props) {
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.button}
-                onPress={() => setIsSignedIn(true)}
-              >
+              <TouchableOpacity style={styles.button} onPress={handleSignIn}>
                 <Text style={styles.buttonText}>Sign In</Text>
               </TouchableOpacity>
             </View>

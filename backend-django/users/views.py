@@ -72,12 +72,13 @@ class UserRegistrationView(APIView):
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
 
     def post(self, request):
-        # Extract email/username and password from the request data
+        # Print the incoming request data
+        print("Incoming Request Data (UserLoginView):", request.data)
+
         identifier = request.data.get("email") or request.data.get("username")
         password = request.data.get("password")
 
@@ -87,7 +88,6 @@ class UserLoginView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Check if the identifier is an email or username and find the user
         try:
             if "@" in identifier:
                 user = User.objects.get(email=identifier)
@@ -96,35 +96,31 @@ class UserLoginView(APIView):
         except User.DoesNotExist:
             raise AuthenticationFailed("No user found with the provided email/username.")
 
-        # Check if the password is correct
         if not user.check_password(password):
             return Response(
                 {"detail": "Invalid email/username or password."},
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        # Try to get the user's profile ID if it exists
         user_profile_id = None
         try:
-            user_profile = user.user  # Accessing the related UserProfile
+            user_profile = user.user
             user_profile_id = user_profile.id
         except ObjectDoesNotExist:
-            # Profile does not exist
             pass
 
-        # Generate JWT tokens (access and refresh)
         refresh = RefreshToken.for_user(user)
         access_token = str(refresh.access_token)
         refresh_token = str(refresh)
 
-        profile=None
-        role=None
+        profile = None
+        role = None
         try:
-            profile=UserProfile.objects.filter(id=user_profile_id)
-            role=profile[0].role
+            profile = UserProfile.objects.filter(id=user_profile_id)
+            role = profile[0].role
         except:
             pass
-        # Return the tokens and user information, including the profile ID if it exists
+
         return Response(
             {
                 "status": "success",
@@ -135,12 +131,13 @@ class UserLoginView(APIView):
                     "id": user.id,
                     "email": user.email,
                     "username": user.username,
-                    "profile_id": user_profile_id,  # Include the profile ID if it exists
-                    "role": role
+                    "profile_id": user_profile_id,
+                    "role": role,
                 },
             },
             status=status.HTTP_200_OK,
         )
+
 
 
 class GoogleAuthView(APIView):
