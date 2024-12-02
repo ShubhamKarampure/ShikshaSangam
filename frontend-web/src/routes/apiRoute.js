@@ -35,4 +35,6 @@ export const API_ROUTES = {
   CHAT_CREATE: `${API_BASE_URL}/multimedia/chats/create/`, // Create a new chat
   MESSAGE_LIST: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/`, // List messages for a specific chat
   MESSAGE_CREATE: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message in a chat
+
+  UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
 }
