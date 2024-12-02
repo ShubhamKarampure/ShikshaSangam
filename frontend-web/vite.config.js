@@ -9,5 +9,8 @@ export default defineConfig({
     alias: {
       "@": resolve(__dirname, "src")
     }
+  },
+  optimizeDeps: {
+    exclude: ['pdf.worker.mjs']
   }
 });
