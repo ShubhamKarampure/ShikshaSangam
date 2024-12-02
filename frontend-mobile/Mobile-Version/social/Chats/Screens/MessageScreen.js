@@ -4,42 +4,29 @@ import { useNavigation } from "@react-navigation/native";
 import MessageCard from "../Components/MessageCard";
 import PageTitleText from "../../Components/PageTitleText";
 import ChatScreen from "./ChatScreen";
+import { messagesData } from "../../data/messagesData";
 
-const MessageScreen = () => {
-  const [messages, setMessages] = useState([
-    {
-      id: 1,
-      name: "Alice",
-      message: "Hey, how are you?",
-      timestamp: "10:45 AM",
-    },
-    { id: 2, name: "Bob", message: "Meeting at 2 PM?", timestamp: "09:30 AM" },
-    {
-      id: 3,
-      name: "Charlie",
-      message: "Let’s catch up later!",
-      timestamp: "Yesterday",
-    },
-  ]);
+const MessageScreen = ({navigation}) => {
+  const [messages, setMessages] = useState(messagesData);
   const [isMessageScreen, setIsMessageScreen] = useState(true);
   const [selectedMessage, setSelectedMessage] = useState(null); // State to store selected message
 
   const handleMessagePress = (item) => {
     //console.log("Message pressed:", message);
-    setSelectedMessage(item);
-    setIsMessageScreen(false);
-  };
-  const onBackButtonPressToReturnHere = () => {
-    setSelectedMessage(null);
-    setIsMessageScreen(true);
+    // setSelectedMessage(item);
+    // setIsMessageScreen(false);
+    navigation.navigate('Chat', {
+      receiver: item
+    })
   };
 
   const renderMessage = ({ item }) => (
     <MessageCard item={item} onPress={() => handleMessagePress(item)} />
   );
+  
   let screen = (
     <View style={styles.container}>
-      <PageTitleText>Messages</PageTitleText>
+      {/* <PageTitleText>Messages</PageTitleText> */}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.id.toString()}
@@ -50,9 +37,9 @@ const MessageScreen = () => {
     </View>
   );
 
-  if (!isMessageScreen) {
-    screen = <ChatScreen receiver={selectedMessage} onBackButtonPress={onBackButtonPressToReturnHere} />;
-  }
+  // if (!isMessageScreen) {
+  //   screen = <ChatScreen receiver={selectedMessage} />;
+  // }
   return screen;
 };
 

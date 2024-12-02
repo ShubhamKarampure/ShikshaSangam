@@ -1,4 +1,4 @@
-import React from "react";
+import React, {memo} from "react";
 import { TouchableOpacity, Text, StyleSheet, View } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 

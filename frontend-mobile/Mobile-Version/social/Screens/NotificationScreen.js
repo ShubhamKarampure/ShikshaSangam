@@ -45,7 +45,7 @@ function NotificationScreen(){
     
       return (
         <View style={styles.container}>
-          <PageTitleText>Notifications</PageTitleText>
+          {/* <PageTitleText>Notifications</PageTitleText> */}
           <FlatList
             data={notifications}
             keyExtractor={(item) => item.id}

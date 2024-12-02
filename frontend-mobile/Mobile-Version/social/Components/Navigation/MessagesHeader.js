@@ -1,8 +1,10 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons"; // Import Icon for the drawer
+import { useNavigation } from "@react-navigation/native";
 
-export default function Header({ navigation }) {
+export default function MessagesHeader() {
+  const navigation = useNavigation();
   return (
     <View style={styles.header}>
       {/* Drawer Icon */}
@@ -11,7 +13,7 @@ export default function Header({ navigation }) {
       </TouchableOpacity>
 
       {/* App Name - Centered */}
-      <Text style={styles.appName}>ShikshaSangam</Text>
+      <Text style={styles.appName}>Messages</Text>
 
       {/* Empty view for spacing (optional, you can replace this if needed) */}
       <View style={styles.emptySpace} />
@@ -28,7 +30,7 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     backgroundColor: "#121212", // Dark background for header
     paddingTop: 20,
-    marginTop:30,
+    marginTop: 30,
   },
   appName: {
     fontSize: 20,

@@ -1,7 +1,167 @@
+// import React from "react";
+// import { NavigationContainer } from "@react-navigation/native";
+// import { createDrawerNavigator } from "@react-navigation/drawer"; // For Drawer Navigation
+// import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // For Tab Navigation
+// import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import Icon from "react-native-vector-icons/Ionicons"; // For Tab Icons
+// import HomeScreen from "./Screens/HomeScreen";
+// import ProfileScreen from "./Screens/ProfileScreen";
+// import MessageScreen from "./Chats/Screens/MessageScreen";
+// import NotificationScreen from "./Screens/NotificationScreen";
+// import SettingScreen from "./Screens/SettingScreen";
+// import NewPostScreen from "./Screens/NewPostScreen";
+// import Header from "./Components/Header";
+// import GroupChatScreen from "./Chats/Screens/GroupChatScreen";
+// import ChatScreen from "./Chats/Screens/ChatScreen";
+
+// const Drawer = createDrawerNavigator();
+// const Tab = createBottomTabNavigator();
+// const Stack = createNativeStackNavigator();
+
+// export default function NavigationSocial() {
+//   const isDarkMode = true; // Set to true to enforce dark mode everywhere
+
+//   return (
+//     <NavigationContainer>
+//       <Drawer.Navigator
+//         screenOptions={{
+//           header: ({ navigation }) => <Header navigation={navigation} />, // Use the custom header for all screens
+//           drawerStyle: {
+//             backgroundColor: isDarkMode ? "#121212" : "#fff", // Dark mode for the drawer background
+//             width: 240, // Smaller drawer size
+//           },
+//           drawerLabelStyle: {
+//             color: isDarkMode ? "#fff" : "#000", // Text color for drawer labels
+//           },
+//           drawerActiveTintColor: "#007bff", // Active icon and text color
+//           drawerInactiveTintColor: "#fff", // Inactive icon and text color
+//         }}
+//       >
+//         {/* Drawer Screen with Tabs */}
+//         <Drawer.Screen
+//           name="Back"
+//           options={{
+//             drawerIcon: ({ color, size }) => (
+//               <Icon name="arrow-back" size={size} color={color} />
+//             ),
+//           }}
+//         >
+//           {() => (
+//             <Tab.Navigator
+//               screenOptions={{
+//                 tabBarActiveTintColor: "#007bff",
+//                 tabBarInactiveTintColor: "gray",
+//                 tabBarStyle: {
+//                   backgroundColor: isDarkMode ? "#121212" : "#fff", // Dark Mode Tab Bar
+//                 },
+//                 headerShown: false,
+//               }}
+//             >
+//               <Tab.Screen
+//                 name="Home"
+//                 component={HomeScreen}
+//                 options={{
+//                   tabBarIcon: ({ focused, color, size }) => (
+//                     <Icon
+//                       name={focused ? "home" : "home-outline"}
+//                       size={size}
+//                       color={color}
+//                     />
+//                   ),
+//                 }}
+//               />
+//               <Tab.Screen
+//                 name="Notifications"
+//                 component={NotificationScreen}
+//                 options={{
+//                   tabBarIcon: ({ focused, color, size }) => (
+//                     <Icon
+//                       name={focused ? "notifications" : "notifications-outline"}
+//                       size={size}
+//                       color={color}
+//                     />
+//                   ),
+//                 }}
+//               />
+
+//               <Tab.Screen
+//                 name="Messages"
+//                 component={MessageScreen}
+//                 options={{
+//                   tabBarIcon: ({ focused, color, size }) => (
+//                     <Icon
+//                       name={focused ? "chatbubbles" : "chatbubbles-outline"}
+//                       size={size}
+//                       color={color}
+//                     />
+//                   ),
+//                 }}
+//               />
+
+//               <Tab.Screen
+//                 name="Profile"
+//                 component={ProfileScreen}
+//                 options={{
+//                   tabBarIcon: ({ focused, color, size }) => (
+//                     <Icon
+//                       name={focused ? "person" : "person-outline"}
+//                       size={size}
+//                       color={color}
+//                     />
+//                   ),
+//                 }}
+//               />
+//             </Tab.Navigator>
+//           )}
+//         </Drawer.Screen>
+
+//         {/* Drawer Screens */}
+//         <Drawer.Screen
+//           name="New Post"
+//           component={NewPostScreen}
+//           options={{
+//             drawerIcon: ({ color, size }) => (
+//               <Icon name="add-circle-outline" size={size} color={color} />
+//             ),
+//           }}
+//         />
+//         <Drawer.Screen
+//           name="Group Chat"
+//           component={GroupChatScreen}
+//           options={{
+//             drawerIcon: ({ color, size }) => (
+//               <Icon name="chatbubbles-outline" size={size} color={color} />
+//             ),
+//           }}
+//         />
+//         <Drawer.Screen
+//           name="Settings"
+//           component={SettingScreen}
+//           options={{
+//             drawerIcon: ({ color, size }) => (
+//               <Icon name="settings-outline" size={size} color={color} />
+//             ),
+//           }}
+//         />
+//         {/* <Stack.Navigator>
+//             <Stack.Screen name="ChatScreen" component={ChatScreen}/>
+//         </Stack.Navigator> */}
+//       </Drawer.Navigator>
+//     </NavigationContainer>
+//   );
+// }
+// NavigationSocial.js
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 import React from "react";
+
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator } from "@react-navigation/drawer"; // For Drawer Navigation
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"; // For Tab Navigation
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+
 import { SafeAreaView } from "react-native-safe-area-context";
 import Icon from "react-native-vector-icons/Ionicons"; // For Tab Icons
 import HomeScreen from "./Screens/HomeScreen";
@@ -10,11 +170,58 @@ import MessageScreen from "./Chats/Screens/MessageScreen";
 import NotificationScreen from "./Screens/NotificationScreen";
 import SettingScreen from "./Screens/SettingScreen";
 import NewPostScreen from "./Screens/NewPostScreen";
-import Header from "./Components/Header";
+import Header from "./Components/Navigation/Header";
 import GroupChatScreen from "./Chats/Screens/GroupChatScreen";
+import ChatScreen from "./Chats/Screens/ChatScreen";
+import CommentSectionScreen from "./Screens/CommentSectionScreen";
+
+import HomeHeader from "./Components/Navigation/HomeHeader";
+import NotificationsHeader from "./Components/Navigation/NotificationsHeader";
+import MessagesHeader from "./Components/Navigation/MessagesHeader";
+import ProfileHeader from "./Components/Navigation/ProfileHeader";
+import {View} from "react-native"
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
+
+function MessageStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Message"
+        component={MessageScreen}
+        options={{
+          header: () => <MessagesHeader />,
+        }}
+      />
+      <Stack.Screen
+        name="Chat"
+        component={ChatScreen}
+        options={{
+          // header: () => <Header>Chats</Header>,
+        }} // Set the title for ChatScreen
+      />
+    </Stack.Navigator>
+  );
+}
+
+function HomeStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{ headerShown: false }} // Hide the header for MessageScreen
+      />
+      <Stack.Screen
+        name="CommentSection"
+        component={CommentSectionScreen}
+        options={{ title: "COMMENTS", headerShown:false}} // Set the title for ChatScreen
+      />
+    </Stack.Navigator>
+  );
+}
 
 export default function NavigationSocial() {
   const isDarkMode = true; // Set to true to enforce dark mode everywhere
@@ -23,7 +230,8 @@ export default function NavigationSocial() {
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
-          header: ({ navigation }) => <Header navigation={navigation} />, // Use the custom header for all screens
+          //header: () => <Header>ShikshaSangam</Header>, // Use the custom header
+          headerShown: false,
           drawerStyle: {
             backgroundColor: isDarkMode ? "#121212" : "#fff", // Dark mode for the drawer background
             width: 240, // Smaller drawer size
@@ -42,6 +250,9 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="arrow-back" size={size} color={color} />
             ),
+            // headerTitle:'Drawer Screen',
+            // headerTitleAlign:'center',
+            headerShown: false,
           }}
         >
           {() => (
@@ -56,8 +267,8 @@ export default function NavigationSocial() {
               }}
             >
               <Tab.Screen
-                name="Home"
-                component={HomeScreen}
+                name="HomeStack"
+                component={HomeStack}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
                     <Icon
@@ -65,6 +276,10 @@ export default function NavigationSocial() {
                       size={size}
                       color={color}
                     />
+                  ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <HomeHeader navigation={navigation} />
                   ),
                 }}
               />
@@ -79,12 +294,16 @@ export default function NavigationSocial() {
                       color={color}
                     />
                   ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <NotificationsHeader navigation={navigation} />
+                  ),
                 }}
               />
 
               <Tab.Screen
                 name="Messages"
-                component={MessageScreen}
+                component={MessageStack}
                 options={{
                   tabBarIcon: ({ focused, color, size }) => (
                     <Icon
@@ -93,6 +312,10 @@ export default function NavigationSocial() {
                       color={color}
                     />
                   ),
+                  //headerShown: true,
+                  // header: (navigation) => (
+                  //   <MessagesHeader navigation={navigation} />
+                  // ),
                 }}
               />
 
@@ -106,6 +329,10 @@ export default function NavigationSocial() {
                       size={size}
                       color={color}
                     />
+                  ),
+                  headerShown: true,
+                  header: (navigation) => (
+                    <ProfileHeader navigation={navigation} />
                   ),
                 }}
               />
@@ -121,6 +348,8 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="add-circle-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>ShikshaSangam</Header>,
           }}
         />
         <Drawer.Screen
@@ -130,6 +359,8 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="chatbubbles-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>Group Chats</Header>,
           }}
         />
         <Drawer.Screen
@@ -139,10 +370,17 @@ export default function NavigationSocial() {
             drawerIcon: ({ color, size }) => (
               <Icon name="settings-outline" size={size} color={color} />
             ),
+            headerShown: true,
+            header: () => <Header>Settings</Header>,
           }}
         />
+        {/* <Stack.Navigator>
+            <Stack.Screen name="ChatScreen" component={ChatScreen}/>
+        </Stack.Navigator> */}
       </Drawer.Navigator>
     </NavigationContainer>
   );
 }
-NavigationSocial.js
+NavigationSocial.js;
+
+
