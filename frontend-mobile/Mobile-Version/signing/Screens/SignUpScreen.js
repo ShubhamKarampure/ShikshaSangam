@@ -7,13 +7,55 @@ import {
   TouchableOpacity,
   KeyboardAvoidingView,
   ScrollView,
+  Alert,
+  ActivityIndicator,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { signup } from "../../api"; // Import the signup API function
 
-export default function SignUpScreen(props) {
+export default function SignUpScreen({ navigation }) {
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // To track the loading state
+
+  const handleSignup = async () => {
+    if (!username || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
+  
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+  
+    setIsLoading(true); // Start loading
+  
+    try {
+      const formData = {
+        username: username, // Extract username
+        email: email,       // Extract email
+        password: password, // Extract password (not password1)
+      }
+  
+      console.log("Form Data:", formData); // Log the form data for debugging
+  
+      const response = await signup(formData);
+  
+      Alert.alert("Success", "Account created successfully");
+      navigation.navigate("LoginScreen"); // Navigate to login screen after successful signup
+    } catch (error) {
+      console.error("Error during signup", error);
+      Alert.alert("Error", error.message || "Failed to create account");
+    } finally {
+      setIsLoading(false); // Stop loading
+    }
+  };
   
 
   return (
@@ -27,27 +69,12 @@ export default function SignUpScreen(props) {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.signUpContainer}>
             <Text style={styles.header}>Sign Up</Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
               <Text style={styles.subHeader}>
                 Already have an account?{" "}
                 <Text style={styles.linkText}>Sign in here</Text>
               </Text>
             </TouchableOpacity>
-
-            {/* Progress Indicator */}
-            <View style={styles.progressContainer}>
-              <View style={[styles.progressCircle, styles.activeStep]}>
-                <Text style={styles.progressText}>1</Text>
-              </View>
-              <View style={styles.progressLine} />
-              <View style={styles.progressCircle}>
-                <Text style={styles.progressText}>2</Text>
-              </View>
-            </View>
-            <View style={styles.progressLabels}>
-              <Text style={styles.progressLabel}>General</Text>
-              <Text style={styles.progressLabel}>Specific</Text>
-            </View>
 
             {/* Form Fields */}
             <View style={styles.inputContainer}>
@@ -55,11 +82,15 @@ export default function SignUpScreen(props) {
                 style={styles.input}
                 placeholder="Enter your username"
                 placeholderTextColor="#888"
+                value={username}
+                onChangeText={setUsername}
               />
               <TextInput
                 style={styles.input}
                 placeholder="Enter your email"
                 placeholderTextColor="#888"
+                value={email}
+                onChangeText={setEmail}
               />
               <View style={styles.passwordContainer}>
                 <TextInput
@@ -67,6 +98,8 @@ export default function SignUpScreen(props) {
                   placeholder="Enter new password"
                   secureTextEntry={!showPassword}
                   placeholderTextColor="#888"
+                  value={password}
+                  onChangeText={setPassword}
                 />
                 <TouchableOpacity
                   onPress={() => setShowPassword(!showPassword)}
@@ -85,6 +118,8 @@ export default function SignUpScreen(props) {
                   placeholder="Confirm password"
                   secureTextEntry={!showConfirmPassword}
                   placeholderTextColor="#888"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
                 />
                 <TouchableOpacity
                   onPress={() => setShowConfirmPassword(!showConfirmPassword)}
@@ -99,16 +134,21 @@ export default function SignUpScreen(props) {
               </View>
             </View>
 
-            {/* Next Button and Back */}
+            {/* Loading Indicator */}
+            {isLoading && (
+              <ActivityIndicator size="large" color="#007bff" style={styles.loading} />
+            )}
+
+            {/* Buttons */}
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.backButton]}
-                onPress={props.onBack}
+                onPress={() => navigation.goBack()}
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
-                <Text style={styles.buttonText}>Next</Text>
+              <TouchableOpacity style={styles.button} onPress={handleSignup}>
+                <Text style={styles.buttonText}>Sign Up</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -235,5 +275,8 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  loading: {
+    marginVertical: 20,
   },
 });
