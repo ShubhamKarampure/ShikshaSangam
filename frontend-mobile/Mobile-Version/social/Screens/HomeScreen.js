@@ -7,11 +7,11 @@ import CommentButton from "../Components/CommentButton";
 import ShareButton from "../Components/ShareButton";
 import PostCard from "../Components/PostCard";
 
-export default function HomeScreen() {
+export default function HomeScreen({navigation}) {
   const isDarkMode = true; // Enforce dark mode by default
   
   const renderPost = ({ item }) => (
-    <PostCard item={item} isDarkMode={isDarkMode}/>
+    <PostCard item={item} isDarkMode={isDarkMode} navigation={navigation}/>
   );
 
   return (
@@ -27,7 +27,9 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f0f2f5" },
+  container: { flex: 1, backgroundColor: ""//"#f0f2f5" 
+
+  },
   containerDark: { backgroundColor: "#121212" },
   feed: { padding: 10 },
   post: { backgroundColor: "#fff", padding: 15, borderRadius: 10, marginBottom: 10 },

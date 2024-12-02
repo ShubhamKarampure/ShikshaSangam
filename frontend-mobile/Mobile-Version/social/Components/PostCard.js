@@ -4,13 +4,21 @@ import { useState } from "react";
 import LikeButton from "../Components/LikeButton";
 import CommentButton from "../Components/CommentButton";
 import ShareButton from "../Components/ShareButton";
-import CommentSectionCard from "./CommentSectionCard";
+import CommentSectionCard from "../Screens/CommentSectionScreen";
 
-const PostCard = ({ item, isDarkMode}) => {
-  const [isCommentPressed, setIsCommentPressed] = useState(false);
+const PostCard = ({ item, isDarkMode, navigation}) => {
+  const [isCommentSectionOpen, setIsCommentSectionOpen] = useState(false);
+
+  function closeCommentSectionHandler(){
+    setIsCommentSectionOpen(false);
+  }
 
   function onCommentPress() {
-    setIsCommentPressed((prev) => !prev);
+    setIsCommentSectionOpen(true);
+    // navigation.navigate('CommentSection', {
+    //   item: item,
+    //   isDarkMode: isDarkMode,
+    // });
   }
 
   return (
@@ -52,7 +60,7 @@ const PostCard = ({ item, isDarkMode}) => {
         </View>
         {/* */}
       </View>
-      {isCommentPressed && <CommentSectionCard item={item} isDarkMode={isDarkMode} />}
+      {isCommentSectionOpen && <CommentSectionCard item={item} isDarkMode={isDarkMode} onPress={closeCommentSectionHandler}/>}
     </View>
   );
 };
