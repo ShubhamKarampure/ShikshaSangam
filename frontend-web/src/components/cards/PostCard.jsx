@@ -89,7 +89,7 @@ const PostCard = ({
                   
                   <span role="button">{socialUser?.name} </span>
                 </h6>
-                <span className="nav-item small"> {timeSince(createdAt)}</span>
+                <span className="nav-item small"> {createdAt}</span>
               </div>
               <p className="mb-0 small">Web Developer at Webestica</p>
             </div>
