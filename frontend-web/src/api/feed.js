@@ -27,12 +27,11 @@ export const getAllFeed = async () => {
 
   res.forEach((p) => {
     // Check if media or avatar is a CloudinaryResource or a simple string
-    const imageUrl = p.user.media
-      ? `https://res.cloudinary.com/${cloudName}/${p.user.media.public_id || p.user.media}`
-      : "https://images.unsplash.com/photo-1549637642-90187f64f420?q=80&w=2074&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Fallback default image URL
+    const imageUrl = p.post.media
+?`https://res.cloudinary.com/${cloudName}/${p.post.media}`:null 
 
     const avatarUrl = p.user.avatar
-      ? `https://res.cloudinary.com/${cloudName}/${p.user.avatar.public_id || p.user.avatar}`
+      ? p.user.avatar
       : "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Fallback default avatar URL
 
     const postObj = {
@@ -43,7 +42,7 @@ export const getAllFeed = async () => {
       image: imageUrl,
       socialUser: {
         avatar: avatarUrl,
-        name: p.user.name,
+        name: p.user.username,
       },
     };
 

@@ -39,5 +39,5 @@ export const API_ROUTES = {
   MESSAGE_CREATE: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message in a chat
 
   UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
-  FEED: `${API_BASE_URL}/social/posts/list_posts`, // Feed
+  FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed
 }

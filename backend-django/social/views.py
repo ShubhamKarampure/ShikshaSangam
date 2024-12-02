@@ -137,7 +137,7 @@ class PostViewSet(viewsets.ModelViewSet):
                         'username': user.user.username,
                         'profile_id': user.id,
                         'num_followers': num_followers,
-                        'avatar': user.avatar_image
+                        'avatar': user.avatar_image.url if user.avatar_image else None,
                     },
                     'post_stats': {
                         'likes': num_likes,
