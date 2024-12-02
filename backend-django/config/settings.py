@@ -216,3 +216,4 @@ if all([
 # Social Account settings have been removed completely as allauth is no longer in use
 
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+
