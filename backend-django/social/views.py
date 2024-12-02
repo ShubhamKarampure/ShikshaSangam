@@ -84,6 +84,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
         for post in posts:
             user = post.userprofile
+            num_followers = Follow.objects.filter(followed=user).count()
             num_likes = Like.objects.filter(content_type=post_content_type, object_id=post.id).count()
             num_comments = Comment.objects.filter(post=post).count()
             num_shares = Share.objects.filter(post=post).count()
@@ -96,6 +97,9 @@ class PostViewSet(viewsets.ModelViewSet):
                 'user': {
                     'username': user.user.username,
                     'profile_id': user.id,
+                    'avatar':user.avatar_image.url if user.avatar_image else None,
+                    'num_followers': num_followers,
+
                 },
                 'post_stats': {
                     'likes': num_likes,
@@ -137,6 +141,7 @@ class PostViewSet(viewsets.ModelViewSet):
                         'username': user.user.username,
                         'profile_id': user.id,
                         'num_followers': num_followers,
+                        'avatar':user.avatar_image.url if user.avatar_image else None
                     },
                     'post_stats': {
                         'likes': num_likes,
@@ -163,12 +168,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CommentPagination
 
-    @action(detail=False, methods=['get'])  # GET /comments/post_comments/{post_pk}/ # Comments for a particular post
+    @action(detail=False, methods=['get'], url_path='post_comments/(?P<post_pk>\d+)')  # GET /comments/post_comments/{post_pk}/ # Comments for a particular post
     def post_comments(self, request, post_pk=None):
+
+
+# Get ContentTypes for your models
+        
         """
         Paginated comments for a specific post.
         - Includes username, avatar, profile ID, and role for each commenter
         """
+        if not post_pk:
+            return Response({'detail': 'Post pk is required.'}, status=400)
+        
         comments = Comment.objects.filter(post__id=post_pk)
         page = self.paginate_queryset(comments)
         if page is not None:
@@ -177,10 +189,14 @@ class CommentViewSet(viewsets.ModelViewSet):
                     'comment': self.get_serializer(comment).data,
                     'user': {
                         'username': comment.userprofile.user.username,
-                        'avatar': comment.userprofile.avatar.url,
+                        'avatar': comment.userprofile.avatar_image.url if comment.userprofile.avatar_image else None,
                         'profile_id': comment.userprofile.id,
                         'role': comment.userprofile.role,
-                    }
+                    },
+
+                    'likes_count': Like.objects.filter(content_type__model='comment', object_id=comment.id).count(),  # Count likes for this comment
+                    'replies_count': Reply.objects.filter(comment=comment).count()  # Count replies for this comment
+                    
                 }
                 for comment in page
             ]
@@ -196,7 +212,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
     serializer_class = ReplySerializer
     pagination_class = ReplyPagination
 
-    @action(detail=False, methods=['get'])  # GET /replies/comment_replies/{comment_pk}/
+    @action(detail=False, methods=['get'], url_path='comment_replies/(?P<comment_pk>\d+)')  # GET /replies/comment_replies/{comment_pk}/
     def comment_replies(self, request, comment_pk=None):
         """
         Paginated replies for a specific comment.
@@ -210,10 +226,11 @@ class ReplyViewSet(viewsets.ModelViewSet):
                     'reply': self.get_serializer(reply).data,
                     'user': {
                         'username': reply.userprofile.user.username,
-                        'avatar': reply.userprofile.avatar.url,
+                        'avatar': reply.userprofile.avatar_image.url if reply.userprofile.avatar_image else None,
                         'profile_id': reply.userprofile.id,
                         'role': reply.userprofile.role,
-                    }
+                    },
+                    'likes_count': Like.objects.filter(content_type__model='reply', object_id=reply.id).count(),  # Count likes for this reply
                 }
                 for reply in page
             ]
@@ -229,6 +246,34 @@ class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
+    @action(detail=False, methods=['delete'], url_path='unlike')
+    def unlike(self, request):
+        """
+        Allows a user to unlike a post or comment.
+        Expects 'object_id' and 'content_type' (e.g., post, comment) in the request data.
+        """
+        object_id = request.data.get('object_id')
+        content_type = request.data.get('content_type')
+
+        if not object_id or not content_type:
+            return Response({'error': 'object_id and content_type are required'}, status=400)
+
+        # Get the content type model (Post, Comment, etc.)
+        try:
+            content_type_obj = ContentType.objects.get(model=content_type)
+        except ContentType.DoesNotExist:
+            return Response({'error': 'Invalid content type'}, status=400)
+
+        # Check if the like exists
+        like = Like.objects.filter(userprofile=request.user.user, content_type=content_type_obj, object_id=object_id).first()
+        
+        if not like:
+            return Response({'error': 'Like not found'}, status=404)
+
+        # Delete the like (unlike)
+        like.delete()
+        return Response({'message': 'Successfully unliked'}, status=204)
+
    
 class FollowViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Follow model
@@ -236,7 +281,28 @@ class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     
 
+    @action(detail=False, methods=['delete']) # URL =  # DELETE followers/unfollow/ 
+    def unfollow(self, request):
+        """
+        Allows a user to unfollow another user.
+        Expects 'followed_user_id' in the request data.
+        """
+        followed_user_id = request.data.get('followed')
 
+        if not followed_user_id:
+            return Response({'error': 'followed_user_id is required'}, status=400)
+
+        follow = Follow.objects.filter(
+            follower=request.user.user, 
+            followed_id=followed_user_id
+        ).first()
+
+        if not follow:
+            return Response({'error': 'Follow relationship not found'}, status=404)
+
+        follow.delete()
+        return Response({'message': 'Successfully unfollowed'}, status=204)
+    
     @action(detail=False, methods=['get'])  # GET /followers/followers/
     def followers(self, request):
         """
@@ -257,7 +323,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'current_program': follower.studentprofile.current_program,
                     'specialization': follower.studentprofile.specialization,
                     'expected_graduation_year': follower.studentprofile.expected_graduation_year,
-                    'location':follower.studentprofile.location,
+                    'enrollment_year':follower.studentprofile.enrollment_year,
                     'role': follower.role,
                 })
             elif follower.role == 'alumni' and hasattr(follower, 'alumnusprofile'):
@@ -270,6 +336,14 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'role': follower.role,
                     'location':follower.alumnusprofile.location,
                 })
+            else:
+                   response_data.append({
+                    'id': follower.id,
+                    'full_name': follower.full_name,
+                    'avatar_image': follower.avatar_image.url if follower.avatar_image else None,
+                    'role': follower.role,
+                })
+
 
         return Response(response_data)
 
@@ -534,3 +608,9 @@ class PollVoteViewSet(viewsets.ModelViewSet):
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
 
+
+# content_types = ContentType.objects.filter(model__in=['post', 'comment', 'reply'])
+
+#         # Print the content type ids and associated models
+#         for content_type in content_types:
+#             print(f"Model: {content_type.model}, ContentType ID: {content_type.id}")
