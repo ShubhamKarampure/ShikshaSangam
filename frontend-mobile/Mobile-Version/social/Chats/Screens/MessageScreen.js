@@ -5,7 +5,7 @@ import MessageCard from "../Components/MessageCard";
 import PageTitleText from "../../Components/PageTitleText";
 import ChatScreen from "./ChatScreen";
 
-const MessageScreen = () => {
+const MessageScreen = ({navigation}) => {
   const [messages, setMessages] = useState([
     {
       id: 1,
@@ -26,17 +26,17 @@ const MessageScreen = () => {
 
   const handleMessagePress = (item) => {
     //console.log("Message pressed:", message);
-    setSelectedMessage(item);
-    setIsMessageScreen(false);
-  };
-  const onBackButtonPressToReturnHere = () => {
-    setSelectedMessage(null);
-    setIsMessageScreen(true);
+    // setSelectedMessage(item);
+    // setIsMessageScreen(false);
+    navigation.navigate('Chat', {
+      receiver: item
+    })
   };
 
   const renderMessage = ({ item }) => (
     <MessageCard item={item} onPress={() => handleMessagePress(item)} />
   );
+  
   let screen = (
     <View style={styles.container}>
       <PageTitleText>Messages</PageTitleText>
@@ -50,9 +50,9 @@ const MessageScreen = () => {
     </View>
   );
 
-  if (!isMessageScreen) {
-    screen = <ChatScreen receiver={selectedMessage} onBackButtonPress={onBackButtonPressToReturnHere} />;
-  }
+  // if (!isMessageScreen) {
+  //   screen = <ChatScreen receiver={selectedMessage} />;
+  // }
   return screen;
 };
 

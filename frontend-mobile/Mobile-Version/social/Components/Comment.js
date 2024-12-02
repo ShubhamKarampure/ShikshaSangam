@@ -1,9 +1,52 @@
-import React from "react";
+import React, {memo} from "react";
 import { View, Text, Image, StyleSheet } from "react-native";
 import ReplyButton from "./ReplyButton";
 import LikeCommentButton from "./LikeCommentButton";
 
-const Comment = ({ comment, isDarkMode, onReplyPress }) => {
+// const Comment = ({ comment, isDarkMode, onReplyPress }) => {
+//   return (
+//     <View
+//       style={[styles.commentContainer, isDarkMode && styles.darkModeBackground]}
+//     >
+//       <View style={styles.commentMainHeader}>
+//         <Image
+//           source={{ uri: comment.avatar }}
+//           style={styles.avatar}
+//         />
+//         <View style={styles.commentHeaderText}>
+//           <Text
+//             style={[styles.commentUsername, isDarkMode && styles.darkModeText]}
+//           >
+//             {comment.author}
+//           </Text>
+//           <Text
+//             style={[
+//               styles.commentTimeStamp,
+//               isDarkMode && styles.darkModeTextSecondary,
+//             ]}
+//           >
+//             {comment.timestamp}
+//           </Text>
+//         </View>
+//       </View>
+//       <Text
+//         style={[styles.commentText, isDarkMode && styles.darkModeTextSecondary]}
+//       >
+//         {comment.content}
+//       </Text>
+//       <View style={styles.actionContainer}>
+//         <LikeCommentButton initialLikeCount={comment.likes} />
+//         <ReplyButton
+//           comment={comment}
+//           isDarkMode={isDarkMode}
+//           onPress={onReplyPress}
+//         />
+//       </View>
+//     </View>
+//   );
+// };
+
+const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
   return (
     <View
       style={[styles.commentContainer, isDarkMode && styles.darkModeBackground]}
@@ -44,8 +87,10 @@ const Comment = ({ comment, isDarkMode, onReplyPress }) => {
       </View>
     </View>
   );
-};
+});
+
 export default Comment;
+
 
 const styles = StyleSheet.create({
   darkModeBackground: {
