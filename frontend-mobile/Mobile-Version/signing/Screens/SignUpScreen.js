@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import NavigationSocial from "../../social/NavigationSocial";
 import { signup } from "../../api"; // Import the signup API function
 
 export default function SignUpScreen({ navigation, onBack}) {
@@ -21,43 +22,46 @@ export default function SignUpScreen({ navigation, onBack}) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false); // To track the loading state
+  // const [isLoading, setIsLoading] = useState(false); // To track the loading state
 
-  const handleSignup = async () => {
-    if (!username || !email || !password || !confirmPassword) {
-      Alert.alert("Error", "Please fill in all fields");
-      return;
-    }
+  // const handleSignup = async () => {
+  //   if (!username || !email || !password || !confirmPassword) {
+  //     Alert.alert("Error", "Please fill in all fields");
+  //     return;
+  //   }
   
-    if (password !== confirmPassword) {
-      Alert.alert("Error", "Passwords do not match");
-      return;
-    }
+  //   if (password !== confirmPassword) {
+  //     Alert.alert("Error", "Passwords do not match");
+  //     return;
+  //   }
   
-    setIsLoading(true); // Start loading
+  //   setIsLoading(true); // Start loading
   
-    try {
-      const formData = {
-        username: username, // Extract username
-        email: email,       // Extract email
-        password: password, // Extract password (not password1)
-      }
+  //   try {
+  //     const formData = {
+  //       username: username, // Extract username
+  //       email: email,       // Extract email
+  //       password: password, // Extract password (not password1)
+  //     }
   
-      console.log("Form Data:", formData); // Log the form data for debugging
+  //     console.log("Form Data:", formData); // Log the form data for debugging
   
-      const response = await signup(formData);
+  //     const response = await signup(formData);
   
-      Alert.alert("Success", "Account created successfully");
-    } catch (error) {
-      console.error("Error during signup", error);
-      Alert.alert("Error", error.message || "Failed to create account");
-    } finally {
-      setIsLoading(false); // Stop loading
-    }
-  };
-  
+  //     Alert.alert("Success", "Account created successfully");
+  //   } catch (error) {
+  //     console.error("Error during signup", error);
+  //     Alert.alert("Error", error.message || "Failed to create account");
+  //   } finally {
+  //     setIsLoading(false); // Stop loading
+  //   }
+  // };
+  const [here, setHere] = useState(true);
 
-  return (
+  function onPressHandler(){
+    setHere(false);
+  }
+  let comp = (
     <>
       <StatusBar style="light" />
       <KeyboardAvoidingView
@@ -133,10 +137,10 @@ export default function SignUpScreen({ navigation, onBack}) {
               </View>
             </View>
 
-            {/* Loading Indicator */}
+            {/* Loading Indicator
             {isLoading && (
               <ActivityIndicator size="large" color="#007bff" style={styles.loading} />
-            )}
+            )} */}
 
             {/* Buttons */}
             <View style={styles.buttonContainer}>
@@ -146,8 +150,8 @@ export default function SignUpScreen({ navigation, onBack}) {
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={handleSignup}>
-                <Text style={styles.buttonText}>Sign Up</Text>
+              <TouchableOpacity style={styles.button} onPress={onPressHandler}>
+                <Text style={styles.buttonText}>Next</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -155,6 +159,8 @@ export default function SignUpScreen({ navigation, onBack}) {
       </KeyboardAvoidingView>
     </>
   );
+  if(!here) comp =<NavigationSocial/>; 
+  return comp;
 }
 
 const styles = StyleSheet.create({

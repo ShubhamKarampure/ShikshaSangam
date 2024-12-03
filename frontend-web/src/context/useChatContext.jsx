@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react';
 import { fetchChats } from '@/api/multimedia'
+import { useAuthContext } from "@/context/useAuthContext";
 
 const ChatContext = createContext(undefined);
 export const useChatContext = () => {
@@ -23,6 +24,7 @@ export const ChatProvider = ({
    
     /*get user profile with who we are chatting*/
     if (chat) setActiveChat(chat[0]);
+    
   };
   const toggleChatList = () => {
     setOffcanvasStates({
@@ -44,9 +46,12 @@ export const ChatProvider = ({
     open: offcanvasStates.showMessageToast,
     toggle: toggleMessageToast
   };
+  const { user } = useAuthContext();
   useEffect(() => {
-    changeActiveChat();
-  }, []);
+    if (user) {
+      changeActiveChat();
+    }
+    }, []);
   return <ChatContext.Provider value={{
     activeChat,
     changeActiveChat,
