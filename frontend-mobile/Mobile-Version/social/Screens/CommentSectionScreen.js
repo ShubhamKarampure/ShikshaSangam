@@ -25,7 +25,6 @@ export default function CommentSectionScreen({
   // onPress,
   // isModalVisible
 }) {
-
   const item = route.params.item;
   const isDarkMode = route.params.isDarkMode;
 
@@ -40,8 +39,8 @@ export default function CommentSectionScreen({
     Animated.timing(slideAnim, {
       toValue: -1000, // Off-screen position
       duration: 500,
-      useNativeDriver:true,
-    }).start(()=>navigation.goBack());
+      useNativeDriver: true,
+    }).start(() => navigation.goBack());
   }
 
   useEffect(() => {
@@ -62,8 +61,10 @@ export default function CommentSectionScreen({
 
   const [commentList, setCommentList] = useState(item.comments);
 
-  function onSendHandler(chat){
-    setCommentList((prevList)=>{
+  const flatListRef = useRef(null); // Reference for FlatList
+
+  function onSendHandler(chat) {
+    setCommentList((prevList) => {
       let comment_id = 1;
       if (prevList) {
         comment_id = prevList[0].comment_id + 1;
@@ -74,12 +75,17 @@ export default function CommentSectionScreen({
         username: sender_username,
         avatar: sender_avatar,
         content: chat.message,
-        timestamp: timePassed(chat.timestamp.isoString, chat.timestamp.isoString),
+        timestamp: timePassed(
+          chat.timestamp.isoString,
+          chat.timestamp.isoString
+        ),
         isoString: chat.timestamp.isoString,
-        likes:0,
+        likes: 0,
       };
-      return [commentItem, ...prevList]
-    })
+      return [commentItem, ...prevList];
+    }); 
+    // Scroll to the top of the list
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   }
 
   return (
@@ -148,6 +154,7 @@ export default function CommentSectionScreen({
                   ItemSeparatorComponent={() => (
                     <View style={styles.separator}></View>
                   )}
+                  ref={flatListRef} // Attach the reference
                   contentContainerStyle={styles.listContent}
                 />
                 <View>
