@@ -9,6 +9,7 @@ import {
   Form,
 } from "react-bootstrap";
 import { useDropzone } from "react-dropzone";
+import { uploadCSV } from "@/api/uploadcsv";
 
 const FileUploadComponent = () => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
@@ -30,12 +31,12 @@ const FileUploadComponent = () => {
     }
 
     // Process accepted CSV files
+    uploadCSV(acceptedFiles)
     const newFiles = csvFiles.map((file) => ({
       name: file.name,
       size: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
       date: new Date().toLocaleDateString(),
     }));
-
     setUploadedFiles((prevFiles) => [...prevFiles, ...newFiles]);
   }, []);
 

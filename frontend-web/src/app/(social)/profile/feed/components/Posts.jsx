@@ -5,6 +5,8 @@ import PostCard from '@/components/cards/PostCard';
 import { getAllFeeds } from '@/helpers/data';
 import { Link } from 'react-router-dom';
 import { useFetchData } from '@/hooks/useFetchData';
+import Post3 from '@/app/(social)/feed/(container)/home/components/FeedComponents/Post3';
+
 const ActionMenu = ({
   name
 }) => {
@@ -58,7 +60,7 @@ const ActionMenu = ({
 const Posts = () => {
   const allPosts = useFetchData(getAllFeeds);
   return <>
-      {allPosts?.slice(0, 1).map((post, idx) => <PostCard {...post} key={idx} />)}
+      {allPosts?.slice(0, 1).map((post, idx) => <Post3 {...post} key={idx} />)}
       <Card>
         <div className="border-bottom">
           <p className="small mb-0 px-4 py-2">

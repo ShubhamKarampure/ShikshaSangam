@@ -2,7 +2,15 @@ import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import clsx from "clsx";
-import { Button, Card, CardBody, CardHeader, CardTitle, Form, FormControl } from "react-bootstrap";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
+  Form,
+  FormControl,
+} from "react-bootstrap";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { fetchUsersToFollow, followUser } from "@/api/social";
@@ -48,9 +56,11 @@ const Followers = () => {
       }
 
       const normalizedQuery = searchQuery.toLowerCase();
-      const filtered = usersToFollow.filter(user => 
-        user.full_name.toLowerCase().includes(normalizedQuery) ||
-        (user.specialization && user.specialization.toLowerCase().includes(normalizedQuery))
+      const filtered = usersToFollow.filter(
+        (user) =>
+          user.full_name.toLowerCase().includes(normalizedQuery) ||
+          (user.specialization &&
+            user.specialization.toLowerCase().includes(normalizedQuery))
       );
       setFilteredUsers(filtered);
 
@@ -115,9 +125,9 @@ const Followers = () => {
       <CardBody>
         <UploadResume />
         <Form className="mb-3">
-          <FormControl 
-            type="text" 
-            placeholder="Search by name/field" 
+          <FormControl
+            type="text"
+            placeholder="Search by name/field"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="mb-3"
@@ -138,57 +148,117 @@ const Followers = () => {
                 <motion.div
                   key={follower.id}
                   layout
-                  className="d-flex gap-3 mb-3"
+                  className="d-flex justify-content-between align-items-center mb-3"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div
-                    className={clsx("avatar", {
-                      "border-primary": follower.role === "student",
-                      "border-success": follower.role === "alumni",
-                      "border-danger": ["college_admin", "college_staff"].includes(follower.role),
-                      "border-secondary": !["student", "alumni", "college_admin", "college_staff"].includes(follower.role),
-                    })}
-                    style={{
-                      borderRadius: "50%",
-                      borderWidth: "2px",
-                      borderStyle: "solid",
-                      width: "60px",
-                      height: "60px",
-                    }}
-                  >
-                    <img
-                      className="avatar-img rounded-circle"
-                      src={avatarUrl}
-                      alt="avatar"
-                      style={{ borderRadius: "50%", width: "100%", height: "100%" }}
-                    />
-                  </div>
+                  <div className="d-flex gap-3 align-items-center">
+                    <div
+                      className={clsx("avatar", {
+                        "border-primary": follower.role === "student",
+                        "border-success": follower.role === "alumni",
+                        "border-danger": [
+                          "college_admin",
+                          "college_staff",
+                        ].includes(follower.role),
+                        "border-secondary": ![
+                          "student",
+                          "alumni",
+                          "college_admin",
+                          "college_staff",
+                        ].includes(follower.role),
+                      })}
+                      style={{
+                        borderRadius: "50%",
+                        borderWidth: "2px",
+                        borderStyle: "solid",
+                        width: "60px",
+                        height: "60px",
+                      }}
+                    >
+                      <img
+                        className="avatar-img rounded-circle"
+                        src={avatarUrl}
+                        alt="avatar"
+                        style={{
+                          borderRadius: "50%",
+                          width: "100%",
+                          height: "100%",
+                        }}
+                      />
+                    </div>
 
-                  <div className="overflow-hidden d-flex flex-column justify-content-center">
-                    <div>
-                      <Link className="h6 mb-0" to="">{follower.full_name || "No username"}</Link>
-                      <p className="mb-0 small text-truncate">{follower.specialization || follower.role}</p>
-                      {follower.role === "alumni" && follower.graduation_year && (
-                        <p className="small text-muted">Batch of {follower.graduation_year}</p>
-                      )}
-                      {follower.role === "student" && follower.expected_graduation_year && (
-                        <p className="small text-muted">Batch of {follower.expected_graduation_year}</p>
-                      )}
+                    <div
+                      className="overflow-hidden"
+                      style={{ maxWidth: "70%" }}
+                    >
+                      <Link
+                        className="h6 mb-0 text-truncate"
+                        to=""
+                        style={{
+                          display: "block",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {follower.full_name || "No username"}
+                      </Link>
+                      <p
+                        className="mb-0 small text-truncate"
+                        style={{
+                          display: "block",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {follower.specialization || follower.role}
+                      </p>
+                      {follower.role === "alumni" &&
+                        follower.graduation_year && (
+                          <p
+                            className="small text-muted text-truncate"
+                            style={{
+                              display: "block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            Batch of {follower.graduation_year}
+                          </p>
+                        )}
+                      {follower.role === "student" &&
+                        follower.expected_graduation_year && (
+                          <p
+                            className="small text-muted text-truncate"
+                            style={{
+                              display: "block",
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                            }}
+                          >
+                            Batch of {follower.expected_graduation_year}
+                          </p>
+                        )}
                     </div>
                   </div>
 
-                  <AnimatedFollowButton
-                    initialFollowState={followedUsers[follower.id] || false}
-                    isLoading={loadingUsers[follower.id] || false}
-                    onFollowChange={() =>
-                      handleFollow({
-                        followerId: follower.id,
-                        followerName: follower.full_name,
-                      })
-                    }
-                  />
+                  <div className="text-end">
+                    <AnimatedFollowButton
+                      initialFollowState={followedUsers[follower.id] || false}
+                      isLoading={loadingUsers[follower.id] || false}
+                      onFollowChange={() =>
+                        handleFollow({
+                          followerId: follower.id,
+                          followerName: follower.full_name,
+                        })
+                      }
+                    />
+                  </div>
                 </motion.div>
               );
             })}

@@ -70,7 +70,8 @@ const PostCard = ({
   image,
   socialUser,
   photos,
-  isVideo
+  isVideo,
+  bio
 }) => {
   return <Card>
       <CardHeader className="border-0 pb-0">
@@ -89,9 +90,9 @@ const PostCard = ({
                   
                   <span role="button">{socialUser?.name} </span>
                 </h6>
-                <span className="nav-item small"> {timeSince(createdAt)}</span>
+                <span className="nav-item small"> {createdAt}</span>
               </div>
-              <p className="mb-0 small">Web Developer at Webestica</p>
+              <p className="mb-0 small">{bio}</p>
             </div>
           </div>
           <ActionMenu name={socialUser?.name} />

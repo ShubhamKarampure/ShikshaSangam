@@ -15,6 +15,7 @@ from users.models import UserProfile
 from django.db.models import Q
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timesince import timesince
+from django.contrib.contenttypes.models import ContentType
 
 class PostPagination(PageNumberPagination):
     page_size = 10  # Number of posts per page
@@ -35,6 +36,81 @@ class PostViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Post model
     queryset = Post.objects.all()
     serializer_class = PostSerializer
+    pagination_class = PostPagination
+
+    @action(detail=False, methods=['get'])  # GET /social/posts/list_posts/
+    def list_posts(self, request):
+        """List all posts with their related data."""
+        all_posts = Post.objects.all()
+        page = self.paginate_queryset(all_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No posts available."})
+
+    @action(detail=False, methods=['get'])  # GET /social/posts/shared_to_me/
+    def shared_to_me(self, request):
+        """List posts shared to the current user."""
+        user_profile = request.user.userprofile
+        shared_to_me_posts = Post.objects.filter(
+            shares__shared_to=user_profile
+        ).distinct()
+        page = self.paginate_queryset(shared_to_me_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No shared posts available."})
+
+    @action(detail=False, methods=['get'])  # GET /social/posts/shared_by_me/
+    def shared_by_me(self, request):
+        """List posts shared by the current user."""
+        user_profile = request.user.userprofile
+        shared_by_me_posts = Post.objects.filter(
+            shares__shared_by=user_profile
+        ).distinct()
+        page = self.paginate_queryset(shared_by_me_posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No shared posts available."})
+
+    def _get_paginated_post_data(self, posts):
+        """Helper function to format paginated post data."""
+        response_data = []
+        post_content_type = ContentType.objects.get_for_model(Post)
+
+        for post in posts:
+            user = post.userprofile
+            num_followers = Follow.objects.filter(followed=user).count()
+            num_likes = Like.objects.filter(content_type=post_content_type, object_id=post.id).count()
+            num_comments = Comment.objects.filter(post=post).count()
+            num_shares = Share.objects.filter(post=post).count()
+            time_since_post = timesince(post.created_at)
+
+            post_serializer = self.get_serializer(post)
+
+            response_data.append({
+                'post': post_serializer.data,
+                'user': {
+                    'username': user.user.username,
+                    'profile_id': user.id,
+                    'avatar':user.avatar_image.url if user.avatar_image else None,
+                    'num_followers': num_followers,
+                    'bio': user.bio
+                },
+                'post_stats': {
+                    'likes': num_likes,
+                    'comments': num_comments,
+                    'shares': num_shares,
+                    'time_since_post': time_since_post,
+                },
+                'comments_count': num_comments,
+            })
+
+        return Response(response_data)
 
     @action(detail=False, methods=['get']) # GET /posts/college_posts/
     def college_posts(self, request):
@@ -45,10 +121,13 @@ class PostViewSet(viewsets.ModelViewSet):
         
         if page is not None:
             response_data = []
-
+            post_content_type = ContentType.objects.get_for_model(Post)
+            
             for post in page:
-                user = post.userprofile.user
-                num_likes = Like.objects.filter(post=post).count()
+                
+                # print(post)
+                user = post.userprofile
+                num_likes =  Like.objects.filter( content_type=post_content_type,object_id=post.id).count()
                 num_comments = Comment.objects.filter(post=post).count()
                 num_shares = Share.objects.filter(post=post).count()
                 num_followers = Follow.objects.filter(followed=user).count()
@@ -59,9 +138,11 @@ class PostViewSet(viewsets.ModelViewSet):
                 response_data.append({
                     'post': post_serializer.data,
                     'user': {
-                        'username': user.username,
+                        'username': user.user.username,
                         'profile_id': user.id,
                         'num_followers': num_followers,
+                        'avatar':user.avatar_image.url if user.avatar_image else None,
+                        'bio': user.bio
                     },
                     'post_stats': {
                         'likes': num_likes,
@@ -79,135 +160,7 @@ class PostViewSet(viewsets.ModelViewSet):
         })
     
 
-    @action(detail=True, methods=['get'])  # GET /posts/{post_id}/details/ (for single post)
-    def post_details(self, request, pk=None):
-        """
-        Fetch detailed information about a single post, including:
-        - Username of the user who posted it
-        - Number of likes, comments, shares, followers
-        - Time since post was made
-        - Number of comments (pagination handled in CommentViewSet)
-        """
-        post = self.get_object()  # Get the requested post
-        user = post.userprofile.user  # The user who posted the post
 
-        # Fetch number of likes, comments, shares, and followers
-        num_likes = Like.objects.filter(post=post).count()
-        num_comments = Comment.objects.filter(post=post).count()  # Total number of comments
-        num_shares = Share.objects.filter(post=post).count()
-        num_followers = Follow.objects.filter(followed=user).count()
-
-        # Time since the post was made
-        time_since_post = timesince(post.created_at)[0]  # e.g., "2 hours ago"
-
-        # Serialize the post content
-        post_serializer = self.get_serializer(post)
-
-        # Return the full post details, including the number of comments
-        return Response({
-            'post': post_serializer.data,
-            'user': {
-                'username': user.username,
-                'num_followers': num_followers,
-            },
-            'post_stats': {
-                'likes': num_likes,
-                'comments': num_comments,  # Just the number of comments
-                'shares': num_shares,
-                'time_since_post': time_since_post,
-            },
-            'comments_count': num_comments  # Number of comments, can be used for pagination link
-        })
-    @action(detail=False, methods=['get'])  # GET /posts/list_posts/ # all posts, with additional data
-    def list_posts(self, request):
-        """
-        List all posts with detailed data:
-        - Post details
-        - User's username and followers count
-        - Post statistics: likes, comments, shares, time since posted
-        """
-        posts = self.queryset
-        page = self.paginate_queryset(posts)
-        
-        if page is not None:
-            response_data = []
-
-            for post in page:
-                user = post.userprofile.user
-                num_likes = Like.objects.filter(post=post).count()
-                num_comments = Comment.objects.filter(post=post).count()
-                num_shares = Share.objects.filter(post=post).count()
-                num_followers = Follow.objects.filter(followed=user).count()
-                time_since_post = timesince(post.created_at)
-
-                post_serializer = self.get_serializer(post)
-
-                response_data.append({
-                    'post': post_serializer.data,
-                    'user': {
-                        'username': user.username,
-                        'profile_id': user.id,
-                        'num_followers': num_followers,
-                    },
-                    'post_stats': {
-                        'likes': num_likes,
-                        'comments': num_comments,
-                        'shares': num_shares,
-                        'time_since_post': time_since_post,
-                    },
-                    'comments_count': num_comments,
-                })
-
-            return Response(response_data)
-        
-        return Response({
-            'detail': 'No posts available.'
-        })
-    
-    @action(detail=False, methods=['get'])  # GET /posts/shared_with_me/
-    def shared_with_me(self, request):
-        """Get all posts shared with the current user."""
-        userprofile = request.user.userprofile
-
-        # Fetch all shares where the current user is the recipient
-        shared_posts = Share.objects.filter(shared_with=userprofile)
-        page = self.paginate_queryset(shared_posts)
-        if page is not None:
-            response_data = []
-            for share in page:
-                shared_post = share.post
-                original_poster = shared_post.userprofile
-                sharer = share.shared_by
-
-                response_data.append({
-                    'post': {
-                        'id': shared_post.id,
-                        'content': shared_post.content,
-                        'media': shared_post.media.url if shared_post.media else None,
-                        # 'time_since_post': humanize.naturaltime(shared_post.created_at), # can handle in frontend as per clients time..??
-                        'likes_count': shared_post.likes.count(),
-                        'comments_count': shared_post.comments.count(),
-                        'shares_count': shared_post.shares.count(),
-                    },
-                    'sharer': {
-                        'id': sharer.id,
-                        'username': sharer.user.username,
-                        'avatar': sharer.avatar_image.url if sharer.avatar_image else None,
-                        'role': sharer.role,
-                    },
-                    'original_poster': {
-                        'id': original_poster.id,
-                        'username': original_poster.user.username,
-                        'avatar': original_poster.avatar_image.url if original_poster.avatar_image else None,
-                        'role': original_poster.role,
-                    },
-                })
-
-            return Response(response_data)
-        return Response({
-            'detail': 'No posts available.'
-        })
-        
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -216,12 +169,19 @@ class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
     pagination_class = CommentPagination
 
-    @action(detail=False, methods=['get'])  # GET /comments/post_comments/{post_pk}/ # Comments for a particular post
+    @action(detail=False, methods=['get'], url_path='post_comments/(?P<post_pk>\d+)')  # GET /comments/post_comments/{post_pk}/ # Comments for a particular post
     def post_comments(self, request, post_pk=None):
+
+
+# Get ContentTypes for your models
+        
         """
         Paginated comments for a specific post.
         - Includes username, avatar, profile ID, and role for each commenter
         """
+        if not post_pk:
+            return Response({'detail': 'Post pk is required.'}, status=400)
+        
         comments = Comment.objects.filter(post__id=post_pk)
         page = self.paginate_queryset(comments)
         if page is not None:
@@ -230,10 +190,14 @@ class CommentViewSet(viewsets.ModelViewSet):
                     'comment': self.get_serializer(comment).data,
                     'user': {
                         'username': comment.userprofile.user.username,
-                        'avatar': comment.userprofile.avatar.url,
+                        'avatar': comment.userprofile.avatar_image.url if comment.userprofile.avatar_image else None,
                         'profile_id': comment.userprofile.id,
                         'role': comment.userprofile.role,
-                    }
+                    },
+
+                    'likes_count': Like.objects.filter(content_type__model='comment', object_id=comment.id).count(),  # Count likes for this comment
+                    'replies_count': Reply.objects.filter(comment=comment).count()  # Count replies for this comment
+                    
                 }
                 for comment in page
             ]
@@ -249,7 +213,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
     serializer_class = ReplySerializer
     pagination_class = ReplyPagination
 
-    @action(detail=False, methods=['get'])  # GET /replies/comment_replies/{comment_pk}/
+    @action(detail=False, methods=['get'], url_path='comment_replies/(?P<comment_pk>\d+)')  # GET /replies/comment_replies/{comment_pk}/
     def comment_replies(self, request, comment_pk=None):
         """
         Paginated replies for a specific comment.
@@ -263,10 +227,11 @@ class ReplyViewSet(viewsets.ModelViewSet):
                     'reply': self.get_serializer(reply).data,
                     'user': {
                         'username': reply.userprofile.user.username,
-                        'avatar': reply.userprofile.avatar.url,
+                        'avatar': reply.userprofile.avatar_image.url if reply.userprofile.avatar_image else None,
                         'profile_id': reply.userprofile.id,
                         'role': reply.userprofile.role,
-                    }
+                    },
+                    'likes_count': Like.objects.filter(content_type__model='reply', object_id=reply.id).count(),  # Count likes for this reply
                 }
                 for reply in page
             ]
@@ -282,6 +247,34 @@ class LikeViewSet(viewsets.ModelViewSet):
     queryset = Like.objects.all()
     serializer_class = LikeSerializer
 
+    @action(detail=False, methods=['delete'], url_path='unlike')
+    def unlike(self, request):
+        """
+        Allows a user to unlike a post or comment.
+        Expects 'object_id' and 'content_type' (e.g., post, comment) in the request data.
+        """
+        object_id = request.data.get('object_id')
+        content_type = request.data.get('content_type')
+
+        if not object_id or not content_type:
+            return Response({'error': 'object_id and content_type are required'}, status=400)
+
+        # Get the content type model (Post, Comment, etc.)
+        try:
+            content_type_obj = ContentType.objects.get(model=content_type)
+        except ContentType.DoesNotExist:
+            return Response({'error': 'Invalid content type'}, status=400)
+
+        # Check if the like exists
+        like = Like.objects.filter(userprofile=request.user.user, content_type=content_type_obj, object_id=object_id).first()
+        
+        if not like:
+            return Response({'error': 'Like not found'}, status=404)
+
+        # Delete the like (unlike)
+        like.delete()
+        return Response({'message': 'Successfully unliked'}, status=204)
+
    
 class FollowViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Follow model
@@ -289,7 +282,28 @@ class FollowViewSet(viewsets.ModelViewSet):
     serializer_class = FollowSerializer
     
 
+    @action(detail=False, methods=['delete']) # URL =  # DELETE followers/unfollow/ 
+    def unfollow(self, request):
+        """
+        Allows a user to unfollow another user.
+        Expects 'followed_user_id' in the request data.
+        """
+        followed_user_id = request.data.get('followed')
 
+        if not followed_user_id:
+            return Response({'error': 'followed_user_id is required'}, status=400)
+
+        follow = Follow.objects.filter(
+            follower=request.user.user, 
+            followed_id=followed_user_id
+        ).first()
+
+        if not follow:
+            return Response({'error': 'Follow relationship not found'}, status=404)
+
+        follow.delete()
+        return Response({'message': 'Successfully unfollowed'}, status=204)
+    
     @action(detail=False, methods=['get'])  # GET /followers/followers/
     def followers(self, request):
         """
@@ -310,7 +324,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'current_program': follower.studentprofile.current_program,
                     'specialization': follower.studentprofile.specialization,
                     'expected_graduation_year': follower.studentprofile.expected_graduation_year,
-                    'location':follower.studentprofile.location,
+                    'enrollment_year':follower.studentprofile.enrollment_year,
                     'role': follower.role,
                 })
             elif follower.role == 'alumni' and hasattr(follower, 'alumnusprofile'):
@@ -323,6 +337,14 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'role': follower.role,
                     'location':follower.alumnusprofile.location,
                 })
+            else:
+                   response_data.append({
+                    'id': follower.id,
+                    'full_name': follower.full_name,
+                    'avatar_image': follower.avatar_image.url if follower.avatar_image else None,
+                    'role': follower.role,
+                })
+
 
         return Response(response_data)
 
@@ -587,3 +609,9 @@ class PollVoteViewSet(viewsets.ModelViewSet):
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
 
+
+# content_types = ContentType.objects.filter(model__in=['post', 'comment', 'reply'])
+
+#         # Print the content type ids and associated models
+#         for content_type in content_types:
+#             print(f"Model: {content_type.model}, ContentType ID: {content_type.id}")

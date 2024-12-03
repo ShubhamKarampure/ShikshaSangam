@@ -46,6 +46,66 @@ export const signin = async (data) => {
 
     const result = await response.json();
     console.log(result);
+    
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+  
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  try {
+    const response = await fetch(API_ROUTES.LOGOUT, {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw { response: { data: errorData } };
+    }
+
+    const result = await response.json();
+    console.log(result);
+
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+  
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  try {
+    const response = await fetch(API_ROUTES.LOGOUT, {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw { response: { data: errorData } };
+    }
+
+    const result = await response.json();
+    console.log(result);
 
     return result;
   } catch (error) {

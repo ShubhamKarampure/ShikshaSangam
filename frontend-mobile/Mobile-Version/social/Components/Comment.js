@@ -1,18 +1,16 @@
-import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import React, {memo} from "react";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import ReplyButton from "./ReplyButton";
 import LikeCommentButton from "./LikeCommentButton";
 
-const Comment = ({ comment, isDarkMode, onReplyPress }) => {
+const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
   return (
-    <View
+    <Pressable
       style={[styles.commentContainer, isDarkMode && styles.darkModeBackground]}
+      android_ripple={{ color: "#261d01"}}
     >
       <View style={styles.commentMainHeader}>
-        <Image
-          source={{ uri: comment.avatar }}
-          style={styles.avatar}
-        />
+        <Image source={{ uri: comment.avatar }} style={styles.avatar} />
         <View style={styles.commentHeaderText}>
           <Text
             style={[styles.commentUsername, isDarkMode && styles.darkModeText]}
@@ -42,10 +40,12 @@ const Comment = ({ comment, isDarkMode, onReplyPress }) => {
           onPress={onReplyPress}
         />
       </View>
-    </View>
+    </Pressable>
   );
-};
+});
+
 export default Comment;
+
 
 const styles = StyleSheet.create({
   darkModeBackground: {

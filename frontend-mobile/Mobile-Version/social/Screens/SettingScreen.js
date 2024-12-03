@@ -52,7 +52,7 @@ const SettingScreen = () => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.pageTitle}>Settings</Text>
+      {/* <Text style={styles.pageTitle}>Settings</Text> */}
       <View style={styles.settingsContainer}>
         <Text style={styles.sectionTitle}>Profile Settings</Text>
         {/** Input Fields */}

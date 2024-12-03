@@ -27,14 +27,18 @@ class Reply(models.Model):
 
 class Like(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='likes')
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE) # can be {20->post, 21-> Comment, 22-> reply}
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')  # Enables liking posts or comments
     created_at = models.DateTimeField(auto_now_add=True)
-
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['userprofile', 'content_type', 'object_id'], name='unique_like_per_object')
+        ]
 class Share(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='shares')
-    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='shares')
+    shared_by = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='shares_made')
+    shared_to = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='shares_received')
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Follow(models.Model):

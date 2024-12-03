@@ -38,7 +38,7 @@ def process_user_data(file_url, college):
                 # Create UserProfile
                 user.set_password(password)
                 user.save()
-                user_profile = UserProfile.objects.create(user=user, college=college)
+                user_profile = UserProfile.objects.create(user=user, college=college, role=role)
 
                 # Create role-specific profiles
                 if role == 'student':

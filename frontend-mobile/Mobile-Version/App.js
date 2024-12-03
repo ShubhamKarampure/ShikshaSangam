@@ -1,9 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, Button, View } from "react-native";
 import { StatusBar } from 'expo-status-bar';   // helps us adjust the settings for seeing time battery etc
 import SignUpScreen from "./signing/Screens/SignUpScreen";
 import LoginScreen from "./signing/Screens/LoginScreen";
 import { WelcomeScreen } from "./signing/Screens/WelcomeScreen";
+
+import { GlobalProvider } from "./Context/GlobalProvider";
 
 export default function App() {
   const [clickedLoggedIn, setClickedLoggedIn] = useState(false); // Track login state
@@ -13,10 +15,12 @@ export default function App() {
   const returnFromLogin = () => setClickedLoggedIn(false);
   const setSignUpFromWelcome = () => setIsSignUp(true);
   const setClickedLoginInFromWelcome = () => setClickedLoggedIn(true);
-
+ 
   return (
-    <>
-      <StatusBar style="auto" />
+    
+    
+      <GlobalProvider>
+      <StatusBar style="dark" />
       <SafeAreaView style={styles.container}>
         {clickedLoggedIn ? (
           // Render the main navigation if logged in
@@ -30,7 +34,9 @@ export default function App() {
           <WelcomeScreen onLogin={setClickedLoginInFromWelcome} onSignUp={setSignUpFromWelcome} />
         )}
       </SafeAreaView>
-    </>
+      </GlobalProvider>
+      
+      
   );
 }
 
@@ -39,4 +45,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+
+
+
+
 

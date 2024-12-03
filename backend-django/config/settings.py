@@ -70,7 +70,7 @@ REST_FRAMEWORK = {
     )
 }
 
-ALLOWED_HOSTS = ['192.168.1.239', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['*']
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware', 
@@ -112,6 +112,7 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': tmpPostgres.path.replace('/', ''),
+        # 'NAME': tmpPostgres.path.decode('utf-8').replace('/', ''),
         'USER': tmpPostgres.username,
         'PASSWORD': tmpPostgres.password,
         'HOST': tmpPostgres.hostname,
@@ -215,3 +216,4 @@ if all([
 # Social Account settings have been removed completely as allauth is no longer in use
 
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
+
