@@ -27,7 +27,6 @@ import { FaCheck, FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
-import { useChatContext } from "@/context/useChatContext";
 import { useLayoutContext } from "@/context/useLayoutContext";
 import TextFormInput from "@/components/form/TextFormInput";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
@@ -90,9 +89,9 @@ const UserMessage = ({ message, isCurrentUser }) => {
     </div>
   );
 };
-const ChatArea = () => {
+
+const ChatArea = ({activeChat}) => {
   const { theme } = useLayoutContext();
-  const { activeChat } = useChatContext();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);

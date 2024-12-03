@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { useChatContext } from '@/context/useChatContext';
 
 const ChatItem = ({ id, participants, last_message, isStory }) => {
-  const { changeActiveChat, activeChat } = useChatContext();
+  const {  activeChatId, changeActiveChat } = useChatContext();
 
   // Access the first participant's full_name and avatar_image
   const participant = participants[0];  // Assuming there's at least one participant
@@ -19,7 +19,7 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
-      <div className={clsx('nav-link text-start', { active: activeChat?.id === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
+      <div className={clsx('nav-link text-start', { active: activeChatId === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
         <div className="d-flex">
           <div className={clsx('flex-shrink-0 avatar me-2', status === 'online' ? 'status-online' : 'status-offline', { 'avatar-story': isStory })}>
             <img className="avatar-img rounded-circle" src={avatar_image} alt={full_name || "Avatar"} />
