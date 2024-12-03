@@ -9,7 +9,7 @@ from django.core.exceptions import ValidationError
 class Post(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='posts')
     content = models.TextField(blank=True, null=True)
-    media = CloudinaryField('media', blank=True, null=True)  # Optional media file (image or video)
+    media = CloudinaryField('media', blank=True, null=True, folder='shikshasangam/postmedia')  # Optional media file (image or video)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
