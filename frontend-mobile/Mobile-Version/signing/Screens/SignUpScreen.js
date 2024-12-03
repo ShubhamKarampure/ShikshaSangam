@@ -10,13 +10,17 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import NavigationSocial from "../../social/NavigationSocial";
 
 export default function SignUpScreen(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+  const [here, setHere] = useState(true);
 
-  return (
+  function onPressHandler(){
+    setHere(false);
+  }
+  let comp = (
     <>
       <StatusBar style="light" />
       <KeyboardAvoidingView
@@ -107,7 +111,7 @@ export default function SignUpScreen(props) {
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button}>
+              <TouchableOpacity style={styles.button} onPress={onPressHandler}>
                 <Text style={styles.buttonText}>Next</Text>
               </TouchableOpacity>
             </View>
@@ -116,6 +120,8 @@ export default function SignUpScreen(props) {
       </KeyboardAvoidingView>
     </>
   );
+  if(!here) comp =<NavigationSocial/>; 
+  return comp;
 }
 
 const styles = StyleSheet.create({
