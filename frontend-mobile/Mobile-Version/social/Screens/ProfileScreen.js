@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Image, ScrollView, TextInput, Button } from 'react-native';
-
+import { useAuthContext } from '../../Context/useAuthContext';
 const ProfileScreen = () => {
   // Dummy profile data
   const initialProfileData = {
@@ -20,6 +20,8 @@ const ProfileScreen = () => {
   const [profileData, setProfileData] = useState(initialProfileData);
   const [isEditing, setIsEditing] = useState(false);
   const [newSkill, setNewSkill] = useState('');
+  const {user,isAuthenticated} = useAuthContext();
+
   
   // Function to handle adding a new skill
   const handleAddSkill = () => {
@@ -36,7 +38,13 @@ const ProfileScreen = () => {
   const handleEditToggle = () => {
     setIsEditing(prev => !prev);
   };
-
+  if (!isAuthenticated) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.text}>You are not logged in.</Text>
+      </View>
+    );
+  }
   return (
     <ScrollView style={styles.container}>
       {/* Profile Header */}
@@ -46,8 +54,8 @@ const ProfileScreen = () => {
           style={styles.profilePicture}
         />
         <View style={styles.nameContainer}>
-          <Text style={styles.name}>{profileData.name}</Text>
-          <Text style={styles.tagline}>{profileData.tagline}</Text>
+          <Text style={styles.name}>{user.username}</Text>
+          <Text style={styles.tagline}>{user.role}</Text>
         </View>
       </View>
 
@@ -117,7 +125,7 @@ const ProfileScreen = () => {
           // If not editing, display text
           <>
             <View style={styles.infoItem}>
-              <Text style={styles.infoText}>Email: {profileData.email}</Text>
+              <Text style={styles.infoText}>Email: {user.email}</Text>
             </View>
             <View style={styles.infoItem}>
               <Text style={styles.infoText}>Phone: {profileData.phone}</Text>

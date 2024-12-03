@@ -56,7 +56,7 @@ export default function SignUpScreen(props) {
                 placeholder="Enter your username"
                 placeholderTextColor="#888"
               />
-              <TextInput
+               <TextInput
                 style={styles.input}
                 placeholder="Enter your email"
                 placeholderTextColor="#888"
