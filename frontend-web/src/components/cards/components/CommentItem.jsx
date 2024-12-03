@@ -11,7 +11,7 @@ const CommentItem = ({
   createdAt,
   image
 }) => {
-  return <li className="comment-item">
+  return <li className="comment-item" style={{'margin': '15px 0px'}}>
       {socialUser && <>
           <div className="d-flex position-relative">
             <div className={clsx('avatar avatar-xs', {

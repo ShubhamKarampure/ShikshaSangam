@@ -1,35 +1,35 @@
-import { getAllFeed } from '@/api/feed';
-import PostCard from '@/components/cards/PostCard';
-import LoadMoreButton from './LoadMoreButton';
-import { useState, useEffect } from 'react';
+import { getAllFeed } from "@/api/feed";
+import PostCard from "@/components/cards/PostCard";
+import LoadMoreButton from "./LoadMoreButton";
+import { useState, useEffect } from "react";
+import Post3 from "./FeedComponents/Post3";
+import Post2 from "./FeedComponents/Post2";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 const Feeds = () => {
-  const [allPosts, setAllPosts] = useState([]); // State for storing posts
-  const [isLoading, setIsLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [allPosts, setAllPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
         setIsLoading(true);
-        const data = await getAllFeed(); // Await the result of the async function
+        const data = await getAllFeed();
         console.log(data);
-        
+
         setAllPosts(data);
       } catch (err) {
-        console.error('Error fetching feeds:', err);
-        setError(err); // Store the error if something goes wrong
+        console.error("Error fetching feeds:", err);
+        setError(err);
       } finally {
-        setIsLoading(false); // Ensure loading state is reset
+        setIsLoading(false);
       }
     };
 
     fetchFeeds();
-  }, []); // Empty dependency array ensures this runs only once when the component mounts
-
-  if (isLoading) {
-    return <p>Loading feeds...</p>;
-  }
+  }, []);
 
   if (error) {
     return <p>Error loading feeds: {error.message}</p>;
@@ -37,14 +37,31 @@ const Feeds = () => {
 
   return (
     <>
-      {allPosts.length > 0 ? (
-        allPosts.map((post, idx) => <PostCard {...post} key={idx} />)
+      {isLoading ? (
+        Array.from({ length: 5 }).map((_, idx) => (
+          <div key={idx} className="skeleton-container">
+            <Skeleton height={50} width={50} circle={true} /> {/* Avatar */}
+            <Skeleton height={20} width={`80%`} /> {/* Title */}
+            <Skeleton height={15} width={`60%`} /> {/* Description */}
+          </div>
+        ))
+      ) : allPosts.length > 0 ? (
+        allPosts.map((post, idx) => <Post3 {...post} key={idx} />)
       ) : (
-        <p>No feeds available.</p>
+        <p>No posts available.</p>
       )}
       <LoadMoreButton />
     </>
   );
 };
 
+
 export default Feeds;
+//  <Post2 comments={[{'comment':'Hello','socialUser':{'avatar': allPosts[0]?.socialUser.avatar,'name': 'User'},'createdAt':allPosts[0]?.createdAt}]}/>
+//       <Post3 comments={[{'comment':'Hello','socialUser':{'avatar': allPosts[0]?.socialUser.avatar,'name': 'User'},'createdAt':allPosts[0]?.createdAt}]}/>
+// comment,
+//   likesCount,
+//   children,
+//   socialUser,
+//   createdAt,
+//   image
