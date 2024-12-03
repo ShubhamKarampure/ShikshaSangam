@@ -14,7 +14,7 @@ import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { signup } from "../../api"; // Import the signup API function
 
-export default function SignUpScreen({ navigation }) {
+export default function SignUpScreen({ navigation, onBack}) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,7 +48,6 @@ export default function SignUpScreen({ navigation }) {
       const response = await signup(formData);
   
       Alert.alert("Success", "Account created successfully");
-      navigation.navigate("LoginScreen"); // Navigate to login screen after successful signup
     } catch (error) {
       console.error("Error during signup", error);
       Alert.alert("Error", error.message || "Failed to create account");
@@ -69,7 +68,7 @@ export default function SignUpScreen({ navigation }) {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.signUpContainer}>
             <Text style={styles.header}>Sign Up</Text>
-            <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
+            <TouchableOpacity >
               <Text style={styles.subHeader}>
                 Already have an account?{" "}
                 <Text style={styles.linkText}>Sign in here</Text>
@@ -143,7 +142,7 @@ export default function SignUpScreen({ navigation }) {
             <View style={styles.buttonContainer}>
               <TouchableOpacity
                 style={[styles.button, styles.backButton]}
-                onPress={() => navigation.goBack()}
+                onPress={onBack}
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
