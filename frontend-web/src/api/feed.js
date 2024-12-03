@@ -159,10 +159,11 @@ export const getAllFeed = async () => {
 
   const res = await response.json();
   const postsArray = [];
-
+  console.log(res);
+  
   // Use Promise.all to resolve all comments asynchronously
   const postsWithComments = await Promise.all(
-    res.map(async (p) => {
+    res.results.map(async (p) => {
       const imageUrl = p.post.media
         ? `https://res.cloudinary.com/${cloudName}/${p.post.media}`
         : null;
