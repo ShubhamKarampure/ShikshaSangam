@@ -156,6 +156,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignContent: "center",
     paddingTop: 6,
+    //marginBottom: 10,
     overflow: "hidden",
   },
   darkModeBackground: {
