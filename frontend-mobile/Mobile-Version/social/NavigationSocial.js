@@ -180,6 +180,7 @@ import NotificationsHeader from "./Components/Navigation/NotificationsHeader";
 import MessagesHeader from "./Components/Navigation/MessagesHeader";
 import ProfileHeader from "./Components/Navigation/ProfileHeader";
 import {View} from "react-native"
+import { AuthProvider,useAuthContext } from "../Context/useAuthContext";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -225,8 +226,9 @@ function HomeStack() {
 
 export default function NavigationSocial() {
   const isDarkMode = true; // Set to true to enforce dark mode everywhere
-
+  
   return (
+    // <AuthProvider>
     <NavigationContainer>
       <Drawer.Navigator
         screenOptions={{
@@ -379,8 +381,9 @@ export default function NavigationSocial() {
         </Stack.Navigator> */}
       </Drawer.Navigator>
     </NavigationContainer>
+    // </AuthProvider>
   );
 }
-NavigationSocial.js;
+// NavigationSocial.js;
 
 
