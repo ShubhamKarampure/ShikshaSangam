@@ -109,7 +109,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 'comments_count': num_comments,
             })
 
-        return Response(response_data)
+        return self.get_paginated_response(response_data)
 
     @action(detail=False, methods=['get']) # GET /posts/college_posts/
     def college_posts(self, request):
@@ -152,7 +152,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     'comments_count': num_comments,
                 })
 
-            return Response(response_data)
+            return self.get_paginated_response(response_data)
         
         return Response({
             'detail': 'No posts available.'
