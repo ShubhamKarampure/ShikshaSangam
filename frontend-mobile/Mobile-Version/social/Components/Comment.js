@@ -2,6 +2,7 @@ import React, {memo} from "react";
 import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import ReplyButton from "./ReplyButton";
 import LikeCommentButton from "./LikeCommentButton";
+import timePassed from "../../Utility/timePassed";
 
 const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
   return (
@@ -23,7 +24,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
               isDarkMode && styles.darkModeTextSecondary,
             ]}
           >
-            {comment.timestamp}
+            {timePassed(comment.isoString, new Date().toISOString())}
           </Text>
         </View>
       </View>
