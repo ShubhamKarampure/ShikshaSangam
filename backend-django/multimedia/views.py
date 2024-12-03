@@ -46,14 +46,22 @@ class ChatCreateView(APIView):
 
 
 class MessageListView(ListAPIView):
-    """Retrieve messages for a specific chat."""
     serializer_class = MessageSerializer
    
     def get_queryset(self):
         chat_id = self.kwargs['chat_id']
         user_profile = self.request.user.user
         chat = get_object_or_404(Chat, id=chat_id, participants=user_profile)
-        return Message.objects.filter(chat=chat)
+        
+        # Optional timestamp filtering
+        after_timestamp = self.request.query_params.get('after_timestamp')
+        queryset = Message.objects.filter(chat=chat)
+        
+        if after_timestamp:
+            queryset = queryset.filter(timestamp__gt=after_timestamp)
+        
+        # Optimize query with select_related and order
+        return queryset.select_related('sender').order_by('timestamp')[:50]
 
 class MessageCreateView(CreateAPIView):
     """Send a message in a chat."""

@@ -25,7 +25,13 @@ class UserProfile(models.Model):
         ('college_admin', 'College Admin'),
         ('college_staff', 'Faculty')
     )
+    STATUS_CHOICES = (
+        ('online', 'Online'),
+        ('offline', 'Offline')
+    )
+    
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='offline')  # Added status field
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
     college = models.ForeignKey(College, on_delete=models.SET_NULL, null=True)
     full_name = models.CharField(max_length=255, null=True, blank=True)
@@ -43,7 +49,6 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.full_name or self.user.username}"
-
 
 class CollegeAdminProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)

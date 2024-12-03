@@ -2,11 +2,6 @@ import { createContext, useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCookie, setCookie } from "cookies-next";
 import { useAuthContext } from "@/context/useAuthContext";
-import {
-  getStudentProfile,
-  getAlumnusProfile,
-  getCollegeStaffProfile,
-} from "@/api/profile";
 import { API_ROUTES } from "../routes/apiRoute";
 
 const ProfileContext = createContext(undefined);
@@ -21,16 +16,17 @@ export const useProfileContext = () => {
 
 export const ProfileProvider = ({ children }) => {
   const navigate = useNavigate();
-  const { user } = useAuthContext();
-
+  const { user } = useAuthContext();  // Getting the user context
+  
   // Retrieve authentication status
   const isAuthenticated = () => !!getCookie("_SS_AUTH_KEY_");
 
   // Retrieve profile setup status and profile data from cookies
   const getProfileStatus = () => getCookie("_PROFILE_SETUP_") === "true";
+
   const getProfileData = async () => {
     const profileData = getCookie("_PROFILE_DATA_");
-    if (profileData && profileData.user==user.id) {
+    if (profileData && profileData.user == user.id) {
       return JSON.parse(profileData); // Return from cookies if data exists
     } else {
       try {
@@ -43,19 +39,16 @@ export const ProfileProvider = ({ children }) => {
         }
 
         const data = await response.json(); // Parse the JSON response
-        // console.log(data);
         
         saveProfileData(data); // Save the fetched profile data to cookies
         setCookie("_PROFILE_SETUP_", "true");
-        setIsProfileSetUp("true")
+        setIsProfileSetUp(true);
         return data;
       } catch (error) {
         console.error("Error fetching profile data:", error);
         return null; // Return null if an error occurs
       }
     }
-
-    // Fetch profile based on user role
   };
 
   const [profile, setProfile] = useState(null);
@@ -75,13 +68,13 @@ export const ProfileProvider = ({ children }) => {
 
   // Redirect logic
   useEffect(() => {
-    if (isAuthenticated()) {
+    if (user && isAuthenticated()) {  // Ensure user is authenticated
       getProfileData();
       if (!isProfileSetUp) {
         navigate("/profile-setup");
       }
     }
-  }, [isProfileSetUp, navigate]);
+  }, [user, isProfileSetUp, navigate]);  // Only run when `user` is available
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -91,10 +84,10 @@ export const ProfileProvider = ({ children }) => {
       }
     };
 
-    if (!profile) {
+    if (user && !profile) {  // Fetch profile only if user exists
       fetchProfileData(); // Fetch profile on mount if not already set
     }
-  }, [profile]);
+  }, [user, profile]);  // Trigger this effect when `user` changes
 
   return (
     <ProfileContext.Provider
