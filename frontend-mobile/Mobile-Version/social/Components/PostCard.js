@@ -7,19 +7,19 @@ import ShareButton from "../Components/ShareButton";
 import CommentSectionCard from "../Screens/CommentSectionScreen";
 
 const PostCard = ({ item, isDarkMode, navigation}) => {
-  const [isModalVisible, setisModalVisible] = useState(false);
+  // const [isModalVisible, setisModalVisible] = useState(false);
 
-  function closeCommentSectionHandler(){
-    setisModalVisible(false);
-  }
+  // function closeCommentSectionHandler(){
+  //   setisModalVisible(false);
+  // }
 
   function onCommentPress() {
     //console.log('Comment Pressed')
-    setisModalVisible(true);
-    // navigation.navigate('CommentSection', {
-    //   item: item,
-    //   isDarkMode: isDarkMode,
-    // });
+    //setisModalVisible(true);
+    navigation.navigate('CommentSection', {
+      item: item,
+      isDarkMode: isDarkMode,
+    });
   }
 
   return (
@@ -61,14 +61,14 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
         </View>
         {/* */}
       </View>
-      {isModalVisible && (
+      {/* {isModalVisible && (
         <CommentSectionCard
           item={item}
           isDarkMode={isDarkMode}
           onPress={closeCommentSectionHandler}
           visible={isModalVisible}
         />
-      )}
+      )} */}
     </View>
   );
 };

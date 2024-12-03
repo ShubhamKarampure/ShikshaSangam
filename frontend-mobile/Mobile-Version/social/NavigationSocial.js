@@ -64,16 +64,27 @@ function MessageStack() {
 
 function HomeStack() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+        detachPreviousScreen: false, // Keeps the Home screen active
+        unmountOnBlur: false, // Prevent unmounting inactive screens
+      }}
+    >
       <Stack.Screen
         name="Home"
         component={HomeScreen}
-        options={{ headerShown: false }} // Hide the header for MessageScreen
+        //options={{ headerShown: false }} // Hide the header for MessageScreen
       />
       <Stack.Screen
         name="CommentSection"
         component={CommentSectionScreen}
-        options={{ title: "COMMENTS", headerShown:false}} // Set the title for ChatScreen
+        options={{
+          title: "COMMENTS",
+          //headerShown: true,
+          presentation: "transparentModal",
+          cardStyle: { backgroundColor: "transparent" },
+        }} // Set the title for ChatScreen
       />
     </Stack.Navigator>
   );

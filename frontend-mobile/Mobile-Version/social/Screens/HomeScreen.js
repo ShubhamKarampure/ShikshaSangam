@@ -7,22 +7,49 @@ import CommentButton from "../Components/CommentButton";
 import ShareButton from "../Components/ShareButton";
 import PostCard from "../Components/PostCard";
 import { useAuthContext } from "../../Context/useAuthContext";
+import { useFocusEffect } from "@react-navigation/native";
 
 export default function HomeScreen({navigation}) {
   const isDarkMode = true; // Enforce dark mode by default
-  // const {user} = useAuthContext();
+  
+  const [scrollOffset, setScrollOffset] = React.useState(0);
+  const flatListRef = React.useRef(null); // Reference to the FlatList
+
+  const handleScroll = (event) => {
+    setScrollOffset(event.nativeEvent.contentOffset.y); // Save the scroll offset
+  };
+
+  // const handleNavigateToComments = (postId) => {
+  //   navigation.navigate("CommentSection", { postId });
+  // };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      // Load data or perform updates here
+      //console.log("HomeScreen is focused");
+    }, [])
+  );
   const renderPost = ({ item }) => (
-    <PostCard item={item} isDarkMode={isDarkMode} navigation={navigation}/>
+    <PostCard item={item} isDarkMode={isDarkMode} navigation={navigation} />
   );
 
   return (
-    <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
-
+    <SafeAreaView
+      style={[styles.container, isDarkMode && styles.containerDark]}
+    >
       <FlatList
         data={posts}
         keyExtractor={(item) => item.post_id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.feed}
+        onScroll={handleScroll} // Track scroll position
+        maintainVisibleContentPosition={{ minIndexForVisible: 0 }} // Prevent scroll position reset
+        onLayout={() => {
+          flatListRef.current?.scrollToOffset({
+            offset: scrollOffset,
+            animated: false,
+          }); // Restore scroll offset
+        }}
       />
       {/* <View>
       <Text>{user ? `Welcome, ${user.name}` : "No user logged in"}</Text>
@@ -32,8 +59,7 @@ export default function HomeScreen({navigation}) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: ""//"#f0f2f5" 
-
+  container: { flex: 1, backgroundColor: "#f0f2f5",
   },
   containerDark: { backgroundColor: "#121212" },
   feed: { padding: 10 },

@@ -19,11 +19,15 @@ import CommentTypingSection from "../Components/CommentTypingSection";
 export default function CommentSectionScreen({
   navigation,
   route,
-  item,
-  isDarkMode,
-  onPress,
-  isModalVisible
+  // item,
+  // isDarkMode,
+  // onPress,
+  // isModalVisible
 }) {
+
+  const item = route.params.item;
+  const isDarkMode = route.params.isDarkMode;
+
   const slideAnim = useRef(new Animated.Value(-1000)).current; // Initial position is off-screen
 
   function onReplyPress(comment) {
@@ -34,9 +38,9 @@ export default function CommentSectionScreen({
   function modalCloseHandler() {
     Animated.timing(slideAnim, {
       toValue: -1000, // Off-screen position
-      duration: 300,
-      useNativeDriver: true,
-    }).start(onPress);
+      duration: 500,
+      useNativeDriver:true,
+    }).start(()=>navigation.goBack());
   }
 
   useEffect(() => {
@@ -56,7 +60,7 @@ export default function CommentSectionScreen({
       <Modal
         animationType="none"
         transparent={true}
-        visible={isModalVisible}
+        //visible={isModalVisible}
         //onRequestClose={modalCloseHandler}
       >
         <TouchableWithoutFeedback onPress={dismissKeyboard}>
@@ -79,6 +83,7 @@ export default function CommentSectionScreen({
                 <Pressable
                   style={styles.commentSectionHeader}
                   onPress={modalCloseHandler}
+                  //onPress={() => navigation.goBack()}
                   android_ripple={{
                     color: "#1f3636",
                     radius: styles.commentSectionHeader.borderRadius,
@@ -181,138 +186,3 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
-
-
-
-
-
-// import React from "react";
-// import {
-//   View,
-//   Text,
-//   StyleSheet,
-//   FlatList,
-//   Modal,
-//   Pressable,
-//   SafeAreaView,
-//   KeyboardAvoidingView,
-//   Platform,
-//   Keyboard,
-//   TouchableWithoutFeedback,
-// } from "react-native";
-// import Comment from "../Components/Comment";
-// import CommentTypingSection from "../Components/CommentTypingSection";
-
-// export default function CommentSectionScreen({
-//   item,
-//   isDarkMode,
-//   onPress,
-//   isModalVisible,
-// }) {
-//   const dismissKeyboard = () => {
-//     Keyboard.dismiss();
-//   };
-
-//   return (
-//     <SafeAreaView style={{ flex: 1 }}>
-//       <Modal
-//         animationType="slide" // Use Modal's built-in animations
-//         transparent={true}
-//         visible={isModalVisible}
-//         onRequestClose={onPress} // Handle Android back button
-//       >
-//         <View
-//           style={[
-//             styles.commentSection,
-//             isDarkMode && styles.darkModeBackground,
-//           ]}
-//         >
-//           <Pressable
-//             style={styles.commentSectionHeader}
-//             onPress={onPress}
-//             android_ripple={{
-//               color: "#1f3636",
-//               radius: styles.commentSectionHeader.borderRadius,
-//             }}
-//           >
-//             <Text
-//               style={[styles.commentHeader, isDarkMode && styles.darkModeText]}
-//             >
-//               Comments
-//             </Text>
-//           </Pressable>
-//           <View style={{ flex: 1 }}></View>
-//           <FlatList
-//             data={item.comments}
-//             keyExtractor={(comment) => comment.comment_id.toString()}
-//             renderItem={({ item: comment }) => (
-//               <Comment
-//                 comment={comment}
-//                 isDarkMode={isDarkMode}
-//                 onReplyPress={() => console.log("Reply to:", comment.author)}
-//               />
-//             )}
-//             ItemSeparatorComponent={() => (
-//               <View style={styles.separator}></View>
-//             )}
-//             contentContainerStyle={styles.listContent}
-//           />
-//           <CommentTypingSection />
-//         </View>
-//       </Modal>
-//     </SafeAreaView>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   modalContainer: {
-//     flex: 1,
-//     justifyContent: "flex-end",
-//   },
-//   commentSection: {
-//     padding: 10,
-//     backgroundColor: "#f0f0f0",
-//     borderRadius: 10,
-//     marginVertical: 10,
-//     shadowColor: "#000",
-//     shadowOffset: { width: 0, height: 2 },
-//     shadowOpacity: 0.1,
-//     shadowRadius: 3,
-//     elevation: 2,
-//   },
-//   commentSectionHeader: {
-//     width: "100%",
-//     flexDirection: "row",
-//     backgroundColor: "#0c2e2e",
-//     borderWidth: 1,
-//     borderColor: "#030d0d",
-//     borderRadius: 50,
-//     justifyContent: "center",
-//     alignContent: "center",
-//     paddingTop: 6,
-//     overflow: "hidden",
-//   },
-//   darkModeBackground: {
-//     backgroundColor: "#1c1c1c",
-//   },
-//   commentHeader: {
-//     fontSize: 16,
-//     fontWeight: "700",
-//     textAlign: "center",
-//     marginBottom: 10,
-//     color: "#333",
-//   },
-//   darkModeText: {
-//     color: "#e0e0e0",
-//   },
-//   separator: {
-//     height: 1,
-//     backgroundColor: "#cccccc",
-//     marginVertical: 10,
-//   },
-//   listContent: {
-//     //paddingBottom: 20,
-//     maxHeight:500,
-    
-//   },
-// });
