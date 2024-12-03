@@ -1,10 +1,17 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
+import { useAuthContext } from '../../Context/useAuthContext'; // Adjust the path to your AuthContext
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const NewPostScreen = () => {
   const [postContent, setPostContent] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
+
+  const { user, isAuthenticated } = useAuthContext(); // Access user and authentication state
+  
+yourIp = "192.168.1.10" // Give your IP for identifying where backend is running to mobile
+const BACKEND_URL = "http://"+yourIp+":8000"; 
 
   // Function to pick an image
   const pickImage = async () => {
@@ -25,17 +32,75 @@ const NewPostScreen = () => {
     }
   };
 
-  // Function to handle post submission
-  const handlePost = () => {
-    if (postContent.trim() || selectedImage) {
-      console.log('New Post Content:', postContent);
-      console.log('Selected Image URI:', selectedImage);
-      setPostContent('');
-      setSelectedImage(null);
-    } else {
-      alert('Post content or an image is required!');
+
+const handlePost = async () => {
+  if (!isAuthenticated) {
+    alert('Please log in to post!');
+    return;
+  }
+
+  if (!postContent.trim() && !selectedImage) {
+    alert('Post content or an image is required!');
+    return;
+  }
+
+  const formData = new FormData();
+
+  // Add text content and user profile ID
+  formData.append('content', postContent);
+  formData.append('userprofile', user.profile_id);
+
+  // Fetch file from URI and append to FormData
+  if (selectedImage) {
+    try {
+      const response = await fetch(selectedImage);
+      const blob = await response.blob();
+
+      const imageName = selectedImage.split('/').pop(); // Extract file name
+      const fileType = blob.type || 'image/jpeg'; // Get MIME type, default to 'image/jpeg'
+
+      formData.append('media', {
+        uri: selectedImage,
+        type: fileType,
+        name: imageName || 'image.jpg',
+      });
+    } catch (error) {
+      console.error('Error fetching file:', error);
+      alert('Failed to load the image. Please try again.');
+      return;
     }
-  };
+  }
+
+  try {
+    const accessToken = await AsyncStorage.getItem('access_token');
+
+    if (!accessToken) {
+      alert('Authentication failed. Please log in again.');
+      return;
+    }
+
+    const response = await fetch(`${BACKEND_URL}/social/posts/`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken}`, // Include the auth token
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error: ${response.status} - ${errorData.message}`);
+    }
+
+    const data = await response.json();
+    alert('Post uploaded successfully!');
+    setPostContent('');
+    setSelectedImage(null);
+  } catch (error) {
+    console.error('Error uploading post:', error);
+    alert('Failed to upload post. Please try again.');
+  }
+};
 
   return (
     <View style={styles.container}>
@@ -127,4 +192,63 @@ const styles = StyleSheet.create({
 });
 
 export default NewPostScreen;
- 
+
+
+  // Function to handle post submission
+  // const handlePost = async () => {
+  //   if (!isAuthenticated) {
+  //     alert('Please log in to post!');
+  //     return;
+  //   }
+
+  //   if (!postContent.trim() && !selectedImage) {
+  //     alert('Post content or an image is required!');
+  //     return;
+  //   }
+
+  //   const formData = new FormData();
+
+  //   // Add text content
+  //   formData.append('content', postContent);
+  //   formData.append('userprofile',user.profile_id)
+  //   // Add the image file
+  //   if (selectedImage) {
+  //     formData.append('media', {
+  //       uri: selectedImage,
+  //       type: 'image/jpeg', // Adjust type based on image format
+  //       name: 'post-image.jpg', // Name for the uploaded file
+  //     });
+  //   }
+
+  //   try {
+  //     // Retrieve access token from AsyncStorage via context
+  //     const accessToken = await AsyncStorage.getItem('access_token');
+
+  //     if (!accessToken) {
+  //       alert('Authentication failed. Please log in again.');
+  //       return;
+  //     }
+
+  //     const response = await fetch(`${BACKEND_URL}/social/posts`, {
+  //       method: 'POST',
+  //       headers: {
+  //         Authorization: `Bearer ${accessToken}`, // Include the auth token
+  //         'Content-Type': 'multipart/form-data',
+  //       },
+  //       body: formData,
+  //     });
+
+  //     if (!response.ok) {
+  //       throw new Error(`Error: ${response.status}`);
+  //     }
+
+  //     const data = await response.json();
+  //     console.log('Post created:', data);
+  //     alert('Post uploaded successfully!');
+  //     setPostContent('');
+  //     setSelectedImage(null);
+  //   } catch (error) {
+  //     console.error('Error uploading post:', error);
+  //     alert('Failed to upload post. Please try again.');
+  //   }
+  // };

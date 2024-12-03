@@ -91,7 +91,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const sessionData = await AsyncStorage.getItem(authSessionKey);
       if (sessionData) {
-        console.log('Session data retrieved:', JSON.parse(sessionData)); // Log session data
+        console.log('Session data retrieved:', JSON.parse(sessionData));// Log session data
+        console.log(sessionData.access);
+        
         return JSON.parse(sessionData);
       } else {
         console.log('No session found');
@@ -114,7 +116,7 @@ export const AuthProvider = ({ children }) => {
   const saveSession = async (sessionData) => {
     try {
       console.log("Logging user details:", sessionData.user); // Log user details (username, email, etc.)
-      // console.log("Access Token:", sessionData.access);
+      console.log("Access Token:", sessionData.access);
       // console.log("Refresh Token:", sessionData.refresh);
       await AsyncStorage.setItem("access_token", sessionData.access);
       await AsyncStorage.setItem("refresh_token", sessionData.refresh);
