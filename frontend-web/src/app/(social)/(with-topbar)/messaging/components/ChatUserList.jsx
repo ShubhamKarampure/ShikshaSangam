@@ -1,11 +1,7 @@
 import { useChatContext } from '@/context/useChatContext';
-import { getAllUsers } from '@/helpers/data';
-import { useFetchData } from '@/hooks/useFetchData';
 import useViewPort from '@/hooks/useViewPort';
 import { Offcanvas, OffcanvasBody, OffcanvasHeader } from 'react-bootstrap';
 import ChatUsers from './ChatUsers';
-import { fetchChats } from '@/api/multimedia'
-import { useEffect,useState } from 'react';
 
 const ChatUserList = ({chat}) => {
 

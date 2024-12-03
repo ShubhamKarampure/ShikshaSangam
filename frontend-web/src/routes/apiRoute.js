@@ -8,7 +8,7 @@ export const API_ROUTES = {
   REGISTER: `${API_BASE_URL}/users/auth/register/`, // Register user
   LOGIN: `${API_BASE_URL}/users/auth/login/token`, // User login (JWT)
   REFRESH: `${API_BASE_URL}/users/auth/token/refresh`, // Token refresh
-  LOGOUT: `${API_BASE_URL}/users/auth/logout/`, // User logout
+  LOGOUT: `${API_BASE_URL}/users/auth/signout/`, // User logout
   
   // College-related routes
   COLLEGE: `${API_BASE_URL}/users/colleges/`, // College listing, CRUD

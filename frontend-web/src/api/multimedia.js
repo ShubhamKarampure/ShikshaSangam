@@ -1,8 +1,7 @@
 import { API_ROUTES } from "../routes/apiRoute";
 import { getTokenFromCookie } from "../utils/get-token";
 
-// Function to handle fetch requests
-const handleFetch = async (url, method, body = null) => {
+const handleFetch = async (url, method, body = null, additionalParams = {}) => {
   const token = getTokenFromCookie();
 
   if (!token) {
@@ -23,7 +22,13 @@ const handleFetch = async (url, method, body = null) => {
     options.body = JSON.stringify(body);
   }
 
-  const response = await fetch(url, options);
+  // Construct URL with query parameters
+  const fullUrl = new URL(url);
+  Object.entries(additionalParams).forEach(([key, value]) => {
+    fullUrl.searchParams.append(key, value);
+  });
+
+  const response = await fetch(fullUrl, options);
 
   if (!response.ok) {
     throw new Error(`Error: ${response.status}`);
@@ -33,29 +38,34 @@ const handleFetch = async (url, method, body = null) => {
 };
 
 export const fetchChats = async (chatId = null) => {
-  // If chatId is provided, include it as a query parameter in the API request
-  const url = chatId ? `${API_ROUTES.CHAT_LIST}?chat_id=${chatId}` : API_ROUTES.CHAT_LIST;
-  
-  return await handleFetch(url, "GET");
+  const params = chatId ? { chat_id: chatId } : {};
+  return await handleFetch(API_ROUTES.CHAT_LIST, "GET", null, params);
 };
 
-// 2. **Create Chat**
 export const createChat = async (otherUserId) => {
   const body = { other_user_id: otherUserId };
   return await handleFetch(API_ROUTES.CHAT_CREATE, "POST", body);
 };
 
-// 3. **Fetch Messages for a Specific Chat**
-export const fetchMessages = async (chatId) => {
-  return await handleFetch(API_ROUTES.MESSAGE_LIST(chatId), "GET");
+export const fetchMessages = async (chatId, options = {}) => {
+  const { 
+    after_timestamp = null,
+    limit = 50  // Default limit to 50 messages
+  } = options;
+
+  const params = {
+    ...(after_timestamp && { after_timestamp }),
+    limit
+  };
+
+  return await handleFetch(API_ROUTES.MESSAGE_LIST(chatId), "GET", null, params);
 };
 
-// 4. **Send Message in a Specific Chat**
 export const sendMessage = async (chatId, messageContent) => {
-  const body = { chat: chatId, content: messageContent }; // Send both 'chat' and 'content'
-  console.log('Sending message to chatId:', chatId);
+  const body = { 
+    chat: chatId, 
+    content: messageContent 
+  };
 
   return await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), "POST", body);
 };
-
-

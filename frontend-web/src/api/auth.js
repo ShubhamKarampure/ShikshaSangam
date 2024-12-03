@@ -1,13 +1,14 @@
 import { API_ROUTES } from "../routes/apiRoute";
+import { getTokenFromCookie } from "../utils/get-token";
 
 // Signup API call using fetch
 export const signup = async (data) => {
   try {
     // Send the POST request using fetch
     const response = await fetch(API_ROUTES.REGISTER, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json', // Set content type as JSON
+        "Content-Type": "application/json", // Set content type as JSON
       },
       body: JSON.stringify(data), // Convert JavaScript object to JSON string
     });
@@ -23,17 +24,18 @@ export const signup = async (data) => {
     // Parse the JSON response
     const res = await response.json();
     console.log(res);
-    
+
     return res;
   } catch (error) {
     throw error;
   }
 };
+
 export const signin = async (data) => {
   try {
     const response = await fetch(API_ROUTES.LOGIN, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     });
 
@@ -43,8 +45,38 @@ export const signin = async (data) => {
     }
 
     const result = await response.json();
-    // console.log(result);
+    console.log(result);
     
+    return result;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const logout = async () => {
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+  
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  try {
+    const response = await fetch(API_ROUTES.LOGOUT, {
+      method: "POST",
+      headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw { response: { data: errorData } };
+    }
+
+    const result = await response.json();
+    console.log(result);
+
     return result;
   } catch (error) {
     throw error;
@@ -54,10 +86,14 @@ export const signin = async (data) => {
 // Refresh token API call using axios
 export const refreshToken = async (refreshToken) => {
   try {
-    const response = await authAPI.post('/token/refresh', { refresh: refreshToken });
+    const response = await authAPI.post("/token/refresh", {
+      refresh: refreshToken,
+    });
     return response.data;
   } catch (error) {
-    throw error.response ? error.response.data : 'Error occurred during token refresh';
+    throw error.response
+      ? error.response.data
+      : "Error occurred during token refresh";
   }
 };
 
@@ -65,4 +101,5 @@ export default {
   signup,
   signin,
   refreshToken,
+  logout,
 };

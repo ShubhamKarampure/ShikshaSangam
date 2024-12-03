@@ -1,21 +1,20 @@
 from django.shortcuts import render
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
-# Create your views here.
-from rest_framework import viewsets
+from django.core.exceptions import ValidationError
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply
 from .serializers import (
     PostSerializer, CommentSerializer, LikeSerializer, FollowSerializer,ReplySerializer,
     ShareSerializer, PollSerializer, PollOptionSerializer, PollVoteSerializer
 )
-from users.permissions import IsVerifiedUser, IsCollegeAdmin, IsOwnerPermission
-from users.serializers import UserSerializer, UserProfileSerializer
 from users.models import UserProfile
 from django.db.models import Q
 from rest_framework.pagination import PageNumberPagination
 from django.utils.timesince import timesince
 from django.contrib.contenttypes.models import ContentType
+from django.db import transaction
 
 class PostPagination(PageNumberPagination):
     page_size = 10  # Number of posts per page
@@ -110,7 +109,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 'comments_count': num_comments,
             })
 
-        return Response(response_data)
+        return self.get_paginated_response(response_data)
 
     @action(detail=False, methods=['get']) # GET /posts/college_posts/
     def college_posts(self, request):
@@ -153,14 +152,12 @@ class PostViewSet(viewsets.ModelViewSet):
                     'comments_count': num_comments,
                 })
 
-            return Response(response_data)
+            return self.get_paginated_response(response_data)
         
         return Response({
             'detail': 'No posts available.'
         })
     
-
-
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -527,91 +524,189 @@ class PollViewSet(viewsets.ModelViewSet):
     queryset = Poll.objects.all()
     serializer_class = PollSerializer
 
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-    #          permission_classes = [] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
+    @action(detail=False, methods=['post'], url_path='create-with-options') # POST /polls/create-with-options/
+    @transaction.atomic # The @transaction.atomic decorator ensures that the poll and its options are either saved together or rolled back if any error occurs.
+    def create_with_options(self, request):
+        """
+        Create a poll and its options in a single request.
+        Expected payload:
+        {
+            "post": 1,
+            "question": "Your poll question?",
+            "poll_type": "single",
+            "options": [
+                {"option_text": "Option 1"},
+                {"option_text": "Option 2"},
+                {"option_text": "Option 3"}
+            ]
+        }
+        """
+        data = request.data
 
+        # Validate and save the poll
+        poll_serializer = PollSerializer(data={
+            "post": data.get("post"),
+            "question": data.get("question"),
+            "poll_type": data.get("poll_type"),
+        })
+        if not poll_serializer.is_valid():
+            return Response(poll_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        poll = poll_serializer.save()
+
+        # Validate and save the options
+        options = data.get("options", [])
+        if not options:
+            return Response({"detail": "At least one option is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        for option_data in options:
+            option_data['poll'] = poll.id  # Associate the option with the created poll
+        option_serializer = PollOptionSerializer(data=options, many=True)
+        if not option_serializer.is_valid():
+            return Response(option_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        option_serializer.save()
+
+        return Response({
+            "poll": poll_serializer.data,
+            "options": option_serializer.data,
+        }, status=status.HTTP_201_CREATED)
+    
+    @action(detail=False, methods=['get'], url_path='withoptions')
+    def all_polls_with_options(self, request):
+        """
+        Get all polls with their associated options.
+        """
+        polls = Poll.objects.prefetch_related('options').all()
+        data = [
+            {
+                'poll_id': poll.id,
+                'question': poll.question,
+                'poll_type': poll.poll_type,
+                'created_at': poll.created_at,
+                'post_id': poll.post.id,
+                'options': [
+                    {
+                        'id': option.id,
+                        'text': option.option_text,
+                        'votes_count': option.votes.count(),
+                    }
+                    for option in poll.options.all()
+                ]
+            }
+            for poll in polls
+        ]
+        return Response(data)
+    @action(detail=False, methods=['get'], url_path='post/(?P<post_pk>\d+)')
+    def polls_for_post(self, request, post_pk=None):
+        """
+        Get all polls for a specific post, including their options.
+        """
+        if not post_pk:
+            return Response({'detail': 'Post ID is required.'}, status=400)
+
+        polls = Poll.objects.prefetch_related('options').filter(post__id=post_pk)
+        if not polls.exists():
+            return Response({'detail': 'No polls found for this post.'}, status=404)
+        
+        for poll in polls:
+            for option in poll.options.all():
+                print(f"Option: {option.option_text}, Votes: {option.votes.count()}")
+    
+
+        data = [
+            {
+                'poll_id': poll.id,
+                'question': poll.question,
+                'poll_type': poll.poll_type,
+                'created_at': poll.created_at,
+                'options': [
+                    {
+                        'id': option.id,
+                        'text': option.option_text,
+                        'votes_count': PollVote.objects.filter(poll=poll, option=option).count(),
+                    }
+                    for option in poll.options.all()
+                ]
+            }
+            for poll in polls
+        ]
+        return Response(data)
+    @action(detail=True, methods=['get'], url_path='options')  # GET /polls/{poll_id}/options/
+    def poll_options(self, request, pk=None):
+        """
+        Get all options for a specific poll.
+        """
+        try:
+            poll = self.get_object()
+            options = poll.options.all()
+            serializer = PollOptionSerializer(options, many=True)
+            return Response(serializer.data)
+        except Poll.DoesNotExist:
+            return Response({'detail': 'Poll not found.'}, status=status.HTTP_404_NOT_FOUND)
 
 class PollOptionViewSet(viewsets.ModelViewSet):
     # Basic CRUD for PollOption model
     queryset = PollOption.objects.all()
     serializer_class = PollOptionSerializer
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-    #          permission_classes = [] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
+    
 
 class PollVoteViewSet(viewsets.ModelViewSet):
     # Basic CRUD for PollVote model
     queryset = PollVote.objects.all()
     serializer_class = PollVoteSerializer
-    # def get_permissions(self):
-    #     if self.action == 'create':
-    # def get_permissions(self):
-    #     if self.action == 'create':
-            
-    #          permission_classes = [IsAuthenticated,] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-    #          permission_classes = [IsAuthenticated,] # [IsAuthenticated]
-    #     elif self.action in ['retrieve', 'list']:
-           
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-    #         permission_classes =  [IsVerifiedUser, IsAuthenticated]
-    #     elif self.action in ['update', 'partial_update']:
-            
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-    #         permission_classes= [IsOwnerPermission , IsVerifiedUser, IsAuthenticated]
-    #     elif self.action == 'destroy':
-            
-    #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
-    #     return [permission() for permission in permission_classes]
 
+    def create(self, request, *args, **kwargs):
+        """
+        Custom create logic for poll votes.
+        """
+        user = request.user.user  # Assuming user is linked to UserProfile
+        data = request.data
 
+        try:
+            poll = Poll.objects.get(id=data.get('poll'))
+            option = PollOption.objects.get(id=data.get('option'))
+        except (Poll.DoesNotExist, PollOption.DoesNotExist):
+            return Response({'detail': 'Poll or option not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Single-vote poll logic
+        if poll.poll_type == 'single':
+            existing_vote = PollVote.objects.filter(userprofile=user, poll=poll)
+            if existing_vote.exists():
+                existing_vote.update(option=option)  # Update the existing vote
+                return Response({'detail': 'Vote updated successfully.'}, status=status.HTTP_200_OK)
+
+        # Multiple-choice poll logic
+        elif poll.poll_type == 'multiple':
+            existing_vote = PollVote.objects.filter(userprofile=user, poll=poll, option=option)
+            if existing_vote.exists():
+                return Response({'detail': 'You have already voted for this option.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Save the new vote
+        vote = PollVote(userprofile=user, poll=poll, option=option)
+        try:
+            vote.save()
+        except ValidationError as e:
+            return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response({'detail': 'Vote recorded successfully.'}, status=status.HTTP_201_CREATED)
+
+    @action(detail=True, methods=['get'], url_path='poll-votes')  # GET /polls/{poll_id}/votes/
+    def poll_votes(self, request, pk=None):
+        """
+        Get all votes for a specific poll.
+        """
+        try:
+            poll = Poll.objects.get(id=pk)
+            votes = PollVote.objects.filter(poll=poll)
+            serializer = PollVoteSerializer(votes, many=True)
+            return Response(serializer.data)
+        except Poll.DoesNotExist:
+            return Response({'detail': 'Poll not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
 # content_types = ContentType.objects.filter(model__in=['post', 'comment', 'reply'])
 
 #         # Print the content type ids and associated models
 #         for content_type in content_types:
 #             print(f"Model: {content_type.model}, ContentType ID: {content_type.id}")
+

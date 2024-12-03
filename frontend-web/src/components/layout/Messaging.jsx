@@ -87,7 +87,7 @@ const UserCard = ({
   return <>
       <li onClick={() => {
       openToast();
-      changeActiveChat(user.id);
+  
     }} className="mt-3 hstack gap-3 align-items-center position-relative toast-btn" data-target="chatToast">
         <div className={clsx(`avatar status-${user.status}`, {
         'avatar-story': user.isStory
