@@ -25,4 +25,6 @@ urlpatterns = [
     path('test/', include('test_app.urls')),
     path('social/', include('social.urls')),
     path('multimedia/', include('multimedia.urls')),    
+    path('events/', include('events.urls')),    
+
 ]

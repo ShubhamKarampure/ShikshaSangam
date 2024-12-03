@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     'test_app',
     'social',
     'multimedia',
+    'events',
 ]
 
 REST_USE_JWT = True
