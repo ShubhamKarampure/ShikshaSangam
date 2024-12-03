@@ -41,4 +41,5 @@ export const API_ROUTES = {
   UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
   FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed
   COMMENT: `${API_BASE_URL}/social/comments/`, // Comment
+  REPLY: `${API_BASE_URL}/social/replies/`, // Reply
 }
