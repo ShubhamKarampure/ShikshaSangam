@@ -13,12 +13,15 @@ import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NavigationSocial from "../../social/NavigationSocial";
 import signin from "../../api/auth";
+import {AuthProvider, useAuthContext} from "../../Context/useAuthContext";
+
 
 export default function LoginScreen(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
   const [usernameOrEmail, setUsernameOrEmail] = useState("");
   const [password, setPassword] = useState("");
+  const {saveSession} = useAuthContext();
 
   const handleSignIn = async () => {
     try {
@@ -31,8 +34,14 @@ export default function LoginScreen(props) {
 
       // Save tokens or user info as needed
       // Example: AsyncStorage.setItem("accessToken", response.access);
+      await saveSession({
+        user: response.user,
+        access: response.access,
+        refresh: response.refresh,
+      })
 
       setIsSignedIn(true); // Navigate to next screen
+      
     } catch (error) {
       console.error("Login Error:", error);
       Alert.alert(
@@ -43,7 +52,9 @@ export default function LoginScreen(props) {
   };
 
   return isSignedIn ? (
+    // <AuthProvider>
     <NavigationSocial />
+    // </AuthProvider>
   ) : (
     <>
       <StatusBar style="light" />

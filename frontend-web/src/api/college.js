@@ -4,7 +4,6 @@ import { getTokenFromCookie } from "../utils/get-token";
 // Create College
 export const createCollege = async (collegeData) => {
   const token = getTokenFromCookie(); // Retrieve token from cookie
-  console.log('here');
   
   if (!token) {
     throw new Error('Token is missing');

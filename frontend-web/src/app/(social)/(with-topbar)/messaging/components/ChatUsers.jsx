@@ -5,20 +5,21 @@ import { BsSearch } from 'react-icons/bs';
 import clsx from 'clsx';
 import { useChatContext } from '@/context/useChatContext';
 
-const ChatItem = ({ id, participants, last_message, status = 'online', isStory }) => {
-  const { changeActiveChat, activeChat } = useChatContext();
+const ChatItem = ({ id, participants, last_message, isStory }) => {
+  const {  activeChatId, changeActiveChat } = useChatContext();
 
   // Access the first participant's full_name and avatar_image
   const participant = participants[0];  // Assuming there's at least one participant
   const full_name = participant?.full_name;
   const avatar_image = participant?.avatar_image;
+  const status = participant?.status
 
   // Extract last_message content safely (could also check if it's empty)
   const lastMessageContent = last_message ? last_message.content : 'No recent messages';
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
-      <div className={clsx('nav-link text-start', { active: activeChat?.id === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
+      <div className={clsx('nav-link text-start', { active: activeChatId === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
         <div className="d-flex">
           <div className={clsx('flex-shrink-0 avatar me-2', status === 'online' ? 'status-online' : 'status-offline', { 'avatar-story': isStory })}>
             <img className="avatar-img rounded-circle" src={avatar_image} alt={full_name || "Avatar"} />

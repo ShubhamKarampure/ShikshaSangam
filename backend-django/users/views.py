@@ -118,6 +118,8 @@ class UserLoginView(APIView):
         try:
             profile = UserProfile.objects.filter(id=user_profile_id)
             role = profile[0].role
+            user_profile.status = 'online'
+            user_profile.save()  
         except:
             pass
 
@@ -133,6 +135,7 @@ class UserLoginView(APIView):
                     "username": user.username,
                     "profile_id": user_profile_id,
                     "role": role,
+                    "status":user_profile.status,
                 },
             },
             status=status.HTTP_200_OK,
@@ -206,6 +209,8 @@ class GoogleAuthView(APIView):
             try:
                 profile=UserProfile.objects.filter(id=user_profile_id)
                 profile=profile[0]
+                user_profile.status = 'online'
+                user_profile.save()  
             except:
                 pass
             # print(profile[0].role)
@@ -225,7 +230,8 @@ class GoogleAuthView(APIView):
                         "email": user.email,
                         "username": user.username,
                         "profile_id": user_profile_id,  
-                        "role": role
+                        "role": role,
+                        "status":user_profile.status,
                     }
                 },
                 status=status.HTTP_200_OK,
@@ -248,6 +254,22 @@ class GoogleAuthView(APIView):
         length = 12
         characters = string.ascii_letters + string.digits + "!@#$%^&*()_+-=[]{}|;:,.<>?"
         return ''.join(secrets.choice(characters) for _ in range(length))
+
+class UserLogoutView(APIView):
+    def post(self, request):
+        try:
+            # Get the current user's profile
+            user_profile = request.user.user
+            user_profile.status = 'offline'  # Set status to offline
+            user_profile.save()
+
+            # Print the user_profile to debug
+            print(f"User profile after logout: {user_profile}")
+            print(f"User status: {user_profile.status}")  # Print the updated status
+
+            return Response({"status": "success", "message": "Logged out successfully."}, status=status.HTTP_200_OK)
+        except UserProfile.DoesNotExist:
+            return Response({"detail": "User profile not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()  # Default queryset to fetch all users

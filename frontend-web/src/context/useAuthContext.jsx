@@ -1,6 +1,8 @@
 import { createContext, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCookie, setCookie, deleteCookie, hasCookie } from 'cookies-next';
+import { logout } from '@/api/auth';  // Assuming you have an API call for logout if needed
+import { useChatContext } from '@/context/useChatContext';
 
 const AuthContext = createContext(undefined);
 
@@ -33,11 +35,25 @@ export const AuthProvider = ({ children }) => {
     setUser(sessionData.user);
   };
 
-  // Remove session
-  const removeSession = () => {
-    deleteCookie(authSessionKey);
-    setUser(null);
-    navigate('/auth/sign-in');
+  // Remove session and call logout API
+  
+  const removeSession = async () => {
+    try {
+      // Call the logout API
+      await logout();  // Make sure you handle this API call as needed
+     
+      // Delete session cookies
+      deleteCookie(authSessionKey);
+      deleteCookie('access_token');
+      deleteCookie('refresh_token');
+      
+      setUser(null);  // Clear the user state
+      
+      navigate('/auth/sign-in');  // Redirect to the sign-in page
+    } catch (error) {
+      console.error("Logout API call failed:", error);
+      // Handle the error gracefully if necessary
+    }
   };
 
   return (

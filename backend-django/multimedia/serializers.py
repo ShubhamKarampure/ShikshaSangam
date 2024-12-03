@@ -21,6 +21,7 @@ class ChatSerializer(serializers.ModelSerializer):
             if participant != current_user:
                 participants_data.append({
                     'full_name': participant.full_name,
+                    'status':participant.status,
                     'avatar_image': participant.avatar_image.url if participant.avatar_image else None
                 })
         return participants_data

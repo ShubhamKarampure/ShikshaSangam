@@ -8,8 +8,12 @@ import { messagesData } from "../../data/messagesData";
 
 const MessageScreen = ({navigation}) => {
   const [messages, setMessages] = useState(messagesData);
-  const [isMessageScreen, setIsMessageScreen] = useState(true);
-  const [selectedMessage, setSelectedMessage] = useState(null); // State to store selected message
+  const sender = {
+    profile_id: 1,
+    avatar: "https://via.placeholder.com/150",
+    username: "John Doe",
+  };
+
 
   const handleMessagePress = (item) => {
     //console.log("Message pressed:", message);
@@ -29,7 +33,7 @@ const MessageScreen = ({navigation}) => {
       {/* <PageTitleText>Messages</PageTitleText> */}
       <FlatList
         data={messages}
-        keyExtractor={(item) => item.id.toString()}
+        keyExtractor={(item) => item.DMChat_id.toString()}
         renderItem={renderMessage}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
@@ -37,9 +41,6 @@ const MessageScreen = ({navigation}) => {
     </View>
   );
 
-  // if (!isMessageScreen) {
-  //   screen = <ChatScreen receiver={selectedMessage} />;
-  // }
   return screen;
 };
 

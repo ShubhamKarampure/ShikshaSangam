@@ -4,6 +4,7 @@ import logo13 from '@/assets/images/logo/13.svg';
 import { Link } from 'react-router-dom';
 import ActionMenu from './ActionMenu.jsx';
 import avatar12 from '@/assets/images/avatar/12.jpg';
+import CommentItem from '@/components/cards/components/CommentItem.jsx';
 
 const Post2 = ({
     createdAt,
@@ -130,7 +131,7 @@ const Post2 = ({
             </li>
           </ul>
           {comments && <>
-            <div className="d-flex mb-3">
+            {/* <div className="d-flex mb-3">
               <div className="avatar avatar-xs me-2">
                 <span role="button">
                   
@@ -144,10 +145,10 @@ const Post2 = ({
                   <BsSendFill />
                 </button>
               </form>
-            </div>
+            </div> */}
 
             <ul className="comment-wrap list-unstyled">
-              {comments.map(comment => <CommentItem {...comment} key={comment.id} />)}
+              {comments.map(comment => <CommentItem {...comment}  />)}
             </ul>
           </>}
         </CardFooter>

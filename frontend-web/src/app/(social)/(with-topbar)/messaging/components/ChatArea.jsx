@@ -27,7 +27,6 @@ import { FaCheck, FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
-import { useChatContext } from "@/context/useChatContext";
 import { useLayoutContext } from "@/context/useLayoutContext";
 import TextFormInput from "@/components/form/TextFormInput";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
@@ -90,14 +89,16 @@ const UserMessage = ({ message, isCurrentUser }) => {
     </div>
   );
 };
-const ChatArea = () => {
+
+const ChatArea = ({activeChat}) => {
   const { theme } = useLayoutContext();
-  const { activeChat } = useChatContext();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const { profile } = useProfileContext();
-
+  const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
+  const pollingIntervalRef = useRef(null);
+  
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -106,59 +107,62 @@ const ChatArea = () => {
     resolver: yupResolver(messageSchema),
   });
 
-  // Fetch messages for the active chat
   const fetchMessagesHandler = useCallback(async () => {
     if (!activeChat) return;
 
-    setIsLoading(true);
-    setError(null);
-
     try {
-      const response = await fetchMessages(activeChat.id);
-      console.log(response);
+      const response = await fetchMessages(activeChat.id, {
+        after_timestamp: lastMessageTimestamp
+      });
 
-      setMessages(response);
+      if (response.length > 0) {
+        // Append only new messages
+        setMessages(prevMessages => {
+          const newMessages = response.filter(
+            newMsg => !prevMessages.some(existingMsg => existingMsg.id === newMsg.id)
+          );
+          return [...prevMessages, ...newMessages];
+        });
+
+        // Update last message timestamp
+        const latestMessage = response[response.length - 1];
+        setLastMessageTimestamp(latestMessage.timestamp);
+      }
     } catch (err) {
-      setError(err.message);
       console.error("Error fetching messages:", err);
-    } finally {
-      setIsLoading(false);
     }
-  }, [activeChat]);
+  }, [activeChat, lastMessageTimestamp]);
 
   useEffect(() => {
+    // Initial fetch
     fetchMessagesHandler();
+
+    // Start polling
+    if (activeChat && activeChat.participants[0].status === profile.status) {
+    pollingIntervalRef.current = setInterval(fetchMessagesHandler, 3000);
+  }
+    // Cleanup interval on unmount or chat change
+    return () => {
+      if (pollingIntervalRef.current) {
+        clearInterval(pollingIntervalRef.current);
+      }
+    };
   }, [fetchMessagesHandler]);
 
-  // Send a new message
   const sendChatMessage = async (values) => {
-    if (!activeChat) {
-      alert("Please start following someone to chat.");
-      return;
-    }
-
     try {
       const newMessage = await sendMessage(activeChat.id, values.newMessage);
-
-      if (!newMessage) {
-        throw new Error("Failed to send message");
-      }
-
-      // Append the new message to the messages list
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-      // Clear the text input
-      reset();
-
-      // Optional: Scroll to the bottom
-      const element = document.querySelector(".chat-conversation-content");
-      if (element) {
-        element.scrollTop = element.scrollHeight;
-      }
+      
+      // Immediately append the message
+      setMessages(prevMessages => [...prevMessages, newMessage]);
+      
+      // Trigger immediate fetch to sync with backend
+      fetchMessagesHandler();
     } catch (err) {
       console.error("Error sending message:", err);
     }
   };
+
 
   // Inform the user to follow someone if no active chat
   if (!activeChat) {
@@ -180,12 +184,13 @@ const ChatArea = () => {
     );
   }
 
-  const { full_name, avatar_image } = activeChat.participants[0];
-
+  const { full_name, avatar_image,status } = activeChat.participants[0];
+  
+  
+  
   return (
     <Card
       className="card-chat rounded-start-lg-0 border-start-lg-0"
-      style={{ width: "100%", height: "100%" }}
     >
       <CardBody className="h-100">
         <div className="h-100">
@@ -210,9 +215,9 @@ const ChatArea = () => {
                 <h6 className="mb-0 mt-1">{full_name || ""}</h6>
                 <div className="small text-secondary">
                   <FaCircle
-                    className={`text-${activeChat.status === "offline" ? "danger" : "success"} me-1`}
+                    className={`text-${status === "offline" ? "danger" : "success"} me-1`}
                   />
-                  {activeChat.status === "offline" ? "Offline" : "Online"}
+                  {status === "offline" ? "Offline" : "Online"}
                 </div>
               </div>
             </div>
