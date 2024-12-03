@@ -39,7 +39,11 @@ const Feeds = () => {
     <>
       {isLoading ? (
         Array.from({ length: 5 }).map((_, idx) => (
-          <div key={idx} className="skeleton-container">
+          <div
+            key={idx}
+            className="skeleton-container"
+            style={{ height: "150px", width: "100%" }} // Match the card height
+          >
             <Skeleton height={50} width={50} circle={true} /> {/* Avatar */}
             <Skeleton height={20} width={`80%`} /> {/* Title */}
             <Skeleton height={15} width={`60%`} /> {/* Description */}
@@ -50,11 +54,11 @@ const Feeds = () => {
       ) : (
         <p>No posts available.</p>
       )}
+
       <LoadMoreButton />
     </>
   );
 };
-
 
 export default Feeds;
 //  <Post2 comments={[{'comment':'Hello','socialUser':{'avatar': allPosts[0]?.socialUser.avatar,'name': 'User'},'createdAt':allPosts[0]?.createdAt}]}/>

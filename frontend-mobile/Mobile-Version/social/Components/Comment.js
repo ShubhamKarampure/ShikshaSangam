@@ -15,7 +15,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
           <Text
             style={[styles.commentUsername, isDarkMode && styles.darkModeText]}
           >
-            {comment.author}
+            {comment.username}
           </Text>
           <Text
             style={[

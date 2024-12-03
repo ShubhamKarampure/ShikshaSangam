@@ -153,7 +153,7 @@ const Followers = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div className="d-flex gap-3 align-items-center">
+                  <div className="d-flex gap-2 align-items-center" style={{width:'70%'}}>
                     <div
                       className={clsx("avatar", {
                         "border-primary": follower.role === "student",
@@ -173,8 +173,8 @@ const Followers = () => {
                         borderRadius: "50%",
                         borderWidth: "2px",
                         borderStyle: "solid",
-                        width: "60px",
-                        height: "60px",
+                        width: "50px",
+                        height: "50px",
                       }}
                     >
                       <img

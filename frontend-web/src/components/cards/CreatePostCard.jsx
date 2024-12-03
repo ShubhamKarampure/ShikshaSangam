@@ -60,7 +60,7 @@ const CreatePostCard = () => {
     resolver: yupResolver(eventFormSchema)
   });
   return <>
-      <Card className="card-body">
+      <Card className="card-body" style={{height:'175px'}}>
         <div className="d-flex mb-3">
           <div className="avatar avatar-xs me-2">
             <span role="button">
