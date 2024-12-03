@@ -13,7 +13,7 @@ import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NavigationSocial from "../../social/NavigationSocial";
 import signin from "../../api/auth";
-import {AuthProvider, useAuthContext} from "../../Context/useAuthContext";
+import { useAuthContext} from "../../Context/useAuthContext";
 
 
 export default function LoginScreen(props) {

@@ -114,8 +114,8 @@ export const AuthProvider = ({ children }) => {
   const saveSession = async (sessionData) => {
     try {
       console.log("Logging user details:", sessionData.user); // Log user details (username, email, etc.)
-      console.log("Access Token:", sessionData.access);
-      console.log("Refresh Token:", sessionData.refresh);
+      // console.log("Access Token:", sessionData.access);
+      // console.log("Refresh Token:", sessionData.refresh);
       await AsyncStorage.setItem("access_token", sessionData.access);
       await AsyncStorage.setItem("refresh_token", sessionData.refresh);
       await AsyncStorage.setItem(authSessionKey, JSON.stringify(sessionData.user));
