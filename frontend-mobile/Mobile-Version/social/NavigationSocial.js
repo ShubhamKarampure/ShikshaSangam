@@ -21,7 +21,8 @@ import HomeHeader from "./Components/Navigation/HomeHeader";
 import NotificationsHeader from "./Components/Navigation/NotificationsHeader";
 import MessagesHeader from "./Components/Navigation/MessagesHeader";
 import ProfileHeader from "./Components/Navigation/ProfileHeader";
-import {View} from "react-native"
+import ChatScreenHeader from "./Components/Navigation/ChatScreenHeader";
+import {View, Image, Text} from "react-native"
 import { AuthProvider,useAuthContext } from "../Context/useAuthContext";
 
 const Drawer = createDrawerNavigator();
@@ -52,11 +53,13 @@ function MessageStack() {
       <Stack.Screen
         name="Chat"
         component={ChatScreen}
-        options={{
-          headerShown: true, // Show header for ChatScreen if needed
+        options={({ route }) => ({
+          headerShown: true,
           headerTitleAlign: "center",
-          headerStyle: { backgroundColor: "#128C7E" },
-        }}
+          headerStyle: { backgroundColor: "#171717" },
+          headerTintColor: 'white',
+          headerTitle: () => <ChatScreenHeader route={route} />,
+        })}
       />
     </Stack.Navigator>
   );

@@ -50,6 +50,7 @@ export default function HomeScreen({navigation}) {
             animated: false,
           }); // Restore scroll offset
         }}
+        removeClippedSubviews={true} // Improves performance
       />
       {/* <View>
       <Text>{user ? `Welcome, ${user.name}` : "No user logged in"}</Text>
