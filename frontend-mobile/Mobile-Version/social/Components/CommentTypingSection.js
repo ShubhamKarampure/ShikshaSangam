@@ -80,23 +80,7 @@ const CommentTypingSection = ({ onSend, isDarkMode = true }) => {
         />
       </View>
 
-      {/* Right - File Attach and Camera Buttons */}
       <View style={styles.rightIcons}>
-        {/* <TouchableOpacity style={styles.iconButton}>
-          <MaterialCommunityIcons
-            name="paperclip"
-            size={25}
-            color={isDarkMode ? "#fff" : "#000"}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.iconButton}>
-          <MaterialCommunityIcons
-            name="camera"
-            size={25}
-            color={isDarkMode ? "#fff" : "#000"}
-          />
-        </TouchableOpacity> */}
-
         {/* Send Button (appears only when there's a message) */}
         <TouchableOpacity
           style={[styles.iconButton, styles.sendButton]}

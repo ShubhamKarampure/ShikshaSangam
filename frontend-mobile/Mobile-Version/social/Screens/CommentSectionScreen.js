@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -32,7 +32,7 @@ export default function CommentSectionScreen({
 
   function onReplyPress(comment) {
     // Handle reply button press for the specific comment
-    console.log("Reply to:", comment.author);
+    console.log("Reply to:", comment.username);
   }
 
   function modalCloseHandler() {
@@ -54,6 +54,59 @@ export default function CommentSectionScreen({
   const dismissKeyboard = () => {
     Keyboard.dismiss();
   };
+
+  function timePassed(isoString1, isoString2) {
+    const date1 = new Date(isoString1);
+    const date2 = new Date(isoString2);
+    const diffMs = Math.abs(date2 - date1); // Time difference in milliseconds
+
+    const seconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+    const weeks = Math.floor(days / 7);
+    const years = Math.floor(days / 365);
+
+    if (seconds < 60) {
+      return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
+    } else if (minutes < 60) {
+      return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
+    } else if (hours < 24) {
+      return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
+    } else if (days < 7) {
+      return `${days} day${days !== 1 ? "s" : ""} ago`;
+    } else if (weeks < 52) {
+      return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
+    } else {
+      return `${years} year${years !== 1 ? "s" : ""} ago`;
+    }
+  }
+
+  const sender_profile_id = 1;
+  const sender_username = "John Doe";
+  const sender_avatar = "https://via.placeholder.com/150";
+
+  const [commentList, setCommentList] = useState(item.comments);
+
+  function onSendHandler(chat){
+    setCommentList((prevList)=>{
+      let comment_id = 1;
+      if (prevList) {
+        comment_id = prevList[0].comment_id + 1;
+      }
+      const now = new Date();
+      const commentItem = {
+        comment_id: comment_id,
+        profile_id: sender_profile_id,
+        username: sender_username,
+        avatar: sender_avatar,
+        content: chat.message,
+        timestamp: timePassed(chat.timestamp.isoString, now.toISOString()),
+        likes:0,
+      };
+      return [commentItem, ...prevList]
+    })
+  }
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
@@ -100,10 +153,11 @@ export default function CommentSectionScreen({
                 </Pressable>
 
                 <FlatList
-                  data={item.comments}
+                  data={commentList}
                   keyExtractor={(comment) => comment.comment_id.toString()}
                   renderItem={({ item: comment }) => (
                     <Comment
+                      //post={item}
                       comment={comment}
                       isDarkMode={isDarkMode}
                       onReplyPress={onReplyPress.bind(this, comment)}
@@ -123,7 +177,7 @@ export default function CommentSectionScreen({
                   contentContainerStyle={styles.listContent}
                 />
                 <View>
-                  <CommentTypingSection />
+                  <CommentTypingSection onSend={onSendHandler} />
                 </View>
               </View>
             </Animated.View>

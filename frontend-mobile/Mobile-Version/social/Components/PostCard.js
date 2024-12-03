@@ -30,7 +30,7 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
           <Image source={{ uri: item.avatar }} style={styles.avatar} />
           <View>
             <Text style={[styles.author, isDarkMode && styles.textDark]}>
-              {item.author}
+              {item.username}
             </Text>
             <Text
               style={[styles.timestamp, isDarkMode && styles.textDarkSecondary]}
