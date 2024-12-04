@@ -99,12 +99,13 @@ const styles = StyleSheet.create({
     width:120,
     marginTop:4,
     //marginRight:16,
-    //backgroundColor:'pink',
+    //backgroundColor:'purple',
   },
   container: {
     alignItems: "center",
     justifyContent: "flex-start",
     flexDirection: "row",
+    alignItems:'flex-start'
     //padding:8,
     //borderWidth: 2,
     //backgroundColor:'grey'

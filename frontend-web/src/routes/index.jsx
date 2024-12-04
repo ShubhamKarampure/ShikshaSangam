@@ -28,6 +28,7 @@ const PostDetails = lazy(() => import('@/app/(social)/(with-topbar)/feed/post-de
 const VideoDetails = lazy(() => import('@/app/(social)/feed/(no-container)/videos/details/page'));
 const Blogs = lazy(() => import('@/app/(social)/(with-topbar)/blogs/page'));
 const BlogDetails = lazy(() => import('@/app/(social)/(with-topbar)/blogs/[blogId]/page'));
+const Meet = lazy(() => import('@/app/(social)/live/meet')) 
 
 //admin pages
 const AlumniUpload = lazy(()=>import('@/app/(admin)/uploadAlumni/page'))
@@ -112,7 +113,12 @@ const generalRoutes = [{
   path: '/feed/create-page',
   name: 'Create Page',
   element: <CreatePage />
-}];
+  },
+{
+  path: '/meet',
+  name: 'Online Meet',
+  element: <Meet />
+  },];
 
 //plain routes
 const otherRoutes = [{
@@ -221,7 +227,8 @@ export const socialWithTopbarRoutes = [{
   path: '/privacy-terms',
   name: 'Privacy And Terms',
   element: <PrivacyAndTermPage />
-}, {
+  },
+  {
   path: '*',
   name: 'not-found',
   element: <NotFoundPage />
@@ -229,7 +236,9 @@ export const socialWithTopbarRoutes = [{
   path: '/not-found',
   name: 'Not Found',
   element: <NotFoundPage />
-}];
+  }];
+
+
 export const profilePagesRoutes = [{
   path: '/profile/feed',
   name: 'Feed',
