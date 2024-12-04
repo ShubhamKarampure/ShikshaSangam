@@ -1,94 +1,6 @@
-// import React from "react";
-// import { TouchableOpacity, Text, StyleSheet, Image, View,  } from "react-native";
-
-// const MessageCard = ({ item, onPress }) => {
-//   return (
-//     <TouchableOpacity
-//       style={styles.messageCard}
-//       activeOpacity={0.7}
-//       onPress={onPress}
-//     >
-//       <View style={styles.mainHeader}>
-//         <Image source={{ uri: item.avatar }} style={styles.avatar} />
-//         <View style={styles.headerText}>
-//           <Text
-//             style={[styles.username, styles.darkModeText]}
-//           >
-//             {item.username}
-//           </Text>
-//         </View>
-//       </View>
-
-//       <Text style={styles.messageText}>{item.message}</Text>
-//       <Text style={styles.messageTimestamp}>{item.timestamp}</Text>
-//     </TouchableOpacity>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   messageCard: {
-//     backgroundColor: "#1e1e1e",
-//     borderRadius: 8,
-//     padding: 15,
-//     marginBottom: 15,
-//   },
-//   messageName: {
-//     fontSize: 16,
-//     fontWeight: "bold",
-//     color: "#1DA1F2",
-//   },
-//   messageText: {
-//     fontSize: 14,
-//     color: "#aaa",
-//     marginTop: 5,
-//   },
-//   messageTimestamp: {
-//     fontSize: 12,
-//     color: "#666",
-//     marginTop: 5,
-//     alignSelf: "flex-end",
-//   },
-//   avatar: {
-//     width: 40,
-//     height: 40,
-//     borderRadius: 20,
-//     marginRight: 10,
-//   },
-//   mainHeader: {
-//     flexDirection: "row",
-//     alignItems: "center",
-//     paddingBottom: 4,
-//     //marginBottom: 8,
-//     borderBottomWidth:2,
-//   },
-//   headerText: {
-//     flex: 1,
-//   },
-//   username: {
-//     fontSize: 16,
-//     fontWeight: "bold",
-//   },
-//   timeStamp: {
-//     fontSize: 12,
-//     color: "#999",
-//   },
-//   darkModeTextSecondary: {
-//     color: "#aaa",
-//   },
-//   commentText: {
-//     fontSize: 14,
-//     color: "#333",
-//     marginVertical: 8,
-//   },
-//   darkModeText: {
-//     color: "#e0e0e0",
-//   },
-// });
-
-// export default MessageCard;
-
 import React from "react";
 import { TouchableOpacity, Text, StyleSheet, Image, View } from "react-native";
+import timePassed from "../../../Utility/timePassed";
 
 const MessageCard = ({ item, onPress }) => {
   return (
@@ -98,16 +10,21 @@ const MessageCard = ({ item, onPress }) => {
       onPress={onPress}
     >
       <View style={styles.mainHeader}>
-        <Image source={{ uri: item.avatar }} style={styles.avatar} />
+        <Image
+          source={{ uri: item.participants[0].avatar_image }}
+          style={styles.avatar}
+        />
         <View style={styles.headerText}>
           <Text style={[styles.username, styles.darkModeText]}>
-            {item.username}
+            {item.participants[0].full_name}
           </Text>
         </View>
-        <Text style={styles.timeStamp}>{item.timestamp}</Text>
+        <Text style={styles.timeStamp}>
+          {timePassed(item.last_message.timestamp, new Date().toISOString())}
+        </Text>
       </View>
 
-      <Text style={styles.messageText}>{item.message}</Text>
+      <Text style={styles.messageText}>{item.last_message.content}</Text>
     </TouchableOpacity>
   );
 };

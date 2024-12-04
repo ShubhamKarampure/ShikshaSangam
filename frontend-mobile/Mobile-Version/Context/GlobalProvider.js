@@ -10,13 +10,13 @@ export const GlobalProvider = ({ children }) => {
     <AuthProvider>
       <NotificationProvider>
         <ChatProvider>
-        <MessageProvider>
-          <SettingsProvider>
-            <ReplyListProvider>
-              {children}
-            </ReplyListProvider>
-          </SettingsProvider>
-        </MessageProvider>
+          <MessageProvider>
+            <SettingsProvider>
+              <ReplyListProvider>
+                  {children}
+              </ReplyListProvider>
+            </SettingsProvider>
+          </MessageProvider>
         </ChatProvider>
       </NotificationProvider>
     </AuthProvider>
