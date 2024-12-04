@@ -8,6 +8,14 @@ export function LeaveScreen({ setIsMeetingLeft }) {
     message: "You left the meeting!",
     variant: "danger",
   });
+  let styleSheet = document.querySelector(
+    'style[data-vite-dev-id="D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"]'
+  );
+
+  // Remove it from the DOM
+  if (styleSheet) {
+    styleSheet.remove();
+  }
   navigate('/messaging');
   return (
    null
