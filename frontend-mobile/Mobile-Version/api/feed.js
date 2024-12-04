@@ -1,8 +1,6 @@
 
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-yourIp = "192.168.1.5" // Give your IP for identifying where backend is running to mobile
-const BACKEND_URL = "http://"+yourIp+":8000"; 
+import BACKEND_URL from "../constants";
 
 
 export const API_ROUTES = {

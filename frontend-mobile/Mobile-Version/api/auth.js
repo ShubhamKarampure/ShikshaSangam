@@ -1,6 +1,6 @@
+import BACKEND_URL from "../constants";
 const signin = async (data) => {
-  yourIp = "192.168.1.10" // Give your IP for identifying where backend is running to mobile
-  const BACKEND_URL = "http://"+yourIp+":8000"; 
+  
 
   try {
     // Correct the URL here by removing spaces and using BACKEND_URL

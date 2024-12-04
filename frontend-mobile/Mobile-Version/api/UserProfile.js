@@ -1,6 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-yourIp = "192.168.1.10" // Give your IP for identifying where backend is running to mobile
-const BACKEND_URL = "http://"+yourIp+":8000"; 
+ import BACKEND_URL from "../constants"
 
 // Helper function to get the access token
 const getAccessToken = async () => {
@@ -35,9 +34,9 @@ export const createUserProfile = async (profileData) => {
   };
 
   // READ (GET) user profile
-export const getUserProfile = async () => {
+export const getUserProfile = async (profile_id) => {
     const token = await getAccessToken();
-    const response = await fetch(`${BACKEND_URL}/users/user-profile/`, {
+    const response = await fetch(`${BACKEND_URL}/users/userprofiles/${profile_id}`, {
       method: 'GET',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -52,11 +51,30 @@ export const getUserProfile = async () => {
   
     return response.json();
   };
+  // UPDATE (PUT) user profile
+export const updateUserProfile = async (profileId, profileData) => {
+  const token = await getAccessToken();
+  const response = await fetch(`${BACKEND_URL}/users/userprofiles/${profileId}/`, {  // Use profileId here
+    method: 'PUT',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+    body: profileData, // FormData instance for updating the profile
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update user profile');
+  }
+
+  return response.json();
+};
 
   // DELETE user profile
 export const deleteUserProfile = async () => {
     const token = await getAccessToken();
-    const response = await fetch(`${BACKEND_URL}/users/user-profile/`, {
+    const response = await fetch(`${BACKEND_URL}/users/user-profiles/`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`,
