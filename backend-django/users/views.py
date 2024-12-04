@@ -28,6 +28,7 @@ from .serializers import (
     AlumnusProfileSerializer,
     CollegeStaffProfileSerializer,
     UserRegistrationSerializer,
+    UserProfileOnlySerializer
 )
 
 import requests
@@ -279,7 +280,7 @@ class UserViewSet(viewsets.ModelViewSet):
 class UserProfileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     queryset = UserProfile.objects.all()
-    serializer_class = UserProfileSerializer
+    serializer_class = UserProfileOnlySerializer
     # def get_permissions(self):
     #     if self.action == 'create':
     #         # Any verified user can create a UserProfile

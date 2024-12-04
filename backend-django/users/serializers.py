@@ -63,6 +63,11 @@ class CollegeSerializer(serializers.ModelSerializer):
 
         return college
 
+class UserProfileOnlySerializer(serializers.ModelSerializer):
+      class Meta:
+        model = UserProfile
+        fields = '__all__'
+
 class UserProfileSerializer(serializers.ModelSerializer):
     role = serializers.ChoiceField(choices=UserProfile.ROLE_CHOICES)
     college_id = serializers.IntegerField(required=False)
@@ -75,7 +80,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['user', 'role', 'status', 'college_id', 'full_name', 'bio', 'avatar_image', 'banner_image', 'contact_number', 'location', 'social_links', 
+        fields = ['id','user', 'role', 'status', 'college_id', 'full_name', 'bio', 'avatar_image', 'banner_image', 'contact_number', 'location', 'social_links', 
                   'enrollment_year', 'current_program', 'expected_graduation_year', 'specialization']
 
     def validate(self, data):
