@@ -97,7 +97,7 @@ const ChatUsers = ({ chats }) => {
       </Card>
       <style jsx>{`
         .card-chat-list {
-          height: calc(100vh - 148px); /* Adjust the offset as needed */
+          height: calc(100vh - 125px); /* Adjust the offset as needed */
         }
         .chat-tab-list {
           flex-grow: 1;

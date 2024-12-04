@@ -49,9 +49,16 @@ const Messaging = () => {
   return (
     <>
       <PageMetaData title="Messaging" />
-      <main style={{margin:'0px',width:'100%',height:'100vh'}}>
-        <div style={{width:'100%',height:'100%'}}>
-          <Row className="gx-0" style={{width:'100%',height:'100%'}}>
+      <main
+        style={{
+          margin: 0,
+          width: "100%",
+          height: "100vh",
+          padding: "calc(1.5rem + 32px) 0 0",
+        }}
+      >
+        <div style={{ width: "100%", height: "100%" }}>
+          <Row className="gx-0" style={{ width: "100%", height: "100%" }}>
             <Col lg={4} xxl={3}>
               <div className="d-flex align-items-center mb-4 d-lg-none">
                 <ChatToggler />
