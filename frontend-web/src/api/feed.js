@@ -159,9 +159,8 @@ export const getAllFeed = async () => {
 
   const res = await response.json();
   const postsArray = [];
-  console.log(res);
+  // console.log(res);
   
-  // Use Promise.all to resolve all comments asynchronously
   const postsWithComments = await Promise.all(
     res.results.map(async (p) => {
       const imageUrl = p.post.media
@@ -208,7 +207,7 @@ export const getAllFeed = async () => {
       };
     })
   );
-  console.log(postsArray);
+  // console.log(postsArray);
   
   postsArray.push(...postsWithComments);
   return postsArray;
