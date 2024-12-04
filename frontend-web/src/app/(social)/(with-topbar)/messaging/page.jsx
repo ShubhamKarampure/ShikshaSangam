@@ -36,6 +36,7 @@ const Messaging = () => {
   useEffect(() => {
     // Fetch chats on mount and set up polling
     fetchUserChats();
+    
     const intervalId = setInterval(fetchUserChats, pollingSpeed);
 
     return () => {
@@ -78,7 +79,7 @@ const Messaging = () => {
               </nav>
             </Col>
             <Col lg={8} xxl={9}>
-              <ChatArea activeChat={activeChat} />
+              <ChatArea activeChat={activeChat}/>
             </Col>
           </Row>
         </div>
