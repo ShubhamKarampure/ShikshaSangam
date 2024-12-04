@@ -6,6 +6,8 @@ from django.utils.timezone import now
 from .models import Event, EventRegistration, EventFAQ, EventLike
 from .serializers import EventSerializer, OrganiserEventSerializer, EventFAQSerializer,EventRegistrationSerializer, EventListSerializer, EventLikeSerializer
 from rest_framework.pagination import PageNumberPagination
+from social.models import Follow
+
 class EventPagination(PageNumberPagination):
     page_size = 16  # Assumong 4x4 grid.,
     page_size_query_param = 'page_size'
@@ -15,13 +17,29 @@ class EventPagination(PageNumberPagination):
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    pagination_class  = EventPagination
 
     @action(detail=False, methods=['get'])
     def list_events(self, request):
         """View for the Events Page: Fetch all events with organiser details."""
         events = self.get_queryset()
-        serializer = EventListSerializer(events, many=True)
-        return Response(serializer.data)
+        page = self.paginate_queryset(events)
+        if page is not None:
+            return self._get_paginated_event_data(page)
+        return Response({"detail": "No event available."})
+    
+    @action(detail=False, methods=['get'])
+    def college_events(self, request):
+        """View for the Events Page: Fetch all events with organiser details."""
+        print(request.user.user.college)
+        events = Event.objects.filter(created_by__college = request.user.user.college)
+        print(events)
+        page = self.paginate_queryset(events)
+        if page is not None:
+            return self._get_paginated_event_data(page)
+        return Response({"detail": "No event available."})
+    
+
 
     @action(detail=True, methods=['get']) # /events/<id>/details/
     def event_details(self, request, pk=None):
@@ -39,6 +57,39 @@ class EventViewSet(viewsets.ModelViewSet):
         # count = len(serializer.data['participants'])
         # serializer.data['no_of_registrations'] = count
         return Response(serializer.data)
+    
+    def _get_paginated_event_data(self, events):
+        """Helper function to format paginated event data."""
+        response_data = []
+        # post_content_type = ContentType.objects.get_for_model(Post)
+
+        for event in events:
+            user = event.created_by 
+            num_followers = Follow.objects.filter(followed=user).count()
+            # num_likes = EventLike.objects.filter(event= event).count()
+            # num_comments = EventFAQ.objects.filter(event=event).count()
+            # num_shares = Share.objects.filter(post=post).count()
+            # time_since_post = timesince(post.created_at)
+
+            event_serializer = EventListSerializer(event)
+            user_dict = {}
+            if user:
+                user_dict = {
+                    'user': {
+                        'username': user.user.username,
+                        'profile_id': user.id,
+                        'avatar':user.avatar_image.url if user.avatar_image else None,
+                        'num_followers': num_followers,
+                        'bio': user.bio
+                    }
+                }  
+            response_data.append({
+                'event': event_serializer.data,  
+            })
+            if user:
+                response_data.append(user_dict)
+
+        return self.get_paginated_response(response_data)
 
 class EventRegistrationViewSet(viewsets.ModelViewSet):
     queryset = EventRegistration.objects.all()

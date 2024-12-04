@@ -6,7 +6,7 @@ from django.utils import timezone
 class EventUserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'avatar', 'followers_count']  # Include relevant fields
+        fields = ['id', 'full_name', 'avatar_image']  # Include relevant fields
 
 class EventLikeSerializer(serializers.ModelSerializer):
     class Meta:
@@ -30,7 +30,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
         fields = ['id', 'userprofile', 'registered_at','event']
 
 class EventSerializer(serializers.ModelSerializer):
-    created_by = EventUserProfileSerializer(read_only=True)  # Organiser details
+    # created_by = EventUserProfileSerializer(read_only=True)  # Organiser details
     speaker_profiles = EventUserProfileSerializer(read_only=True, many=True)  # Linked speakers
     faqs = EventFAQSerializer(read_only=True, many=True)
     likes_count = serializers.SerializerMethodField()
