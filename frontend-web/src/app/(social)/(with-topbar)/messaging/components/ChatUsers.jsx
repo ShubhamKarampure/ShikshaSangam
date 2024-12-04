@@ -5,24 +5,50 @@ import { BsSearch } from 'react-icons/bs';
 import clsx from 'clsx';
 import { useChatContext } from '@/context/useChatContext';
 
+const CALL_MESSAGE_PREFIX = "CALL_INVITATION:";
+
 const ChatItem = ({ id, participants, last_message, isStory }) => {
-  const {  activeChatId, changeActiveChat } = useChatContext();
+  const { activeChatId, changeActiveChat } = useChatContext();
 
   // Access the first participant's full_name and avatar_image
-  const participant = participants[0];  // Assuming there's at least one participant
+  const participant = participants[0]; // Assuming there's at least one participant
   const full_name = participant?.full_name;
   const avatar_image = participant?.avatar_image;
-  const status = participant?.status
+  const status = participant?.status;
 
-  // Extract last_message content safely (could also check if it's empty)
-  const lastMessageContent = last_message ? last_message.content : 'No recent messages';
+  // Determine the last message content
+  let lastMessageContent = last_message?.content || 'No recent messages';
+  if (lastMessageContent.startsWith(CALL_MESSAGE_PREFIX)) {
+    const callDetails = lastMessageContent.slice(CALL_MESSAGE_PREFIX.length); // Extract everything after the prefix
+    const callType = callDetails.split('|')[0].slice(0, 5); // Get the first 5 characters of the call type (e.g., 'audio' or 'video')
+    if (callType === 'audio') {
+      lastMessageContent = 'Audio Call';
+    } else if (callType === 'video') {
+      lastMessageContent = 'Video Call';
+    }
+  }
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
-      <div className={clsx('nav-link text-start', { active: activeChatId === id })} id="chat-1-tab" data-bs-toggle="pill" role="tab">
+      <div
+        className={clsx('nav-link text-start', { active: activeChatId === id })}
+        id="chat-1-tab"
+        data-bs-toggle="pill"
+        role="tab"
+      >
         <div className="d-flex">
-          <div className={clsx('flex-shrink-0 avatar me-2', status === 'online' ? 'status-online' : 'status-offline', { 'avatar-story': isStory })}>
-            <img className="avatar-img rounded-circle" src={avatar_image} alt={full_name || "Avatar"} />
+          <div
+            className={clsx(
+              'flex-shrink-0 avatar me-2',
+              status === 'online' ? 'status-online' : 'status-offline',
+              { 'avatar-story': isStory }
+            )}
+          >
+            <img
+              className="avatar-img rounded-circle"
+              src={avatar_image}
+              alt={full_name || "Avatar"}
+            />
           </div>
           <div className="flex-grow-1 d-block">
             <h6 className="mb-0 mt-1">{full_name}</h6>
@@ -33,6 +59,7 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
     </li>
   );
 };
+
 
 const ChatUsers = ({ chats }) => {
   const [users, setUsers] = useState(chats);
@@ -50,7 +77,7 @@ const ChatUsers = ({ chats }) => {
   };
 
   return (
-    <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0 overflow-hidden">
+    <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0 overflow-hidden" >
       <form className="position-relative">
         <input
           className="form-control py-2"
@@ -66,7 +93,7 @@ const ChatUsers = ({ chats }) => {
       <div className="mt-4 h-100">
         <SimplebarReactClient className="chat-tab-list custom-scrollbar">
           <ul className="nav flex-column nav-pills nav-pills-soft">
-            {users.slice(0, 5).map((chat, idx) => (
+            {users.map((chat, idx) => (
               <ChatItem {...chat} key={idx} last_message={chat.last_message} />
             ))}
           </ul>

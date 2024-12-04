@@ -20,7 +20,7 @@ const MessageScreen = ({navigation}) => {
     // setSelectedMessage(item);
     // setIsMessageScreen(false);
     navigation.navigate('Chat', {
-      receiver: item
+      receiver: item,
     })
   };
 

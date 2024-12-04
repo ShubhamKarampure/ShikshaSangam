@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { View, Text, FlatList, StyleSheet, Button } from "react-native";
 import PageTitleText from "../../Components/PageTitleText";
+import ReplySection from "../../Components/ReplySection";
 
 export default function GroupChatScreen(props) {
   //console.log(receiver);
   return (
     <View style={styles.container}>
-      <PageTitleText>This is Group chat Screen</PageTitleText>
-      <View style={styles.chatArea}></View>
+      <View style={styles.chatArea}>
+    
+      </View>
     </View>
   );
 }

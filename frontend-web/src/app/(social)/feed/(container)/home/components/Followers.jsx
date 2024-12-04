@@ -118,10 +118,6 @@ const Followers = () => {
 
   return (
     <Card>
-      <CardHeader className="pb-0 border-0">
-        <CardTitle className="mb-0">Who to Follow</CardTitle>
-      </CardHeader>
-
       <CardBody>
         <UploadResume />
         <Form className="mb-3">
