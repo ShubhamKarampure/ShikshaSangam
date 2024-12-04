@@ -32,9 +32,9 @@ import { FaUserFriends, FaCommentDots } from "react-icons/fa";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { SiGooglemeet } from "react-icons/si";
 import { createMeeting } from "../../../live/api";
-import Meet from "../../../live/Meet"; 
-const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
 
+const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
+import { useNavigate } from "react-router-dom";
 // Constant for call message type
 const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
@@ -182,10 +182,8 @@ const ChatArea = ({ activeChat }) => {
   const pollingIntervalRef = useRef(null);
   const { showNotification } = useNotificationContext();
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
- 
-  const [showMeet, setShowMeet] = useState(false);
-  const [meetId, setMeetId] = useState(null);
-
+  const navigate = useNavigate();
+  
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -340,20 +338,17 @@ const initiateCall = async () => {
     );
   }
 
-  
+ 
 
-    const onMeetCall = (meetId) => {
-    setMeetId(meetId);  // Set the meeting ID
-    setShowMeet(true);   // Trigger rendering of the Meet component
+  const onMeetCall = (meetId) => {
+    const token = VIDEOSDK_TOKEN
+    const participantName = profile.full_name
+   navigate(`/meet/${token}/${meetId}/${participantName}`);
   };
   
    const { full_name, avatar_image, status } = activeChat.participants[0];
   
   return (
-    <>
-      {showMeet ? (
-        <Meet meetingId={meetId} token={VIDEOSDK_TOKEN} participantName={profile.full_name}/>  // Render Meet component when showMeet is true
-      ) : (
         <Card className="card-chat rounded-start-lg-0 border-start-lg-0">
           <CardBody className="h-100 ">
             <div className="h-100">
@@ -500,9 +495,7 @@ const initiateCall = async () => {
               </Button>
             </form>
           </CardFooter>
-        </Card>)
-      }
-      </>
+        </Card>
   );
 };
 

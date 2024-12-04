@@ -4,9 +4,11 @@ import { MeetingAppProvider } from "./MeetingAppContextDef.jsx";
 import { MeetingContainer } from "./meeting/MeetingContainer.jsx";
 import { LeaveScreen } from "./components/screens/LeaveScreen.jsx";
 import { JoiningScreen } from "./components/screens/JoiningScreen.jsx";
+import { useParams } from "react-router-dom";
 import "./index.css";
 
-function Meet({ token: initialToken, meetingId: initialMeetingId, participantName: initialParticipantName }) {
+function Meet() {
+  const { initialToken, initialMeetingId, initialParticipantName } = useParams();
   const [token, setToken] = useState(initialToken);
   const [meetingId, setMeetingId] = useState(initialMeetingId);
   const [participantName, setParticipantName] = useState(initialParticipantName);

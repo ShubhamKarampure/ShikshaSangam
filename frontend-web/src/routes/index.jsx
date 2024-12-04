@@ -115,7 +115,7 @@ const generalRoutes = [{
   element: <CreatePage />
   },
 {
-  path: '/meet',
+  path:"/meet/:initialToken/:initialMeetingId/:initialParticipantName",
   name: 'Online Meet',
   element: <Meet />
   },];

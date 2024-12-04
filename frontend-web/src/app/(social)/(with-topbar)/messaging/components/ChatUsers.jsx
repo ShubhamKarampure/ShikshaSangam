@@ -5,7 +5,7 @@ import { BsSearch } from 'react-icons/bs';
 import clsx from 'clsx';
 import { useChatContext } from '@/context/useChatContext';
 
-const MEET_MESSAGE_PREFIX = "MEET_INVITATION:";
+const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
 const ChatItem = ({ id, participants, last_message, isStory }) => {
   const { activeChatId, changeActiveChat } = useChatContext();
