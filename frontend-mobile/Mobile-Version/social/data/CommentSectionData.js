@@ -1,6 +1,6 @@
 import { replyData } from "./replyData";
 
-export const COMMENTS = [
+export let COMMENTS = [
   {
     comment_id: 20,
     profile_id: 1,

@@ -3,15 +3,15 @@ import { Pressable, Text, StyleSheet, View } from "react-native";
 
 const ViewRepliesButton = ({ comment, isDarkMode, onPress }) => {
   // Only render if replyCount > 0
-  if (!comment.replyCount || comment.replyCount === 0) {
+  if (!comment.replies_count || comment.replies_count === 0) {
     return <></>;
   }
 
   // Determine button text based on reply count
   const replyText =
-    comment.replyCount === 1
+    comment.replies_count === 1
       ? "View 1 reply"
-      : `View ${comment.replyCount} replies`;
+      : `View ${comment.replies_count} replies`;
 
   return (
     <Pressable
