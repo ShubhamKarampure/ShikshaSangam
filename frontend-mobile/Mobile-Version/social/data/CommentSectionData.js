@@ -1,3 +1,5 @@
+import { replyData } from "./replyData";
+
 export const COMMENTS = [
   {
     comment_id: 20,
@@ -9,6 +11,8 @@ export const COMMENTS = [
     timestamp: "1 minute ago",
     likes: 4,
     isoString: "2024-12-03T22:49:20.885287Z",
+    replyCount: 25,
+    replies: replyData.slice(0, 24), // Selecting 2 replies for this comment
   },
   {
     comment_id: 19,
@@ -19,6 +23,8 @@ export const COMMENTS = [
     timestamp: "15 minutes ago",
     likes: 5,
     isoString: "2024-12-03T22:35:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 18,
@@ -29,6 +35,8 @@ export const COMMENTS = [
     timestamp: "30 minutes ago",
     likes: 1,
     isoString: "2024-12-03T22:20:20.885287Z",
+    replyCount: 1,
+    replies: replyData.slice(5, 6), // Selecting 1 reply for this comment
   },
   {
     comment_id: 17,
@@ -39,6 +47,8 @@ export const COMMENTS = [
     timestamp: "1 hour ago",
     likes: 0,
     isoString: "2024-12-03T21:50:20.885287Z",
+    replyCount: 1,
+    replies: replyData.slice(10, 11), // Selecting 1 reply for this comment
   },
   {
     comment_id: 16,
@@ -49,6 +59,8 @@ export const COMMENTS = [
     timestamp: "2 hours ago",
     likes: 7,
     isoString: "2024-12-03T20:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 15,
@@ -59,6 +71,8 @@ export const COMMENTS = [
     timestamp: "3 hours ago",
     likes: 41,
     isoString: "2024-12-03T19:50:20.885287Z",
+    replyCount: 2,
+    replies: replyData.slice(0, 2), // Selecting 2 replies for this comment
   },
   {
     comment_id: 14,
@@ -69,6 +83,8 @@ export const COMMENTS = [
     timestamp: "4 hours ago",
     likes: 12,
     isoString: "2024-12-03T18:50:20.885287Z",
+    replyCount: 1,
+    replies: replyData.slice(4, 5), // Selecting 1 reply for this comment
   },
   {
     comment_id: 13,
@@ -79,6 +95,8 @@ export const COMMENTS = [
     timestamp: "5 hours ago",
     likes: 2,
     isoString: "2024-12-03T17:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 12,
@@ -89,6 +107,8 @@ export const COMMENTS = [
     timestamp: "7 hours ago",
     likes: 53,
     isoString: "2024-12-03T15:50:20.885287Z",
+    replyCount: 5,
+    replies: replyData.slice(6, 11), // Selecting 3 replies for this comment
   },
   {
     comment_id: 11,
@@ -99,6 +119,8 @@ export const COMMENTS = [
     timestamp: "8 hours ago",
     likes: 43,
     isoString: "2024-12-03T14:50:20.885287Z",
+    replyCount: 2,
+    replies: replyData.slice(15, 17), // Selecting 2 replies for this comment
   },
   {
     comment_id: 10,
@@ -109,6 +131,8 @@ export const COMMENTS = [
     timestamp: "9 hours ago",
     likes: 5,
     isoString: "2024-12-03T13:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 9,
@@ -119,6 +143,8 @@ export const COMMENTS = [
     timestamp: "12 hours ago",
     likes: 7,
     isoString: "2024-12-03T10:50:20.885287Z",
+    replyCount: 7,
+    replies: replyData.slice(12, 19), // Selecting 1 reply for this comment
   },
   {
     comment_id: 8,
@@ -129,6 +155,8 @@ export const COMMENTS = [
     timestamp: "15 hours ago",
     likes: 4,
     isoString: "2024-12-03T07:50:20.885287Z",
+    replyCount: 2,
+    replies: replyData.slice(22, 24), // Selecting 2 replies for this comment
   },
   {
     comment_id: 7,
@@ -139,6 +167,8 @@ export const COMMENTS = [
     timestamp: "1 day ago",
     likes: 4,
     isoString: "2024-12-02T22:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 6,
@@ -149,6 +179,8 @@ export const COMMENTS = [
     timestamp: "2 days ago",
     likes: 56,
     isoString: "2024-12-01T22:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 5,
@@ -159,6 +191,8 @@ export const COMMENTS = [
     timestamp: "3 days ago",
     likes: 23,
     isoString: "2024-11-30T22:50:20.885287Z",
+    replyCount: 1,
+    replies: replyData.slice(7, 8), // Selecting 1 reply for this comment
   },
   {
     comment_id: 4,
@@ -169,6 +203,8 @@ export const COMMENTS = [
     timestamp: "4 days ago",
     likes: 59,
     isoString: "2024-11-29T22:50:20.885287Z",
+    replyCount: 0,
+    replies: [],
   },
   {
     comment_id: 3,
@@ -179,6 +215,8 @@ export const COMMENTS = [
     timestamp: "5 days ago",
     likes: 2,
     isoString: "2024-11-28T22:50:20.885287Z",
+    replyCount: 2,
+    replies: replyData.slice(10, 12), // Selecting 2 replies for this comment
   },
   {
     comment_id: 2,
@@ -189,6 +227,8 @@ export const COMMENTS = [
     timestamp: "6 days ago",
     likes: 77,
     isoString: "2024-11-27T22:50:20.885287Z",
+    replyCount: 1,
+    replies: replyData.slice(0, 1), // Selecting 1 reply for this comment
   },
   {
     comment_id: 1,
@@ -199,6 +239,7 @@ export const COMMENTS = [
     timestamp: "1 week ago",
     likes: 232,
     isoString: "2024-11-26T22:50:20.885287Z",
+    replyCount: 20,
+    replies: replyData.slice(2, 22),
   },
 ];
-

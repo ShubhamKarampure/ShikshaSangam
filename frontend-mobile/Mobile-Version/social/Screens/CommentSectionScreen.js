@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: "#cccccc",
-    marginVertical: 10,
+    marginVertical: 5,
   },
   listContent: {
     paddingBottom: 20,
