@@ -81,7 +81,7 @@ function ParticipantGrid({ participantIds, isPresenting }) {
                           participantIds.length === 1
                             ? "md:max-w-7xl 2xl:max-w-[1480px] "
                             : "md:max-w-lg 2xl:max-w-2xl"
-                        } overflow-clip overflow-hidden  p-1`}
+                        } overflow-clip  p-1`}
                       >
                         <MemoizedParticipant participantId={participantId} />
                       </div>

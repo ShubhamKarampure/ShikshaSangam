@@ -114,11 +114,7 @@ const generalRoutes = [{
   name: 'Create Page',
   element: <CreatePage />
   },
-{
-  path:"/meet/:initialToken/:initialMeetingId/:initialParticipantName",
-  name: 'Online Meet',
-  element: <Meet />
-  },];
+];
 
 //plain routes
 const otherRoutes = [{
@@ -236,7 +232,11 @@ export const socialWithTopbarRoutes = [{
   path: '/not-found',
   name: 'Not Found',
   element: <NotFoundPage />
-  }];
+  },{
+    path:"/meet/:initialToken/:initialMeetingId/:initialParticipantName",
+    name: 'Online Meet',
+    element: <Meet />
+    },];
 
 
 export const profilePagesRoutes = [{

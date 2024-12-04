@@ -8,17 +8,22 @@ import { useParams } from "react-router-dom";
 import "./index.css";
 
 function Meet() {
-  const { initialToken, initialMeetingId, initialParticipantName } = useParams();
+  const { initialToken, initialMeetingId, initialParticipantName } =
+    useParams();
   const [token, setToken] = useState(initialToken);
   const [meetingId, setMeetingId] = useState(initialMeetingId);
-  const [participantName, setParticipantName] = useState(initialParticipantName);
+  const [participantName, setParticipantName] = useState(
+    initialParticipantName
+  );
   const [micOn, setMicOn] = useState(false);
   const [webcamOn, setWebcamOn] = useState(false);
   const [customAudioStream, setCustomAudioStream] = useState(null);
   const [customVideoStream, setCustomVideoStream] = useState(null);
   const [isMeetingStarted, setMeetingStarted] = useState(false);
   const [isMeetingLeft, setIsMeetingLeft] = useState(false);
-  const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
+  const isMobile = window.matchMedia(
+    "only screen and (max-width: 768px)"
+  ).matches;
 
   useEffect(() => {
     if (isMobile) {
@@ -28,9 +33,32 @@ function Meet() {
     }
   }, [isMobile]);
 
-  
+  useEffect(() => {
+    // Dynamically load Tailwind CSS only on the /meet page
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/src/app/(social)/live/index.css"; // Path to the stylesheet
+    link.dataset.viteDevId =
+      "D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"; // Same data attribute
+
+    document.head.appendChild(link);
+
+    return () => {
+      let styleSheet = document.querySelector(
+        'style[data-vite-dev-id="D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"]'
+      );
+
+      // Remove it from the DOM
+      if (styleSheet) {
+        styleSheet.remove();
+      }
+      if (link) {
+        document.head.removeChild(link);
+      }
+      console.log(document.head);
+    };
+  });
   return (
-    
     <MeetingAppProvider>
       {isMeetingStarted ? (
         <MeetingProvider
@@ -80,11 +108,9 @@ function Meet() {
             setMeetingStarted(true);
           }}
           startMeeting={isMeetingStarted}
-              setIsMeetingLeft={setIsMeetingLeft}
-              
+          setIsMeetingLeft={setIsMeetingLeft}
         />
       )}
-
     </MeetingAppProvider>
   );
 }
