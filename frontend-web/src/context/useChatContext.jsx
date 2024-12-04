@@ -46,7 +46,6 @@ export const ChatProvider = ({
   useEffect(() => {
     if (user) {
       changeActiveChat();
-      console.log("its me")
     }
     }, []);
   return <ChatContext.Provider value={{

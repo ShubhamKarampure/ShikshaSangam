@@ -73,3 +73,30 @@ class MessageCreateView(CreateAPIView):
         chat = get_object_or_404(Chat, id=chat_id, participants=user_profile)
         serializer.save(chat=chat, sender=user_profile)
 
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
+from django.shortcuts import get_object_or_404
+from .models import Chat, Message
+from rest_framework.permissions import IsAuthenticated
+
+class ClearChatView(APIView):
+
+    def delete(self, request, *args, **kwargs):
+        chat_id = self.kwargs['chat_id']
+        user_profile = request.user.user
+        
+        # Get the chat or return 404 if not found
+        chat = get_object_or_404(Chat, id=chat_id)
+        
+        # Check if the user is part of the chat
+        if user_profile not in chat.participants.all():
+            return Response({'detail': 'You are not a participant in this chat.'}, status=status.HTTP_403_FORBIDDEN)
+        
+        # Delete all messages in the chat
+        Message.objects.filter(chat=chat).delete()
+
+        # Return a success response
+        return Response({'detail': 'All messages have been deleted from the chat.'}, status=status.HTTP_200_OK)
+
+
