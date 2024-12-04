@@ -50,7 +50,7 @@ const ChatUsers = ({ chats }) => {
   };
 
   return (
-    <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0 overflow-hidden">
+    <Card className="card-chat-list rounded-end-lg-0 card-body border-end-lg-0 rounded-top-0 overflow-hidden" >
       <form className="position-relative">
         <input
           className="form-control py-2"
@@ -66,7 +66,7 @@ const ChatUsers = ({ chats }) => {
       <div className="mt-4 h-100">
         <SimplebarReactClient className="chat-tab-list custom-scrollbar">
           <ul className="nav flex-column nav-pills nav-pills-soft">
-            {users.slice(0, 5).map((chat, idx) => (
+            {users.map((chat, idx) => (
               <ChatItem {...chat} key={idx} last_message={chat.last_message} />
             ))}
           </ul>

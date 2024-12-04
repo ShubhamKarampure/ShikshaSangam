@@ -69,3 +69,7 @@ export const sendMessage = async (chatId, messageContent) => {
 
   return await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), "POST", body);
 };
+
+export const clearChat = async (chatId) => {
+  return await handleFetch(API_ROUTES.CHAT_CLEAR(chatId), "DELETE");
+};
