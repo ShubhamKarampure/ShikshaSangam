@@ -9,9 +9,10 @@ import PostCard from "../Components/PostCard";
 import { useAuthContext } from "../../Context/useAuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 
-export default function HomeScreen({navigation}) {
+export default function HomeScreen({navigation}) {   // GET  /social/posts/list_posts/    to get the list of post objects
+
   const isDarkMode = true; // Enforce dark mode by default
-  
+
   const [scrollOffset, setScrollOffset] = React.useState(0);
   const flatListRef = React.useRef(null); // Reference to the FlatList
 
@@ -39,7 +40,7 @@ export default function HomeScreen({navigation}) {
     >
       <FlatList
         data={posts}
-        keyExtractor={(item) => item.post_id.toString()}
+        keyExtractor={(item) => item.post.id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.feed}
         onScroll={handleScroll} // Track scroll position

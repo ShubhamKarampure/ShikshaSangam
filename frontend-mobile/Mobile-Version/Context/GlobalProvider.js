@@ -3,6 +3,7 @@ import { AuthProvider } from './useAuthContext';  // Import AuthContext
 import { NotificationProvider } from './NotificationContext';
 import { MessageProvider } from './MessageContext';
 import { SettingsProvider } from './SettingsContext';
+import { ReplyListProvider } from './ReplyListContext';
 
 export const GlobalProvider = ({ children }) => {
   return (
@@ -10,7 +11,9 @@ export const GlobalProvider = ({ children }) => {
       <NotificationProvider>
         <MessageProvider>
           <SettingsProvider>
-            {children}
+            <ReplyListProvider>
+              {children}
+            </ReplyListProvider>
           </SettingsProvider>
         </MessageProvider>
       </NotificationProvider>

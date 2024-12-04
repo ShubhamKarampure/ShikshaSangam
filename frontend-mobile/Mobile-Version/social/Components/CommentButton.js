@@ -18,7 +18,7 @@ const CommentButton = ({ item, isDarkMode, onPress }) => {
           isDarkMode ? styles.textDarkSecondary : styles.textLight,
         ]}
       >
-        {item.commentsCount}
+        {item.comments_count}
       </Text>
     </TouchableOpacity>
   );

@@ -8,7 +8,12 @@ export default function ChatScreenHeader({ route }) {
       <StatusBar style="light" />
       <View style={styles.headerContainer}>
         <Image
-          source={{ uri: route.params.receiver.avatar }}
+          source={{
+            uri:
+              route.params.receiver.avatar !== null
+                ? route.params.receiver.avatar
+                : "https://via.placeholder.com/150",
+          }}
           style={styles.avatar}
         />
         <View>
