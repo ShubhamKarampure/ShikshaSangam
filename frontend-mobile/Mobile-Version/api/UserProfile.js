@@ -51,25 +51,26 @@ export const getUserProfile = async (profile_id) => {
   
     return response.json();
   };
-  // UPDATE (PUT) user profile
-export const updateUserProfile = async (profileId, profileData) => {
-  const token = await getAccessToken();
-  const response = await fetch(`${BACKEND_URL}/users/userprofiles/${profileId}/`, {  // Use profileId here
-    method: 'PUT',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Content-Type': 'multipart/form-data',
-    },
-    body: profileData, // FormData instance for updating the profile
-  });
-
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to update user profile');
-  }
-
-  return response.json();
-};
+  
+  export const updateUserProfile = async (profileId, profileData) => {
+    const token = await getAccessToken();
+  
+    const response = await fetch(`${BACKEND_URL}/users/userprofiles/${profileId}/`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`, // Include the authentication token
+      },
+      body: profileData, // FormData instance with all fields and files
+    });
+  
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to update user profile");
+    }
+  
+    return response.json(); // Backend should return updated profile with Cloudinary URLs
+  };
+  
 
   // DELETE user profile
 export const deleteUserProfile = async () => {
