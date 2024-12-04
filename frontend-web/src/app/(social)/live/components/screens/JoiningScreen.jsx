@@ -31,6 +31,7 @@ export function JoiningScreen({
   customAudioStream,
   setCustomAudioStream,
   setCustomVideoStream,
+  meetingId,
 }) {
   const {
     selectedWebcam,
@@ -62,7 +63,7 @@ export function JoiningScreen({
   const [dlgMuted, setDlgMuted] = useState(false);
   const [dlgDevices, setDlgDevices] = useState(false);
   const [didDeviceChange, setDidDeviceChange] = useState(false);
-
+console.log(meetingId)
   const videoPlayerRef = useRef();
   const videoTrackRef = useRef();
   const audioTrackRef = useRef();
@@ -501,6 +502,7 @@ export function JoiningScreen({
                     videoTrack={videoTrack}
                     setVideoTrack={setVideoTrack}
                     onClickStartMeeting={onClickStartMeeting}
+                    initalmeetId = {meetingId}
                     onClickJoin={async (id) => {
                       const token = await getToken();
                       const { meetingId, err } = await validateMeeting({

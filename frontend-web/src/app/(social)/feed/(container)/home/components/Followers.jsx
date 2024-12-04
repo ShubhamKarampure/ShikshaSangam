@@ -169,8 +169,8 @@ const Followers = () => {
                         borderRadius: "50%",
                         borderWidth: "2px",
                         borderStyle: "solid",
-                        width: "50px",
-                        height: "50px",
+                        width: "45px",
+                        height: "45px",
                       }}
                     >
                       <img
