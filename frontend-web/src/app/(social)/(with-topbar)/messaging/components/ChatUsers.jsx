@@ -5,7 +5,7 @@ import { BsSearch } from 'react-icons/bs';
 import clsx from 'clsx';
 import { useChatContext } from '@/context/useChatContext';
 
-const CALL_MESSAGE_PREFIX = "CALL_INVITATION:";
+const MEET_MESSAGE_PREFIX = "MEET_INVITATION:";
 
 const ChatItem = ({ id, participants, last_message, isStory }) => {
   const { activeChatId, changeActiveChat } = useChatContext();
@@ -18,15 +18,10 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
 
   // Determine the last message content
   let lastMessageContent = last_message?.content || 'No recent messages';
-  if (lastMessageContent.startsWith(CALL_MESSAGE_PREFIX)) {
-    const callDetails = lastMessageContent.slice(CALL_MESSAGE_PREFIX.length); // Extract everything after the prefix
-    const callType = callDetails.split('|')[0].slice(0, 5); // Get the first 5 characters of the call type (e.g., 'audio' or 'video')
-    if (callType === 'audio') {
-      lastMessageContent = 'Audio Call';
-    } else if (callType === 'video') {
-      lastMessageContent = 'Video Call';
+  if (lastMessageContent.startsWith(MEET_MESSAGE_PREFIX)) {
+      lastMessageContent = 'Quick Connect';
     }
-  }
+  
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
@@ -59,7 +54,6 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
     </li>
   );
 };
-
 
 const ChatUsers = ({ chats }) => {
   const [users, setUsers] = useState(chats);

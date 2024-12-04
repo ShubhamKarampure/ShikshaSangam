@@ -1,13 +1,14 @@
-const API_BASE_URL = "https://api.videosdk.live";
-const VIDEOSDK_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcGlrZXkiOiJmMjUyYmE2NS00YTZlLTQ5OWYtOWIwZS1mN2IyODVmMDczZGEiLCJwZXJtaXNzaW9ucyI6WyJhbGxvd19qb2luIl0sImlhdCI6MTczMjkyMzA0MSwiZXhwIjoxNzMzNTI3ODQxfQ.gd-9mpRpGu5KwQwaHJOL8_oE8ZQZa37888D10D7QJsM';
-console.log(VIDEOSDK_TOKEN)
+
+const API_BASE_URL = import.meta.env.VITE_VIDEOSDK_BASE_URL;
+const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
 
 export const getToken = async () => {
   return VIDEOSDK_TOKEN
 };
 
-export const createMeeting = async ({ token }) => {
+export const createMeeting = async (token) => {
   const url = `${API_BASE_URL}/v2/rooms`;
+  console.log(token)
   const options = {
     method: "POST",
     headers: { Authorization: token, "Content-Type": "application/json" },
