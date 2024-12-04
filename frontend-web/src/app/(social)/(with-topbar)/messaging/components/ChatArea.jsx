@@ -349,7 +349,7 @@ const initiateCall = async () => {
    const { full_name, avatar_image, status } = activeChat.participants[0];
   
   return (
-        <Card className="card-chat rounded-start-lg-0 border-start-lg-0">
+        <Card className="card-chat rounded-start-lg-0 border-start-lg-0 h-100">
           <CardBody className="h-100 ">
             <div className="h-100">
               {/* Chat Header */}

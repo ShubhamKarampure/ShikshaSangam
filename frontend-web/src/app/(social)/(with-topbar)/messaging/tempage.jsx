@@ -6,12 +6,11 @@ import PageMetaData from "@/components/PageMetaData";
 import { fetchChats } from "@/api/multimedia";
 import { useEffect, useState, useCallback } from "react";
 import { useChatContext } from "@/context/useChatContext";
-import { calcLength } from "framer-motion";
 
 const Messaging = () => {
   const { activeChatId, changeActiveChat } = useChatContext();
   const [chat, setUserChats] = useState([]);
-  const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
+ const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const fetchUserChats = useCallback(async () => {
     try {
       const fetchedChats = await fetchChats();
@@ -49,9 +48,9 @@ const Messaging = () => {
   return (
     <>
       <PageMetaData title="Messaging" />
-      <main style={{margin:'0px',width:'100%',height:'100vh'}}>
-        <div style={{width:'100%',height:'100%'}}>
-          <Row className="gx-0" style={{width:'100%',height:'100%'}}>
+      <main>
+        <Container>
+          <Row className="gx-0">
             <Col lg={4} xxl={3}>
               <div className="d-flex align-items-center mb-4 d-lg-none">
                 <ChatToggler />
@@ -74,8 +73,10 @@ const Messaging = () => {
               <ChatArea activeChat={activeChat} />
             </Col>
           </Row>
-        </div>
+        </Container>
+
       </main>
+
     </>
   );
 };
