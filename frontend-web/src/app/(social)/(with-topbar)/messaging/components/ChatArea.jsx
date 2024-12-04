@@ -16,12 +16,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import clsx from "clsx";
 import { FaCircle, FaPaperclip, FaPaperPlane } from "react-icons/fa";
-import {
-  BsPersonCheck,
-  BsThreeDotsVertical,
-  BsTrash,
-} from "react-icons/bs";
-import {  FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
+import { BsPersonCheck, BsThreeDotsVertical, BsTrash } from "react-icons/bs";
+import { FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
@@ -49,12 +45,11 @@ const AlwaysScrollToBottom = () => {
   return <div ref={elementRef} />;
 };
 const MeetInvitationMessage = ({ message, onMeetCall, isCurrentUser }) => {
-  
-  console.log(message.content)
+  console.log(message.content);
   const callDetails = message.content.split("#");
   const meetId = callDetails[1];
-  
-  console.log(meetId)
+
+  console.log(meetId);
   return (
     <div
       className={clsx("d-flex mb-3 ", {
@@ -119,7 +114,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
 
   if (isMeetInvitation) {
     return (
-      < MeetInvitationMessage
+      <MeetInvitationMessage
         message={message}
         onMeetCall={onMeetCall}
         isCurrentUser={isCurrentUser}
@@ -183,7 +178,7 @@ const ChatArea = ({ activeChat }) => {
   const { showNotification } = useNotificationContext();
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const navigate = useNavigate();
-  
+
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -261,37 +256,36 @@ const ChatArea = ({ activeChat }) => {
       });
     }
   };
-const initiateCall = async () => {
-  try {
-   
-    // Create a meeting using the token
-    console.log(VIDEOSDK_TOKEN)
-    const meetingResponse = await createMeeting(VIDEOSDK_TOKEN);
-    console.log(meetingResponse)
-    if (!meetingResponse || !meetingResponse.meetingId) {
-      throw new Error("Failed to create meeting");
+  const initiateCall = async () => {
+    try {
+      // Create a meeting using the token
+      console.log(VIDEOSDK_TOKEN);
+      const meetingResponse = await createMeeting(VIDEOSDK_TOKEN);
+      console.log(meetingResponse);
+      if (!meetingResponse || !meetingResponse.meetingId) {
+        throw new Error("Failed to create meeting");
+      }
+      const meetId = meetingResponse.meetingId;
+
+      // Create a special call invitation message
+      const callMessage = `${MEET_MESSAGE_PREFIX}#${meetId}`;
+
+      // Send the call message
+      const newMessage = await sendMessage(activeChat.id, callMessage);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+      showNotification({
+        message: "Meeting invitation sent successfully!",
+        variant: "success",
+      });
+    } catch (err) {
+      console.error("Error initiating call:", err);
+      showNotification({
+        message: "Failed to initiate call",
+        variant: "danger",
+      });
     }
-    const meetId = meetingResponse.meetingId;
-
-    // Create a special call invitation message
-    const callMessage = `${MEET_MESSAGE_PREFIX}#${meetId}`;
-
-    // Send the call message
-    const newMessage = await sendMessage(activeChat.id, callMessage);
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-
-    showNotification({
-      message: "Meeting invitation sent successfully!",
-      variant: "success",
-    });
-  } catch (err) {
-    console.error("Error initiating call:", err);
-    showNotification({
-      message: "Failed to initiate call",
-      variant: "danger",
-    });
-  }
-};
+  };
 
   const clear = async (chatId) => {
     try {
@@ -338,164 +332,167 @@ const initiateCall = async () => {
     );
   }
 
- 
-
   const onMeetCall = (meetId) => {
-    const token = VIDEOSDK_TOKEN
-    const participantName = profile.full_name
-   navigate(`/meet/${token}/${meetId}/${participantName}`);
+    const token = VIDEOSDK_TOKEN;
+    const participantName = profile.full_name;
+    navigate(`/meet/${token}/${meetId}/${participantName}`);
   };
-  
-   const { full_name, avatar_image, status } = activeChat.participants[0];
-  
+
+  const { full_name, avatar_image, status } = activeChat.participants[0];
+
   return (
-        <Card className="card-chat rounded-start-lg-0 border-start-lg-0 h-100">
-          <CardBody className="h-100 ">
-            <div className="h-100">
-              {/* Chat Header */}
-              <div className="d-sm-flex justify-content-between align-items-center">
-                <div className="d-flex mb-2 mb-sm-0">
-                  <div className="flex-shrink-0 avatar me-2">
-                    <img
-                      className="img-fluid"
-                      src={avatar_image || "path/to/placeholder-image.jpg"}
-                      alt={full_name}
-                      style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                  </div>
-
-                  <div className="d-block flex-grow-1">
-                    <h6 className="mb-0 mt-1">{full_name || ""}</h6>
-                    <div className="small text-secondary">
-                      <FaCircle
-                        className={`text-${status === "offline" ? "danger" : "success"} me-1`}
-                      />
-                      {status === "offline" ? "Offline" : "Online"}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Chat Actions */}
-                <div className="d-flex align-items-center">
-                  <OverlayTrigger
-                    placement="top"
-                    overlay={<Tooltip>Quick Connect</Tooltip>}
-                  >
-                    <Button
-                      variant="primary-soft"
-                      className="icon-md rounded-circle me-2 px-2"
-                      onClick={() => initiateCall()}
-                    >
-                      <SiGooglemeet />
-                    </Button>
-                  </OverlayTrigger>
-                  <Dropdown>
-                    <DropdownToggle
-                      as="a"
-                      className="icon-md rounded-circle btn btn-primary-soft me-2 px-2 content-none"
-                      role="button"
-                    >
-                      <BsThreeDotsVertical />
-                    </DropdownToggle>
-                    <DropdownMenu className="dropdown-menu-end">
-                      <DropdownItem>
-                        <BsPersonCheck className="me-2 fw-icon" />
-                        View profile
-                      </DropdownItem>
-                      <DropdownItem onClick={() => clear(activeChat.id)}>
-                        <BsTrash className="me-2 fw-icon" />
-                        Delete chat
-                      </DropdownItem>
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
+    <Card className="card-chat rounded-start-lg-0 border-start-lg-0 h-100">
+      <CardBody className="h-100 ">
+        <div className="h-100">
+          {/* Chat Header */}
+          <div className="d-sm-flex justify-content-between align-items-center">
+            <div className="d-flex mb-2 mb-sm-0">
+              <div className="flex-shrink-0 avatar me-2">
+                <img
+                  className="img-fluid"
+                  src={avatar_image || "path/to/placeholder-image.jpg"}
+                  alt={full_name}
+                  style={{
+                    width: "50px",
+                    height: "50px",
+                    objectFit: "cover",
+                    borderRadius: "50%",
+                  }}
+                />
               </div>
 
-              <hr />
-
-              {/* Chat Messages */}
-              <SimplebarReactClient className="chat-conversation-content">
-                {isLoading ? (
-                  <div className="text-center my-3">Loading messages...</div>
-                ) : error ? (
-                  <div className="text-center text-danger my-3">{error}</div>
-                ) : (
-                  <>
-                    {messages.map((message) => (
-                      <UserMessage
-                        key={message.id}
-                        message={message}
-                        onMeetCall={onMeetCall}
-                        isCurrentUser={message.sender === profile.full_name}
-                      />
-                    ))}
-                    <AlwaysScrollToBottom />
-                  </>
-                )}
-              </SimplebarReactClient>
-            </div>
-          </CardBody>
-
-          {/* Message Input */}
-          <CardFooter>
-            <form
-              onSubmit={handleSubmit(sendChatMessage)}
-              className="d-sm-flex align-items-end"
-            >
-              <Controller
-                name="newMessage"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <div className="w-100">
-                    <input
-                      {...field}
-                      type="text"
-                      placeholder="Type a message"
-                      className={`form-control ${error ? "is-invalid" : ""}`}
-                    />
-                    {error && (
-                      <div className="invalid-feedback">{error.message}</div>
-                    )}
-                  </div>
-                )}
-              />
-              <Dropdown
-                show={isEmojiPickerOpen}
-                onToggle={(isOpen) => setIsEmojiPickerOpen(isOpen)}
-                drop="up"
-              >
-                <DropdownToggle
-                  type="button"
-                  className="btn h-100 btn-sm btn-danger-soft ms-2 border border-transparent content-none"
-                >
-                  <FaFaceSmile className="fs-6" />
-                </DropdownToggle>
-                <DropdownMenu className="p-0 rounded-4">
-                  <EmojiPicker
-                    data={data}
-                    theme={theme}
-                    onEmojiSelect={(e) => {
-                      const currentMessage = control._formValues.newMessage || "";
-                      setValue("newMessage", currentMessage + e.native);
-                      setIsEmojiPickerOpen(false);
-                    }}
+              <div className="d-block flex-grow-1">
+                <h6 className="mb-0 mt-1">{full_name || ""}</h6>
+                <div className="small text-secondary">
+                  <FaCircle
+                    className={`text-${status === "offline" ? "danger" : "success"} me-1`}
                   />
+                  {status === "offline" ? "Offline" : "Online"}
+                </div>
+              </div>
+            </div>
+
+            {/* Chat Actions */}
+            <div className="d-flex align-items-center">
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Quick Connect</Tooltip>}
+              >
+                <Button
+                  variant="primary-soft"
+                  className="icon-md rounded-circle me-2 px-2"
+                  onClick={() => initiateCall()}
+                >
+                  <SiGooglemeet />
+                </Button>
+              </OverlayTrigger>
+              <Dropdown>
+                <DropdownToggle
+                  as="a"
+                  className="icon-md rounded-circle btn btn-primary-soft me-2 px-2 content-none"
+                  role="button"
+                >
+                  <BsThreeDotsVertical />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-end">
+                  <DropdownItem>
+                    <BsPersonCheck className="me-2 fw-icon" />
+                    View profile
+                  </DropdownItem>
+                  <DropdownItem onClick={() => clear(activeChat.id)}>
+                    <BsTrash className="me-2 fw-icon" />
+                    Delete chat
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
-              <Button variant="secondary-soft" size="sm" className="ms-2">
-                <FaPaperclip className="fs-6" />
-              </Button>
-              <Button variant="primary" type="submit" size="sm" className="ms-2">
-                <FaPaperPlane className="fs-6" />
-              </Button>
-            </form>
-          </CardFooter>
-        </Card>
+            </div>
+          </div>
+
+          <hr />
+
+          {/* Chat Messages */}
+          <SimplebarReactClient
+            className="chat-conversation-content tw-overflow-hidden tw-overflow-y-auto"
+            style={{
+              maxHeight: "calc(100vh - 260px)",
+            }}
+          >
+            {isLoading ? (
+              <div className="text-center my-3">Loading messages...</div>
+            ) : error ? (
+              <div className="text-center text-danger my-3">{error}</div>
+            ) : (
+              <div>
+                {messages.map((message) => (
+                  <UserMessage
+                    key={message.id}
+                    message={message}
+                    onMeetCall={onMeetCall}
+                    isCurrentUser={message.sender === profile.full_name}
+                  />
+                ))}
+                <AlwaysScrollToBottom />
+              </div>
+            )}
+          </SimplebarReactClient>
+        </div>
+      </CardBody>
+
+      {/* Message Input */}
+      <CardFooter>
+        <form
+          onSubmit={handleSubmit(sendChatMessage)}
+          className="d-sm-flex align-items-end"
+        >
+          <Controller
+            name="newMessage"
+            control={control}
+            render={({ field, fieldState: { error } }) => (
+              <div className="w-100">
+                <input
+                  {...field}
+                  type="text"
+                  placeholder="Type a message"
+                  className={`form-control ${error ? "is-invalid" : ""}`}
+                />
+                {error && (
+                  <div className="invalid-feedback">{error.message}</div>
+                )}
+              </div>
+            )}
+          />
+          <Dropdown
+            show={isEmojiPickerOpen}
+            onToggle={(isOpen) => setIsEmojiPickerOpen(isOpen)}
+            drop="up"
+          >
+            <DropdownToggle
+              type="button"
+              className="btn h-100 btn-sm btn-danger-soft ms-2 border border-transparent content-none"
+            >
+              <FaFaceSmile className="fs-6" />
+            </DropdownToggle>
+            <DropdownMenu className="p-0 rounded-4">
+              <EmojiPicker
+                data={data}
+                theme={theme}
+                onEmojiSelect={(e) => {
+                  const currentMessage = control._formValues.newMessage || "";
+                  setValue("newMessage", currentMessage + e.native);
+                  setIsEmojiPickerOpen(false);
+                }}
+              />
+            </DropdownMenu>
+          </Dropdown>
+          <Button variant="secondary-soft" size="sm" className="ms-2">
+            <FaPaperclip className="fs-6" />
+          </Button>
+          <Button variant="primary" type="submit" size="sm" className="ms-2">
+            <FaPaperPlane className="fs-6" />
+          </Button>
+        </form>
+      </CardFooter>
+    </Card>
   );
 };
 
