@@ -1,36 +1,59 @@
-import React, { useState } from "react";
-import { View, Text, FlatList, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, FlatList, StyleSheet, ActivityIndicator, Text } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import MessageCard from "../Components/MessageCard";
-import PageTitleText from "../../Components/PageTitleText";
-import ChatScreen from "./ChatScreen";
-import { messagesData } from "../../data/messagesData";
+import { fetchChats } from "../../../api/multimedia";
 
-const MessageScreen = ({navigation}) => {
-  const [messages, setMessages] = useState(messagesData);
-  const sender = {
-    profile_id: 1,
-    avatar: "https://via.placeholder.com/150",
-    username: "John Doe",
-  };
+const MessageScreen = ({ navigation }) => {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
+  useEffect(() => {
+    // Fetch chats when the component mounts
+    const getChats = async () => {
+      try {
+        const fetchedChats = await fetchChats(); // Fetch chats using the API function
+        setMessages(fetchedChats); // Update state with the fetched chats
+      } catch (err) {
+        setError("Failed to fetch chats. Please try again.");
+        console.error(err);
+      } finally {
+        setLoading(false); // Ensure loading is stopped regardless of success or failure
+      }
+    };
+
+    getChats();
+  }, []);
 
   const handleMessagePress = (item) => {
-    //console.log("Message pressed:", message);
-    // setSelectedMessage(item);
-    // setIsMessageScreen(false);
-    navigation.navigate('Chat', {
+    navigation.navigate("Chat", {
       receiver: item,
-    })
+    });
   };
 
   const renderMessage = ({ item }) => (
     <MessageCard item={item} onPress={() => handleMessagePress(item)} />
   );
-  
-  let screen = (
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color="#ffffff" />
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View style={styles.errorContainer}>
+        <Text style={styles.errorText}>{error}</Text>
+      </View>
+    );
+  }
+
+  return (
     <View style={styles.container}>
-      {/* <PageTitleText>Messages</PageTitleText> */}
       <FlatList
         data={messages}
         keyExtractor={(item) => item.DMChat_id.toString()}
@@ -40,8 +63,6 @@ const MessageScreen = ({navigation}) => {
       />
     </View>
   );
-
-  return screen;
 };
 
 const styles = StyleSheet.create({
@@ -49,10 +70,26 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#121212",
     paddingHorizontal: 20,
-    //paddingTop: 10,
   },
   listContent: {
     paddingBottom: 20,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#121212",
+  },
+  errorText: {
+    color: "#ffffff",
+    fontSize: 16,
+    textAlign: "center",
   },
 });
 
