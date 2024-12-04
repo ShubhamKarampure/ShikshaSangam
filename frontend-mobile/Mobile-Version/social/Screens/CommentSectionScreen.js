@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import Comment from "../Components/Comment";
 import CommentTypingSection from "../Components/CommentTypingSection";
+import timePassed from "../../Utility/timePassed";
 
 export default function CommentSectionScreen({
   navigation,
@@ -24,7 +25,6 @@ export default function CommentSectionScreen({
   // onPress,
   // isModalVisible
 }) {
-
   const item = route.params.item;
   const isDarkMode = route.params.isDarkMode;
 
@@ -39,8 +39,8 @@ export default function CommentSectionScreen({
     Animated.timing(slideAnim, {
       toValue: -1000, // Off-screen position
       duration: 500,
-      useNativeDriver:true,
-    }).start(()=>navigation.goBack());
+      useNativeDriver: true,
+    }).start(() => navigation.goBack());
   }
 
   useEffect(() => {
@@ -55,57 +55,37 @@ export default function CommentSectionScreen({
     Keyboard.dismiss();
   };
 
-  function timePassed(isoString1, isoString2) {
-    const date1 = new Date(isoString1);
-    const date2 = new Date(isoString2);
-    const diffMs = Math.abs(date2 - date1); // Time difference in milliseconds
-
-    const seconds = Math.floor(diffMs / 1000);
-    const minutes = Math.floor(seconds / 60);
-    const hours = Math.floor(minutes / 60);
-    const days = Math.floor(hours / 24);
-    const weeks = Math.floor(days / 7);
-    const years = Math.floor(days / 365);
-
-    if (seconds < 60) {
-      return `${seconds} second${seconds !== 1 ? "s" : ""} ago`;
-    } else if (minutes < 60) {
-      return `${minutes} minute${minutes !== 1 ? "s" : ""} ago`;
-    } else if (hours < 24) {
-      return `${hours} hour${hours !== 1 ? "s" : ""} ago`;
-    } else if (days < 7) {
-      return `${days} day${days !== 1 ? "s" : ""} ago`;
-    } else if (weeks < 52) {
-      return `${weeks} week${weeks !== 1 ? "s" : ""} ago`;
-    } else {
-      return `${years} year${years !== 1 ? "s" : ""} ago`;
-    }
-  }
-
   const sender_profile_id = 1;
   const sender_username = "John Doe";
   const sender_avatar = "https://via.placeholder.com/150";
 
   const [commentList, setCommentList] = useState(item.comments);
 
-  function onSendHandler(chat){
-    setCommentList((prevList)=>{
+  const flatListRef = useRef(null); // Reference for FlatList
+
+  function onSendHandler(chat) {
+    setCommentList((prevList) => {
       let comment_id = 1;
       if (prevList) {
         comment_id = prevList[0].comment_id + 1;
       }
-      const now = new Date();
       const commentItem = {
         comment_id: comment_id,
         profile_id: sender_profile_id,
         username: sender_username,
         avatar: sender_avatar,
         content: chat.message,
-        timestamp: timePassed(chat.timestamp.isoString, now.toISOString()),
-        likes:0,
+        timestamp: timePassed(
+          chat.timestamp.isoString,
+          chat.timestamp.isoString
+        ),
+        isoString: chat.timestamp.isoString,
+        likes: 0,
       };
-      return [commentItem, ...prevList]
-    })
+      return [commentItem, ...prevList];
+    }); 
+    // Scroll to the top of the list
+    flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   }
 
   return (
@@ -174,6 +154,7 @@ export default function CommentSectionScreen({
                   ItemSeparatorComponent={() => (
                     <View style={styles.separator}></View>
                   )}
+                  ref={flatListRef} // Attach the reference
                   contentContainerStyle={styles.listContent}
                 />
                 <View>
@@ -234,7 +215,7 @@ const styles = StyleSheet.create({
   separator: {
     height: 1,
     backgroundColor: "#cccccc",
-    marginVertical: 10,
+    marginVertical: 5,
   },
   listContent: {
     paddingBottom: 20,
