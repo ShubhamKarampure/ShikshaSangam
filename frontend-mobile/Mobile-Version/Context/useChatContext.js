@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react';
-import { AuthContext } from "./useAuthContext";
+import { useAuthContext } from './useAuthContext';
 
 const ChatContext = createContext(undefined);
 export const useChatContext = () => {
@@ -18,7 +18,7 @@ export const ChatProvider = ({
     setActiveChatId(chatId);
   };
   
-  const { user } = AuthContext();
+  const { user } = useAuthContext();
   useEffect(() => {
     if (user) {
       changeActiveChat();
@@ -27,8 +27,6 @@ export const ChatProvider = ({
   return <ChatContext.Provider value={{
     activeChatId,
     changeActiveChat,
-    chatList,
-    chatToast
   }}>
       {children}
     </ChatContext.Provider>;
