@@ -75,6 +75,7 @@ class PostViewSet(viewsets.ModelViewSet):
             return self._get_paginated_post_data(page)
 
         return Response({"detail": "No shared posts available."})
+    
 
     def _get_paginated_post_data(self, posts):
         """Helper function to format paginated post data."""
@@ -157,6 +158,53 @@ class PostViewSet(viewsets.ModelViewSet):
         return Response({
             'detail': 'No posts available.'
         })
+    
+    @action(detail=True, methods=['get'], url_path='details', url_name='details')
+    def get_post_details(self, request, pk=None):
+        """
+        Custom action to fetch detailed data for a single post.
+        """
+        try:
+            post = self.get_object()  # Fetch the post instance using the primary key
+        except Post.DoesNotExist:
+            return Response({'error': 'Post not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Prepare content type for the Post model
+        post_content_type = ContentType.objects.get_for_model(Post)
+
+        # Extract associated user profile
+        user = post.userprofile
+
+        # Calculate stats
+        num_followers = Follow.objects.filter(followed=user).count()
+        num_likes = Like.objects.filter(content_type=post_content_type, object_id=post.id).count()
+        num_comments = Comment.objects.filter(post=post).count()
+        num_shares = Share.objects.filter(post=post).count()
+        time_since_post = timesince(post.created_at)
+
+        # Serialize the post
+        post_serializer = self.get_serializer(post)
+
+        # Prepare response data
+        response_data = {
+            'post': post_serializer.data,
+            'user': {
+                'username': user.user.username,
+                'profile_id': user.id,
+                'avatar': user.avatar_image.url if user.avatar_image else None,
+                'num_followers': num_followers,
+                'bio': user.bio
+            },
+            'post_stats': {
+                'likes': num_likes,
+                'comments': num_comments,
+                'shares': num_shares,
+                'time_since_post': time_since_post,
+            },
+            'comments_count': num_comments,
+        }
+
+        return Response(response_data, status=status.HTTP_200_OK)
     
 
 

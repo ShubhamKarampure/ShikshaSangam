@@ -6,17 +6,16 @@ import { LeaveScreen } from "./components/screens/LeaveScreen.jsx";
 import { JoiningScreen } from "./components/screens/JoiningScreen.jsx";
 import "./index.css";
 
-function Meet() {
-  const [token, setToken] = useState("");
-  const [meetingId, setMeetingId] = useState("");
-  const [participantName, setParticipantName] = useState("");
+function Meet({ token: initialToken, meetingId: initialMeetingId, participantName: initialParticipantName }) {
+  const [token, setToken] = useState(initialToken);
+  const [meetingId, setMeetingId] = useState(initialMeetingId);
+  const [participantName, setParticipantName] = useState(initialParticipantName);
   const [micOn, setMicOn] = useState(false);
   const [webcamOn, setWebcamOn] = useState(false);
   const [customAudioStream, setCustomAudioStream] = useState(null);
   const [customVideoStream, setCustomVideoStream] = useState(null);
   const [isMeetingStarted, setMeetingStarted] = useState(false);
   const [isMeetingLeft, setIsMeetingLeft] = useState(false);
-
   const isMobile = window.matchMedia("only screen and (max-width: 768px)").matches;
 
   useEffect(() => {
@@ -27,6 +26,7 @@ function Meet() {
     }
   }, [isMobile]);
 
+  
   return (
     
     <MeetingAppProvider>
@@ -68,6 +68,7 @@ function Meet() {
           micOn={micOn}
           setMicOn={setMicOn}
           webcamOn={webcamOn}
+          meetingId={meetingId}
           setWebcamOn={setWebcamOn}
           customAudioStream={customAudioStream}
           setCustomAudioStream={setCustomAudioStream}
@@ -82,8 +83,6 @@ function Meet() {
         />
       )}
 
-      
-      
     </MeetingAppProvider>
   );
 }

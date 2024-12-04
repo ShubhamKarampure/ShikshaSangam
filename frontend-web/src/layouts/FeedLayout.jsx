@@ -40,7 +40,7 @@ const FeedLayout = ({ children }) => {
   const { messagingOffcanvas, startOffcanvas } = useLayoutContext();
   const { width } = useViewPort();
   return (
-    <div style={{ width: "100%" , padding: '0px 55px'}}>
+    <div style={{ width: "100%" , padding: '0px 65px'}}>
       <Suspense fallback={<Preloader />}>
         <TopHeader />
       </Suspense>

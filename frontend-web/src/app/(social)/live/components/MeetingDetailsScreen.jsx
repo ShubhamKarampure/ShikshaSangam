@@ -8,8 +8,9 @@ export function MeetingDetailsScreen({
   participantName,
   setParticipantName,
   onClickStartMeeting,
+   initalmeetId 
 }) {
-  const [meetingId, setMeetingId] = useState("");
+  const [meetingId, setMeetingId] = useState( initalmeetId );
   const [meetingIdError, setMeetingIdError] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const [iscreateMeetingClicked, setIscreateMeetingClicked] = useState(false);
@@ -46,7 +47,7 @@ export function MeetingDetailsScreen({
           <input
             defaultValue={meetingId}
             onChange={(e) => {
-              setMeetingId(e.target.value);
+              setMeetingId(meetingId);
             }}
             placeholder={"Enter meeting Id"}
             className="px-4 py-3 bg-gray-650 rounded-xl text-white w-full text-center"
@@ -91,33 +92,7 @@ export function MeetingDetailsScreen({
       {!iscreateMeetingClicked && !isJoinMeetingClicked && (
         <div className="w-full md:mt-0 mt-4 flex flex-col">
           <div className="flex items-center justify-center flex-col w-full ">
-            <button
-              className="w-full bg-purple-350 text-white px-2 py-3 rounded-xl"
-              onClick={async (e) => {
-                const { meetingId, err } = await _handleOnCreateMeeting();
-              
-                if (meetingId) {
-                  setMeetingId(meetingId);
-                  setIscreateMeetingClicked(true);
-                } else {
-                  toast(
-                    `${err}`,
-                    {
-                      position: "bottom-left",
-                      autoClose: 4000,
-                      hideProgressBar: true,
-                      closeButton: false,
-                      pauseOnHover: true,
-                      draggable: true,
-                      progress: undefined,
-                      theme: "light",
-                    }
-                  );
-                }
-              }}
-            >
-              Create a meeting
-            </button>
+            
             <button
               className="w-full bg-gray-650 text-white px-2 py-3 rounded-xl mt-5"
               onClick={(e) => {
