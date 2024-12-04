@@ -168,6 +168,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
 };
 
 const ChatArea = ({ activeChat }) => {
+  const [chat, setChat ] = useState();
   const { theme } = useLayoutContext();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -178,7 +179,7 @@ const ChatArea = ({ activeChat }) => {
   const { showNotification } = useNotificationContext();
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const navigate = useNavigate();
-
+ const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -191,7 +192,9 @@ const ChatArea = ({ activeChat }) => {
   });
 
   const fetchMessagesHandler = useCallback(async () => {
+    
     if (!activeChat) return;
+    console.log(activeChat)
 
     try {
       const response = await fetchMessages(activeChat.id, {
@@ -219,12 +222,18 @@ const ChatArea = ({ activeChat }) => {
 
   useEffect(() => {
     // Initial fetch
+    if (activeChat && activeChat.id !== chat?.id) {
+      setMessages([]); 
+      setLastMessageTimestamp([]);
+    }
+    setChat(activeChat)
     fetchMessagesHandler();
 
     // Start polling
     if (activeChat && activeChat.participants[0].status === profile.status) {
-      pollingIntervalRef.current = setInterval(fetchMessagesHandler, 1000000);
+      pollingIntervalRef.current = setInterval(fetchMessagesHandler, pollingSpeed);
     }
+
 
     // Cleanup interval on unmount or chat change
     return () => {
@@ -232,7 +241,7 @@ const ChatArea = ({ activeChat }) => {
         clearInterval(pollingIntervalRef.current);
       }
     };
-  }, [fetchMessagesHandler, activeChat]);
+  }, [fetchMessagesHandler]);
 
   const sendChatMessage = async (values) => {
     try {
