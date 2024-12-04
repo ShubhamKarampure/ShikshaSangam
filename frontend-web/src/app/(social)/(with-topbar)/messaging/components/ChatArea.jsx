@@ -32,7 +32,10 @@ import TextFormInput from "@/components/form/TextFormInput";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
 import { fetchMessages, sendMessage, clearChat } from "@/api/multimedia";
 import { FaUserFriends, FaCommentDots } from "react-icons/fa";
-import { useNotificationContext } from '@/context/useNotificationContext';
+import { useNotificationContext } from "@/context/useNotificationContext";
+
+// Constant for call message type
+const CALL_MESSAGE_PREFIX = "CALL_INVITATION:";
 
 const AlwaysScrollToBottom = () => {
   const elementRef = useRef(null);
@@ -45,7 +48,69 @@ const AlwaysScrollToBottom = () => {
   return <div ref={elementRef} />;
 };
 
-const UserMessage = ({ message, isCurrentUser }) => {
+const CallInvitationMessage = ({ message, onJoinCall, isCurrentUser }) => {
+  const callDetails = message.content
+    .replace(CALL_MESSAGE_PREFIX, "")
+    .split("|");
+  const [callType, callId] = callDetails;
+
+  return (
+    <div
+      className={clsx("d-flex mb-2 px-3", {
+        "justify-content-end": isCurrentUser,
+        "justify-content-start": !isCurrentUser,
+      })}
+    >
+      <div
+        className={clsx(
+          "p-2 rounded shadow-sm d-flex align-items-center gap-3 bg-primary text-white"
+        )}
+        style={{ cursor: "pointer", width: "fit-content" }}
+        onClick={() => onJoinCall(callType, callId)}
+      >
+        {/* Call Icon */}
+        <div
+          className="rounded-circle d-flex align-items-center justify-content-center"
+          style={{
+            width: "50px",
+            height: "50px",
+            backgroundColor: "white",
+            color: "#007bff",
+          }}
+        >
+          {callType === "video" ? (
+            <BsCameraVideoFill className="fs-5" />
+          ) : (
+            <BsTelephoneFill className="fs-5" />
+          )}
+        </div>
+
+        {/* Call Details */}
+        <div>
+          <h6 className="mb-0 fw-bold">
+            {callType === "video" ? "Video Call" : "Audio Call"}
+          </h6>
+          <p className="m-1 small">Tap anywhere to join</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const UserMessage = ({ message, isCurrentUser, onJoinCall }) => {
+  // Check if message is a call invitation
+  const isCallInvitation = message.content.startsWith(CALL_MESSAGE_PREFIX);
+
+  if (isCallInvitation) {
+    return (
+      <CallInvitationMessage
+        message={message}
+        onJoinCall={onJoinCall}
+        isCurrentUser={isCurrentUser}
+      />
+    );
+  }
+
   return (
     <div
       className={clsx("d-flex mb-1", {
@@ -91,7 +156,7 @@ const UserMessage = ({ message, isCurrentUser }) => {
   );
 };
 
-const ChatArea = ({activeChat}) => {
+const ChatArea = ({ activeChat }) => {
   const { theme } = useLayoutContext();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +166,7 @@ const ChatArea = ({activeChat}) => {
   const pollingIntervalRef = useRef(null);
   const { showNotification } = useNotificationContext();
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
-  
+  const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -109,8 +174,8 @@ const ChatArea = ({activeChat}) => {
   const { reset, handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(messageSchema),
     defaultValues: {
-      newMessage: ''
-    }
+      newMessage: "",
+    },
   });
 
   const fetchMessagesHandler = useCallback(async () => {
@@ -118,14 +183,15 @@ const ChatArea = ({activeChat}) => {
 
     try {
       const response = await fetchMessages(activeChat.id, {
-        after_timestamp: lastMessageTimestamp
+        after_timestamp: lastMessageTimestamp,
       });
 
       if (response.length > 0) {
         // Append only new messages
-        setMessages(prevMessages => {
+        setMessages((prevMessages) => {
           const newMessages = response.filter(
-            newMsg => !prevMessages.some(existingMsg => existingMsg.id === newMsg.id)
+            (newMsg) =>
+              !prevMessages.some((existingMsg) => existingMsg.id === newMsg.id)
           );
           return [...prevMessages, ...newMessages];
         });
@@ -145,9 +211,9 @@ const ChatArea = ({activeChat}) => {
 
     // Start polling
     if (activeChat && activeChat.participants[0].status === profile.status) {
-      pollingIntervalRef.current = setInterval(fetchMessagesHandler, 3000);
+      pollingIntervalRef.current = setInterval(fetchMessagesHandler, pollingSpeed);
     }
-    
+
     // Cleanup interval on unmount or chat change
     return () => {
       if (pollingIntervalRef.current) {
@@ -158,23 +224,63 @@ const ChatArea = ({activeChat}) => {
 
   const sendChatMessage = async (values) => {
     try {
-      if (!values.newMessage || values.newMessage.trim() === '') return;
+      if (!values.newMessage || values.newMessage.trim() === "") return;
 
       const newMessage = await sendMessage(activeChat.id, values.newMessage);
-      
+
       // Immediately append the message
-      setMessages(prevMessages => [...prevMessages, newMessage]);
-      
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
       // Clear the message input
-      setValue('newMessage', '');
-      
+      setValue("newMessage", "");
+
       // Trigger immediate fetch to sync with backend
       fetchMessagesHandler();
     } catch (err) {
       console.error("Error sending message:", err);
       showNotification({
-        message: 'Failed to send message',
-        variant: 'danger',
+        message: "Failed to send message",
+        variant: "danger",
+      });
+    }
+  };
+
+  const initiateCall = async (callType) => {
+    try {
+      if (activeChat && activeChat.participants[0].status !== profile.status) {
+        showNotification({
+          message: "Call cannot be initiated. The user is currently offline.",
+          type: "warning", // Use "info", "error", or other styles as per your notification system
+          duration: 5000, // Notification visibility duration in milliseconds
+        });
+        return;
+      }
+
+      // Generate a unique call ID (you might want to use a more robust method)
+
+      const callId = `call_${Date.now()}`;
+
+      // Create a special call invitation message
+      const callMessage = `${CALL_MESSAGE_PREFIX}${callType}|${callId}`;
+
+      const newMessage = await sendMessage(activeChat.id, callMessage);
+
+      // Immediately append the message
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+
+      // Trigger immediate fetch to sync with backend
+      fetchMessagesHandler();
+
+      // Optional: Trigger actual call logic here
+      showNotification({
+        message: `${callType.charAt(0).toUpperCase() + callType.slice(1)} call initiated`,
+        variant: "success",
+      });
+    } catch (err) {
+      console.error("Error initiating call:", err);
+      showNotification({
+        message: "Failed to initiate call",
+        variant: "danger",
       });
     }
   };
@@ -185,21 +291,21 @@ const ChatArea = ({activeChat}) => {
         await clearChat(chatId);
         // Trigger immediate fetch to sync with backend
         showNotification({
-          message: 'Chats cleared successfully...',
-          variant: 'success',
+          message: "Chats cleared successfully...",
+          variant: "success",
         });
       } else {
         showNotification({
-          message: 'No chats to clear',
-          variant: 'danger',
+          message: "No chats to clear",
+          variant: "danger",
         });
       }
       setMessages([]);
     } catch (err) {
       console.error("Failed to clear", err);
       showNotification({
-        message: 'Failed to clear chats',
-        variant: 'danger',
+        message: "Failed to clear chats",
+        variant: "danger",
       });
     }
   };
@@ -257,15 +363,30 @@ const ChatArea = ({activeChat}) => {
                 </div>
               </div>
             </div>
+
             {/* Chat Actions */}
             <div className="d-flex align-items-center">
-              <OverlayTrigger placement="top" overlay={<Tooltip>Audio call</Tooltip>}>
-                <Button variant="primary-soft" className="icon-md rounded-circle me-2 px-2">
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Audio Call</Tooltip>}
+              >
+                <Button
+                  variant="primary-soft"
+                  className="icon-md rounded-circle me-2 px-2"
+                  onClick={() => initiateCall("audio")}
+                >
                   <BsTelephoneFill />
                 </Button>
               </OverlayTrigger>
-              <OverlayTrigger placement="top" overlay={<Tooltip>Video call</Tooltip>}>
-                <Button variant="primary-soft" className="icon-md rounded-circle me-2 px-2">
+              <OverlayTrigger
+                placement="top"
+                overlay={<Tooltip>Video Call</Tooltip>}
+              >
+                <Button
+                  variant="primary-soft"
+                  className="icon-md rounded-circle me-2 px-2"
+                  onClick={() => initiateCall("video")}
+                >
                   <BsCameraVideoFill />
                 </Button>
               </OverlayTrigger>
@@ -283,7 +404,7 @@ const ChatArea = ({activeChat}) => {
                     View profile
                   </DropdownItem>
                   <DropdownItem onClick={() => clear(activeChat.id)}>
-                    <BsTrash className="me-2 fw-icon"/>
+                    <BsTrash className="me-2 fw-icon" />
                     Delete chat
                   </DropdownItem>
                 </DropdownMenu>
@@ -330,14 +451,16 @@ const ChatArea = ({activeChat}) => {
                   {...field}
                   type="text"
                   placeholder="Type a message"
-                  className={`form-control ${error ? 'is-invalid' : ''}`}
+                  className={`form-control ${error ? "is-invalid" : ""}`}
                 />
-                {error && <div className="invalid-feedback">{error.message}</div>}
+                {error && (
+                  <div className="invalid-feedback">{error.message}</div>
+                )}
               </div>
             )}
           />
-          <Dropdown 
-            show={isEmojiPickerOpen} 
+          <Dropdown
+            show={isEmojiPickerOpen}
             onToggle={(isOpen) => setIsEmojiPickerOpen(isOpen)}
             drop="up"
           >
@@ -352,8 +475,8 @@ const ChatArea = ({activeChat}) => {
                 data={data}
                 theme={theme}
                 onEmojiSelect={(e) => {
-                  const currentMessage = control._formValues.newMessage || '';
-                  setValue('newMessage', currentMessage + e.native);
+                  const currentMessage = control._formValues.newMessage || "";
+                  setValue("newMessage", currentMessage + e.native);
                   setIsEmojiPickerOpen(false);
                 }}
               />

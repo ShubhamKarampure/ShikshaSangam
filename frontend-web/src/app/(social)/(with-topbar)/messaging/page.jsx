@@ -10,7 +10,7 @@ import { useChatContext } from "@/context/useChatContext";
 const Messaging = () => {
   const { activeChatId, changeActiveChat } = useChatContext();
   const [chat, setUserChats] = useState([]);
-
+ const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const fetchUserChats = useCallback(async () => {
     try {
       const fetchedChats = await fetchChats();
@@ -35,7 +35,7 @@ const Messaging = () => {
   useEffect(() => {
     // Fetch chats on mount and set up polling
     fetchUserChats();
-    const intervalId = setInterval(fetchUserChats, 2000);
+    const intervalId = setInterval(fetchUserChats, pollingSpeed);
 
     return () => {
       clearInterval(intervalId);
@@ -74,6 +74,7 @@ const Messaging = () => {
             </Col>
           </Row>
         </Container>
+
       </main>
     </>
   );

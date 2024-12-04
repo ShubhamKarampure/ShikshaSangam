@@ -73,3 +73,42 @@ export const sendMessage = async (chatId, messageContent) => {
 export const clearChat = async (chatId) => {
   return await handleFetch(API_ROUTES.CHAT_CLEAR(chatId), "DELETE");
 };
+
+import axios from 'axios';
+
+const BASE_URL = '/api/v1';
+// New call-related API methods
+export const sendCallInvitation = async (chatId, callType) => {
+  try {
+    const response = await axios.post(`${BASE_URL}/calls/invite`, {
+      chatId,
+      callType,
+      recipientId
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error sending call invitation:', error);
+    throw error;
+  }
+};
+
+export const respondToCall = async (callId, response) => {
+  try {
+    await axios.post(`${BASE_URL}/calls/${callId}/respond`, { response });
+  } catch (error) {
+    console.error('Error responding to call:', error);
+    throw error;
+  }
+};
+
+export const fetchPendingCallInvitations = async (chatId) => {
+  try {
+    const response = await axios.get(`${BASE_URL}/calls/pending`, { 
+      params: { chatId } 
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching pending call invitations:', error);
+    throw error;
+  }
+};
