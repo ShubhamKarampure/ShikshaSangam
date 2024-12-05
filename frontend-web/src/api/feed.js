@@ -136,7 +136,7 @@ const formattedreplies = res.results.map((r) => ({
   return formattedreplies
 }
 
-export const getAllFeed = async () => {
+export const getAllFeed = async (limit=3,offset=0) => {
   const token = getTokenFromCookie(); // Retrieve token from cookie
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
 
@@ -144,7 +144,7 @@ export const getAllFeed = async () => {
     throw new Error("Token is missing");
   }
 
-  const response = await fetch(API_ROUTES.FEED, {
+  const response = await fetch(`${API_ROUTES.FEED}?limit=${limit}&offset=${offset}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,

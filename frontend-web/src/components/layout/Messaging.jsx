@@ -41,7 +41,7 @@ const UserMessage = ({
           <div className={clsx('d-flex flex-column', received ? 'align-items-end' : 'align-items-start')}>
             {message.image ? <div className="bg-light text-secondary p-2 px-3 rounded-2">
                 <p className="small mb-0">{message.message}</p>
-                <Card className="shadow-none p-2 border border-2 rounded mt-2">
+                <Card className="shadow-none p-2 border rounded mt-2">
                   <img width={87} height={91} src={message.image} alt="image" />
                 </Card>
               </div> : <div className={clsx('p-2 px-3 rounded-2', received ? 'bg-primary text-white' : 'bg-light text-secondary')}>{message.message}</div>}
