@@ -39,8 +39,8 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
           >
             <img
               className="avatar-img rounded-circle"
-              src={avatar_image}
-              alt={full_name || "Avatar"}
+              src={avatarUrl}
+              alt={fullName || "Avatar"}
               loading="lazy"
             />
           </div>
