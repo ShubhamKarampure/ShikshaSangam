@@ -173,41 +173,95 @@ export const getAllFeed = async () => {
   }
 
   const res = await response.json();
-  // const cloudName = CLOUDINARY_CLOUD_NAME;
-  // const postsArray = []; // Initialize the array to store posts with comments
-
-  //console.log(res);
-  //console.log('Seperator');
-
-  // Map posts and fetch associated comments
-  // const postsWithComments = await Promise.all(
-  //   res.results.map(async (p) => {
-  //     const imageUrl = p.post.media
-  //       ? `https://res.cloudinary.com/${cloudName}/${p.post.media}`
-  //       : null;
-
-  //     const avatarUrl = p.user.avatar
-  //       ? p.user.avatar
-  //       : "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Default avatar URL
-
-  //     // let comments = [];
-  //     // try {
-  //     //   comments = await getComment(p.post.id);
-  //     // } catch (err) {
-  //     //   console.error(`Error fetching comments for post ID ${p.post.id}:`, err);
-  //     // }
-
-      
-
-      
-  //   })
-  // );
-
-  // Add all posts with comments to the array
-  //postsArray.push(...postsWithComments);
-
-  // Return the final array
-  //return postsArray;
+  
   return res;
+};
+
+export const postlike = async (profile_id, post_id) => {
+  try {
+    const token = await getToken(); // Retrieve token
+    if (!token) {
+      throw new Error("Token is missing");
+    }
+
+    // Prepare the request payload
+    const requestData = {
+      userprofile: profile_id,
+      content_type: 20, // Hardcoded for posts
+      object_id: post_id,
+    };
+
+    // Make the API call
+    const response = await fetch(`${API_ROUTES.LIKES}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestData),
+    });
+    
+console.log("Payload being sent for like:", requestData);
+console.log("Token being sent:", token);
+
+
+    // Parse and return the response
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+    }
+
+    const responseData = await response.json();
+    return responseData; // Return the response data
+  } catch (error) {
+    console.error("Error in postlike:", error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
+};
+
+
+
+export const postunlike = async (post_id) => {
+  try {
+    const token = await getToken(); // Retrieve token
+    if (!token) {
+      throw new Error("Token is missing");
+    }
+
+    // Prepare the request payload
+    const requestData = {
+      content_type: 20, // Fixed value for posts
+      object_id: post_id, // Post ID
+    };
+
+    // Make the API call
+    // const response = await fetch(`${API_ROUTES.UNLIKES}`, {
+    //   method: "DELETE",
+    //   headers: {
+    //     Authorization: `Bearer ${token}`,
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(requestData),
+    // });
+    const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    
+
+    // Parse and return the response
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+    }
+
+    const responseData = await response.json();
+    return responseData; // Return the response data
+  } catch (error) {
+    console.error("Error in postunlike:", error.message);
+    throw error; // Re-throw the error for the caller to handle
+  }
 };
 

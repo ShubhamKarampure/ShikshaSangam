@@ -9,9 +9,10 @@ import Animated, {
 } from "react-native-reanimated";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
-const LikeButtonComp = ({ onLikeToggle, likes }) => {
-  const liked = useSharedValue(0);
+import { useProfileContext } from "../../Context/ProfileContext";
+import { postlike,postunlike } from "../../api/feed";
+const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked }) => {
+  const liked = useSharedValue(initialIsLiked ? 1 : 0);
   const [isLiked, setIsLiked] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // Lock for preventing rapid taps
 
@@ -36,24 +37,31 @@ const LikeButtonComp = ({ onLikeToggle, likes }) => {
 
     // Update the animation
     liked.value = withSpring(currentLiked ? 0 : 1);
-
-    // Update the state after the animation
-    setTimeout(() => {
+    try {
+      // Call the API and update state
+      if (currentLiked) {
+        await postunlike(); // Replace with your API logic
+        onLikeToggle(-1);
+      } else {
+        await postlike(); // Replace with your API logic
+        onLikeToggle(1);
+      }
       setIsLiked(!currentLiked);
-      onLikeToggle(currentLiked ? -1 : 1);
-      setTimeout(()=>{
-        setIsProcessing(false);
-      }, 350);
-      // setIsProcessing(false);
-    }, 200); // Match animation duration
+    } catch (error) {
+      console.error("Error toggling like:", error);
+      // Revert animation on error
+      liked.value = withSpring(currentLiked ? 1 : 0);
+    } finally {
+      setTimeout(() => setIsProcessing(false), 300);
+    }
   };
 
-  function stall(){
-    return;
-  }
+  // function stall(){
+  //   return;
+  // }
 
   return (
-    <Pressable onPress={isProcessing?stall:toggleLike} style={styles.container}>
+    <Pressable onPress={toggleLike} style={styles.container}>
       <Animated.View style={[StyleSheet.absoluteFillObject, outlineStyle]}>
         <MaterialCommunityIcons
           name={"thumb-up-outline"}
@@ -77,17 +85,37 @@ const LikeButtonComp = ({ onLikeToggle, likes }) => {
   );
 };
 
-export default function LikeButton({ initialLikeCount }) {
-  if(!initialLikeCount) initialLikeCount=0;
-  const [likeCount, setLikeCount] = useState(initialLikeCount);
+export default function LikeButton({ initialLikeCount, post_id,initialIsLiked }) {
+  const {profile} = useProfileContext()
+  const profile_id = profile.id;
+  // if(!initialLikeCount) initialLikeCount=0;
+  const [likeCount, setLikeCount] = useState(initialLikeCount||0);
 
-  const handleLikeToggle = (change) => {
-    setLikeCount((prevCount) => prevCount + change);
+  // const handleLikeToggle = async (change) => {
+  //   try {
+  //     if (change === 1) {
+  //       await postlike(post_id, profile_id);
+  //     } else if (change === -1) {
+  //       await postunlike(post_id, profile_id);
+  //     }
+  
+  //     setLikeCount((prevCount) => prevCount + change);
+  //   } catch (error) {
+  //     console.error("Error toggling like:", error);
+  //   }
+  // };
+  const handleLikeToggle = async (change) => {
+    try {
+      setLikeCount((prevCount) => prevCount + change);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
+  
 
   return (
     <View style={styles.mainContainer}>
-      <LikeButtonComp onLikeToggle={handleLikeToggle} likes={likeCount} />
+      <LikeButtonComp onLikeToggle={handleLikeToggle} likes={likeCount} initialIsLiked={initialIsLiked} />
     </View>
   );
 }
