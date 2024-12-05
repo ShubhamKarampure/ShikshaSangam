@@ -40,7 +40,7 @@ class PostViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['get'])  # GET /social/posts/list_posts/
     def list_posts(self, request):
         """List all posts with their related data."""
-        all_posts = Post.objects.all()
+        all_posts = Post.objects.all().order_by('-created_at')
         page = self.paginate_queryset(all_posts)
 
         if page is not None:
@@ -54,7 +54,7 @@ class PostViewSet(viewsets.ModelViewSet):
         user_profile = request.user.userprofile
         shared_to_me_posts = Post.objects.filter(
             shares__shared_to=user_profile
-        ).distinct()
+        ).distinct().order_by('-created_at')
         page = self.paginate_queryset(shared_to_me_posts)
 
         if page is not None:
@@ -68,7 +68,7 @@ class PostViewSet(viewsets.ModelViewSet):
         user_profile = request.user.userprofile
         shared_by_me_posts = Post.objects.filter(
             shares__shared_by=user_profile
-        ).distinct()
+        ).distinct().order_by('-created_at')
         page = self.paginate_queryset(shared_by_me_posts)
 
         if page is not None:
@@ -116,7 +116,7 @@ class PostViewSet(viewsets.ModelViewSet):
     def college_posts(self, request):
         """Get posts from the same college as the current user."""
         user_college = request.user.user.college
-        college_posts = Post.objects.filter(userprofile__college=user_college)
+        college_posts = Post.objects.filter(userprofile__college=user_college).order_by('-created_at')
         page = self.paginate_queryset(college_posts)
         
         if page is not None:
