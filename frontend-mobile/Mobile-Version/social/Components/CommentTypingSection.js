@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const CommentTypingSection = ({ onSend, isDarkMode = true }) => {
+const CommentTypingSection = ({ onSend, isDarkMode = true, placeholder }) => {
   const [message, setMessage] = useState("");
 
   function getCurrentDateFields() {
@@ -71,7 +71,7 @@ const CommentTypingSection = ({ onSend, isDarkMode = true }) => {
         <TextInput
           value={message}
           onChangeText={setMessage}
-          placeholder="Type a message"
+          placeholder={placeholder}
           placeholderTextColor={isDarkMode ? "#888" : "#999"}
           style={[styles.input, isDarkMode && styles.darkModeInput]}
           multiline={true}

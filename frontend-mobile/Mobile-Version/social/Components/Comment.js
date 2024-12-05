@@ -5,12 +5,32 @@ import LikeCommentButton from "./LikeCommentButton";
 import ViewRepliesButton from "./ViewRepliesButton";
 import ReplySection from "./ReplySection";
 import timePassed from "../../Utility/timePassed";
+import { processImageUrl } from "../../Utility/urlUtils";
 
-const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
+const Comment = memo(({ comment, isDarkMode, onReplyPress }) => { // props comment  
+  
+  // const comment = {
+  //   comment: {
+  //     id: 3,
+  //     content: "When Life Gives you lemons, throw it away and do react native",
+  //     created_at: "2024-12-03T14:02:26.358973Z",
+  //     post: 2,
+  //     userprofile: 3,
+  //   },
+  //   user: {
+  //     username: "alumni_demo",
+  //     avatar:
+  //       "http://res.cloudinary.com/dhp4wuv2x/image/upload/v1733055942/shikshasangam/avatar/ap1pqjspdbeeyj3zls9e.jpg",
+  //     profile_id: 3,
+  //     role: "alumni",
+  //   },
+  //   likes_count: 1,
+  //   replies_count: 2,
+  // };
 
   const [isReplySectionOpen, setIsReplySectionOpen] = useState(false);
 
-  function handleViewReplies(){
+  function handleViewReplies() {
     setIsReplySectionOpen(prev=>!prev);
   }
 
@@ -24,7 +44,15 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
         android_ripple={{ color: "#261d01" }}
       >
         <View style={styles.commentMainHeader}>
-          <Image source={{ uri: comment.avatar }} style={styles.avatar} />
+          <Image
+            source={{
+              uri:
+                comment.user.avatar !== null
+                  ? processImageUrl(comment.user.avatar)
+                  : "https://via.placeholder.com/150/FF5733/FFFFFF",
+            }}
+            style={styles.avatar}
+          />
           <View style={styles.commentHeaderText}>
             <Text
               style={[
@@ -32,7 +60,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
                 isDarkMode && styles.darkModeText,
               ]}
             >
-              {comment.username}
+              {comment.user.username}
             </Text>
             <Text
               style={[
@@ -40,7 +68,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
                 isDarkMode && styles.darkModeTextSecondary,
               ]}
             >
-              {timePassed(comment.isoString, new Date().toISOString())}
+              {timePassed(comment.comment.created_at, new Date().toISOString())}
             </Text>
           </View>
         </View>
@@ -50,10 +78,10 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
             isDarkMode && styles.darkModeTextSecondary,
           ]}
         >
-          {comment.content}
+          {comment.comment.content}
         </Text>
         <View style={styles.actionContainer}>
-          <LikeCommentButton initialLikeCount={comment.likes} />
+          <LikeCommentButton initialLikeCount={comment.likes_count} />
           <ReplyButton
             comment={comment}
             isDarkMode={isDarkMode}
@@ -68,9 +96,11 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => {
           />
         </View>
       </Pressable>
-      {isReplySectionOpen?(
-        <ReplySection comment={comment} isDarkMode={isDarkMode}/>
-      ):(<></>)}
+      {isReplySectionOpen ? (
+        <ReplySection comment_id={comment.comment.id} isDarkMode={isDarkMode} />
+      ) : (
+        <></>
+      )}
     </View>
   );
 });
@@ -102,6 +132,7 @@ const styles = StyleSheet.create({
     height: 40,
     borderRadius: 20,
     marginRight: 10,
+    borderWidth:2,
   },
   commentMainHeader: {
     flexDirection: "row",

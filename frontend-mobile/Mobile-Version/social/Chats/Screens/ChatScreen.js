@@ -20,7 +20,7 @@ export default function ChatScreen({ navigation, route }) {
   useEffect(() => {
     // Scroll to the bottom only if the user is at the bottom
     if (
-      isAtBottom &&
+      // isAtBottom &&
       chatList[chatList.length - 1]?.profile_id === sender_profile_id
     ) {
       flatListRef.current?.scrollToEnd({ animated: true });

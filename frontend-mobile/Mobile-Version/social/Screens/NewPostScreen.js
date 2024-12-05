@@ -3,15 +3,14 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, Image, Alert } fro
 import * as ImagePicker from 'expo-image-picker';
 import { useAuthContext } from '../../Context/useAuthContext'; // Adjust the path to your AuthContext
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import BACKEND_URL from '../../constants';
 const NewPostScreen = () => {
   const [postContent, setPostContent] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
 
   const { user, isAuthenticated } = useAuthContext(); // Access user and authentication state
   
-yourIp = "192.168.1.10" // Give your IP for identifying where backend is running to mobile
-const BACKEND_URL = "http://"+yourIp+":8000"; 
+ 
 
   // Function to pick an image
   const pickImage = async () => {

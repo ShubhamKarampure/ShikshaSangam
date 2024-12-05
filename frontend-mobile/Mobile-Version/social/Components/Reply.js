@@ -3,9 +3,27 @@ import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import ReplyButton from "./ReplyButton";
 import LikeCommentButton from "./LikeCommentButton";
 import timePassed from "../../Utility/timePassed";
+import { processImageUrl } from "../../Utility/urlUtils";
 
-export default function Reply({isDarkMode=true, reply}) {
-
+export default function Reply({reply, isDarkMode=true}) {
+  // prop reply // For api call /social/replies/comment_replies/{comment will be here}
+  // const reply = {
+  //   reply: {
+  //     id: 4,
+  //     content: "Kabhi Kabhi lagta hai apunich bhagvaan hai 😎",
+  //     created_at: "2024-12-04T13:15:00.000Z",
+  //     comment: 3,
+  //     userprofile: 2,
+  //   },
+  //   user: {
+  //     username: "Shubham Karampure",
+  //     avatar:
+  //       "http://res.cloudinary.com/dhp4wuv2x/image/upload/v1733055854/shikshasangam/avatar/ahbs1gionghsf2g6aqxa.jpg",
+  //     profile_id: 2,
+  //     role: "student",
+  //   },
+  //   likes_count: 68,
+  // };
   // const reply = {
   //   reply_id: 1,
   //   profile_id: 2,
@@ -23,12 +41,12 @@ export default function Reply({isDarkMode=true, reply}) {
       android_ripple={{ color: "#261d01" }}
     >
       <View style={styles.replyMainHeader}>
-        <Image source={{ uri: reply.avatar }} style={styles.avatar} />
+        <Image source={{ uri: reply.user.avatar ? processImageUrl(reply.user.avatar):"https://via.placeholder.com/150/FF5733/FFFFFF", }} style={styles.avatar} />
         <View style={styles.replyHeaderText}>
           <Text
             style={[styles.replyUsername, isDarkMode && styles.darkModeText]}
           >
-            {reply.username}
+            {reply.user.username}
           </Text>
           <Text
             style={[
@@ -36,17 +54,17 @@ export default function Reply({isDarkMode=true, reply}) {
               isDarkMode && styles.darkModeTextSecondary,
             ]}
           >
-            {timePassed(reply.isoString, new Date().toISOString())}
+            {timePassed(reply.reply.created_at, new Date().toISOString())}
           </Text>
         </View>
       </View>
       <Text
         style={[styles.replyText, isDarkMode && styles.darkModeTextSecondary]}
       >
-        {reply.content}
+        {reply.reply.content}
       </Text>
       <View style={styles.actionContainer}>
-        <LikeCommentButton initialLikeCount={reply.likes} />
+        <LikeCommentButton initialLikeCount={reply.likes_count} />
         {/* <ReplyButton
           isDarkMode={isDarkMode}
           //onPress={onReplyPress}  // change

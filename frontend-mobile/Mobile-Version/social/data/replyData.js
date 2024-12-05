@@ -1,4 +1,4 @@
-export const replyData = [
+export let replyData = [
   {
     reply_id: 1,
     profile_id: 7,
