@@ -9,10 +9,11 @@ const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
 const ChatItem = ({ id, participants, last_message, isStory }) => {
   const { activeChatId, changeActiveChat } = useChatContext();
-
   const participant = participants[0];
-  const full_name = participant?.full_name;
-  const avatar_image = participant?.avatar_image;
+  const fullName = participant?.full_name || "Unknown User";
+  const avatarUrl =
+    participant?.avatar_image ||
+    `https://ui-avatars.com/api/?name=${fullName}&background=0D8ABC&color=fff`;
   const status = participant?.status;
 
   let lastMessageContent = last_message?.content || "No recent messages";
@@ -38,13 +39,13 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
           >
             <img
               className="avatar-img rounded-circle"
-              src={avatar_image}
-              alt={full_name || "Avatar"}
+              src={avatarUrl}
+              alt={fullName || "Avatar"}
               loading="lazy"
             />
           </div>
           <div className="flex-grow-1 d-block">
-            <h6 className="mb-0 mt-1">{full_name}</h6>
+            <h6 className="mb-0 mt-1">{fullName}</h6>
             <div className="small text-secondary">{lastMessageContent}</div>
           </div>
         </div>
@@ -60,7 +61,7 @@ const ChatUsers = ({ chats }) => {
     setUsers(chats);
   }, [chats]);
 
-  const search = (text) => {
+  const handleSearch = (query) => {
     setUsers(
       text
         ? chats.filter((u) =>
@@ -81,7 +82,7 @@ const ChatUsers = ({ chats }) => {
             type="search"
             placeholder="Search for chats"
             aria-label="Search"
-            onKeyUp={(e) => search(e.target.value)}
+            onKeyUp={(e) => handleSearch(e.target.value)}
           />
           <button
             className="btn bg-transparent text-secondary px-2 py-0 position-absolute top-50 end-0 translate-middle-y"
