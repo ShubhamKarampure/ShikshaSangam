@@ -15,15 +15,20 @@ from rest_framework.pagination import PageNumberPagination
 from django.utils.timesince import timesince
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from rest_framework.pagination import LimitOffsetPagination
 
-class PostPagination(PageNumberPagination):
-    page_size = 10  # Number of posts per page
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+
+#GET /social/posts/list_posts/?limit=5&offset=10 example for limit offset
+
+class PostOffsetPagination(LimitOffsetPagination):
+    default_limit = 10  # Number of items per page by default
+    max_limit = 100  # Maximum number of items allowed per request
+
 
 class CommentPagination(PageNumberPagination):
     page_size = 5  # Number of comments per page (adjust as necessary)
     page_size_query_param = 'page_size' # ?page_size = x
+    max_page_size = 100  # Maximum number of comments per page
 
 class ReplyPagination(PageNumberPagination):
     page_size = 3  # Number of replies per page (adjust as necessary)
@@ -35,7 +40,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Post model
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    pagination_class = PostPagination
+    pagination_class = PostOffsetPagination
 
     @action(detail=False, methods=['get'])  # GET /social/posts/list_posts/
     def list_posts(self, request):
@@ -227,7 +232,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         if not post_pk:
             return Response({'detail': 'Post pk is required.'}, status=400)
         
-        comments = Comment.objects.filter(post__id=post_pk)
+        comments = Comment.objects.filter(post__id=post_pk).order_by('-created_at')
         page = self.paginate_queryset(comments)
         if page is not None:
             response_data = [
@@ -264,7 +269,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
         Paginated replies for a specific comment.
         - Includes username, avatar, profile ID, and role for each replier
         """
-        replies = Reply.objects.filter(comment__id=comment_pk)
+        replies = Reply.objects.filter(comment__id=comment_pk).order_by('created_at')
         page = self.paginate_queryset(replies)
         if page is not None:
             response_data = [
