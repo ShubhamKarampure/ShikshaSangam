@@ -150,7 +150,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 has_liked = Like.objects.filter(
                     content_type=post_content_type,
                     object_id=post.id,
-                    user=self.request.user
+                    userprofile=self.request.user.user
                 ).exists()
 
                 post_serializer = self.get_serializer(post)
@@ -299,7 +299,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
 
         reply_content_type = ContentType.objects.get_for_model(Reply)
         replies = Reply.objects.filter(comment__id=comment_pk).order_by('created_at')
-        
+
         page = self.paginate_queryset(replies)
         if page is not None:
             response_data = [
