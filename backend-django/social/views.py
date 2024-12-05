@@ -89,7 +89,12 @@ class PostViewSet(viewsets.ModelViewSet):
             num_comments = Comment.objects.filter(post=post).count()
             num_shares = Share.objects.filter(post=post).count()
             time_since_post = timesince(post.created_at)
-
+              # Check if the current user has liked this post
+            has_liked = Like.objects.filter(
+                content_type=post_content_type,
+                object_id=post.id,
+                userprofile=self.request.user.user
+            ).exists()
             post_serializer = self.get_serializer(post)
 
             response_data.append({
@@ -108,6 +113,8 @@ class PostViewSet(viewsets.ModelViewSet):
                     'time_since_post': time_since_post,
                 },
                 'comments_count': num_comments,
+                'is_liked': has_liked, 
+                
             })
 
         return self.get_paginated_response(response_data)
@@ -118,6 +125,8 @@ class PostViewSet(viewsets.ModelViewSet):
         user_college = request.user.user.college
         college_posts = Post.objects.filter(userprofile__college=user_college).order_by('-created_at')
         page = self.paginate_queryset(college_posts)
+
+        
         
         if page is not None:
             response_data = []
@@ -132,6 +141,12 @@ class PostViewSet(viewsets.ModelViewSet):
                 num_shares = Share.objects.filter(post=post).count()
                 num_followers = Follow.objects.filter(followed=user).count()
                 time_since_post = timesince(post.created_at)
+                  # Check if the current user has liked this post
+                has_liked = Like.objects.filter(
+                    content_type=post_content_type,
+                    object_id=post.id,
+                    user=self.request.user
+                ).exists()
 
                 post_serializer = self.get_serializer(post)
 
@@ -151,6 +166,7 @@ class PostViewSet(viewsets.ModelViewSet):
                         'time_since_post': time_since_post,
                     },
                     'comments_count': num_comments,
+                    'is_liked':has_liked,
                 })
 
             return self.get_paginated_response(response_data)
@@ -181,6 +197,12 @@ class PostViewSet(viewsets.ModelViewSet):
         num_comments = Comment.objects.filter(post=post).count()
         num_shares = Share.objects.filter(post=post).count()
         time_since_post = timesince(post.created_at)
+          # Check if the current user has liked this post
+        has_liked = Like.objects.filter(
+            content_type=post_content_type,
+            object_id=post.id,
+            user=self.request.user
+        ).exists()
 
         # Serialize the post
         post_serializer = self.get_serializer(post)
@@ -202,6 +224,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 'time_since_post': time_since_post,
             },
             'comments_count': num_comments,
+            'is_liked': has_liked,
         }
 
         return Response(response_data, status=status.HTTP_200_OK)
@@ -229,7 +252,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         
         comments = Comment.objects.filter(post__id=post_pk)
         page = self.paginate_queryset(comments)
+        comment_content_type = ContentType.objects.get_for_model(Comment)
+       
         if page is not None:
+            
             response_data = [
                 {
                     'comment': self.get_serializer(comment).data,
@@ -240,8 +266,9 @@ class CommentViewSet(viewsets.ModelViewSet):
                         'role': comment.userprofile.role,
                     },
 
-                    'likes_count': Like.objects.filter(content_type__model='comment', object_id=comment.id).count(),  # Count likes for this comment
-                    'replies_count': Reply.objects.filter(comment=comment).count()  # Count replies for this comment
+                    'likes_count': Like.objects.filter(content_type=comment_content_type, object_id=comment.id).count(),  # Count likes for this comment
+                    'replies_count': Reply.objects.filter(comment=comment).count(),  # Count replies for this comment
+                    'is_liked': Like.objects.filter(content_type=comment_content_type, object_id=comment.id,userprofile=self.request.user.user).exists()
                     
                 }
                 for comment in page
@@ -265,6 +292,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
         - Includes username, avatar, profile ID, and role for each replier
         """
         replies = Reply.objects.filter(comment__id=comment_pk)
+        reply_content_type = ContentType.objects.get_for_model(Reply)
         page = self.paginate_queryset(replies)
         if page is not None:
             response_data = [
@@ -276,7 +304,9 @@ class ReplyViewSet(viewsets.ModelViewSet):
                         'profile_id': reply.userprofile.id,
                         'role': reply.userprofile.role,
                     },
-                    'likes_count': Like.objects.filter(content_type__model='reply', object_id=reply.id).count(),  # Count likes for this reply
+                    'likes_count': Like.objects.filter(content_type=reply_content_type, object_id=reply.id).count(),  # Count likes for this reply
+                    'is_liked': Like.objects.filter(  content_type=reply_content_type, object_id=reply.id,userprofile=self.request.user.user).exists()
+
                 }
                 for reply in page
             ]
