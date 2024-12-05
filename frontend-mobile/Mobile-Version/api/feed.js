@@ -141,16 +141,17 @@ export const getReply = async (commentId) => {
   }
 
   const res = await response.json();
-  return res.results.map((r) => ({
-    replyId: r.reply.id,
-    comment: r.reply.content,
-    createdAt: r.reply.created_at,
-    socialUser: {
-      avatar: r.user.avatar,
-      name: r.user.username,
-    },
-    likesCount: r.likes_count,
-  }));
+  return res;
+  // return res.results.map((r) => ({
+  //   replyId: r.reply.id,
+  //   comment: r.reply.content,
+  //   createdAt: r.reply.created_at,
+  //   socialUser: {
+  //     avatar: r.user.avatar,
+  //     name: r.user.username,
+  //   },
+  //   likesCount: r.likes_count,
+  // }));
 };
 
 // Function to get all feed posts

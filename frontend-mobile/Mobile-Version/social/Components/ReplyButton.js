@@ -66,10 +66,17 @@ import React from "react";
 import { Pressable, Text, StyleSheet } from "react-native";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-const ReplyButton = ({ comment, isDarkMode, onPress }) => {
+const ReplyButton = ({ comment, isDarkMode, onPress, currentComment }) => {
+
   return (
     <Pressable
-      style={styles.container}
+      style={
+        currentComment === null
+          ? styles.container
+          : currentComment.comment.id === comment.comment.id
+          ? styles.focusedContainer
+          : styles.container
+      }
       onPress={onPress}
       android_ripple={{ color: "#2b2b04" }}
     >
@@ -91,6 +98,15 @@ const ReplyButton = ({ comment, isDarkMode, onPress }) => {
 };
 
 const styles = StyleSheet.create({
+  focusedContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#0f381a",
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 5,
+  },
   container: {
     flexDirection: "row",
     alignItems: "center",

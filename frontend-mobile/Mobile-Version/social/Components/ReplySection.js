@@ -1,11 +1,32 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Pressable, FlatList } from "react-native";
 import Reply from "./Reply";
+import { getReply } from "../../api/feed";
 
-export default function ReplySection({ comment_id, isDarkMode }) { 
+export default function ReplySection({ comment_id, isDarkMode }) {
   // /social/replies/comment_replies/{comment_id} to get the list of replies
   // get the replies from backend via api call
-  const fromBackendReplies = [ // dummy placeholder data
+
+  const [replyList, setReplyList] = useState(null);
+
+  // Fetch replies when the component mounts
+  useEffect(() => {
+    const fetchReplies = async () => {
+      try {
+        const replies = await getReply(comment_id); // Call the API to fetch comments
+        setReplyList(replies.results); // Set the fetched comments to state
+        console.log("replies.results = ",replies.results);
+      } catch (error) {
+        console.error("Error fetching replies:", error.message);
+      }
+    };
+
+    fetchReplies();
+  }, [comment_id]);
+
+  console.log("replyList = ", replyList);
+  
+  const fromBackendReplies = [
     {
       reply: {
         id: 4,
@@ -42,8 +63,8 @@ export default function ReplySection({ comment_id, isDarkMode }) {
     },
   ];
 
-  // Extracting replies from the comment prop
-  const allReplies = fromBackendReplies || [];
+  const allReplies = replyList || [];
+  //const allReplies = fromBackendReplies || [];
 
   // States to manage visible replies and batch size
   const [visibleReplies, setVisibleReplies] = useState(allReplies.slice(0, 10));
