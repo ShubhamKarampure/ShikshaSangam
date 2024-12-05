@@ -5,7 +5,7 @@ import SenderChatBubble from "../Components/SenderChatBubble";
 import ReceiverChatBubble from "../Components/ReceiverChatBubble";
 import TypingSection from "../Components/TypingSection";
 import { chatsData } from "../../data/chatsData";
-import { fetchMessages } from "../../../api/multimedia";
+import { fetchMessages,sendMessage } from "../../../api/multimedia";
 
 export default function ChatScreen({ navigation, route }) {
   const chatInfo = route.params.receiver;
@@ -21,24 +21,21 @@ export default function ChatScreen({ navigation, route }) {
   const sender_avatar = "https://via.placeholder.com/150/FF5733/FFFFFF";
   const sender_username = "John Doe";
   
-  useEffect(() => {
-
-    const fetchMessagesHandler = async () => {
+  const fetchMessagesHandler = async () => {
       try {
         const response = await fetchMessages(chatInfo.id, {
         after_timestamp: lastMessageTimestamp,
       });
         console.log(response)
+        const latestMessage = response[response.length - 1];
       } catch (err) {
         console.error("Error fetching messages", err);
       }
-    };
-
+  };
+  
+  useEffect(() => {  
     // Initial fetch
     fetchMessagesHandler();
-    const latestMessage = response[response.length - 1];
-    setLastMessageTimestamp(latestMessage.timestamp);
-
     // Scroll to the bottom only if the user is at the bottom
     if (
       // isAtBottom &&
@@ -55,18 +52,24 @@ export default function ChatScreen({ navigation, route }) {
       return <ReceiverChatBubble chat={item} />;
     }
   }
-
-  function sendHandler(chat) {
-    const newChatItem = {
+  const sendHandler = async (chat) => {
+    /* const newChatItem = {
       profile_id: sender_profile_id,
       avatar: sender_avatar,
       username: sender_username,
       content: chat.message,
       timestamp: chat.timestamp.hoursMinutes,
       isoString: chat.timestamp.isoString,
-    };
-    setChatList((prevList) => [...prevList, newChatItem]);
+    }; */
+    try {
+      if (!chat.message) return;
+      const newChatItem = await sendMessage(chatInfo.id, chat.message);
+      console.log(newChatItem)
+    } catch (err) {
+      console.error("Error sending message:", err);
+    }
   }
+  
 
   function handleScroll(event) {
     // Check if the user is at the bottom of the chat list
