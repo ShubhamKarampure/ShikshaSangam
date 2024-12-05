@@ -234,15 +234,7 @@ export const postunlike = async (post_id) => {
       object_id: post_id, // Post ID
     };
 
-    // Make the API call
-    // const response = await fetch(`${API_ROUTES.UNLIKES}`, {
-    //   method: "DELETE",
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(requestData),
-    // });
+    
     const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
       method: "DELETE",
       headers: {

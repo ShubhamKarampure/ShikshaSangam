@@ -1,3 +1,5 @@
+// like done now we have to do unlike and set the is_liked statte work pending..
+
 import React, { useState } from "react";
 import Animated, {
   useSharedValue,
@@ -11,7 +13,9 @@ import { Pressable, View, StyleSheet, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useProfileContext } from "../../Context/ProfileContext";
 import { postlike,postunlike } from "../../api/feed";
-const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked }) => {
+const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
+  const {profile} = useProfileContext()
+  const profile_id = profile.id;
   const liked = useSharedValue(initialIsLiked ? 1 : 0);
   const [isLiked, setIsLiked] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false); // Lock for preventing rapid taps
@@ -30,31 +34,28 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked }) => {
   }));
 
   const toggleLike = async () => {
-    if (isProcessing) return; // Prevent further taps during processing
-
+    if (isProcessing) return;
     setIsProcessing(true);
+  
     const currentLiked = liked.value === 1;
-
-    // Update the animation
     liked.value = withSpring(currentLiked ? 0 : 1);
+  
     try {
-      // Call the API and update state
       if (currentLiked) {
-        await postunlike(); // Replace with your API logic
+        await postunlike(post_id);
         onLikeToggle(-1);
       } else {
-        await postlike(); // Replace with your API logic
+        await postlike(profile_id, post_id);
         onLikeToggle(1);
       }
-      setIsLiked(!currentLiked);
     } catch (error) {
       console.error("Error toggling like:", error);
-      // Revert animation on error
       liked.value = withSpring(currentLiked ? 1 : 0);
     } finally {
-      setTimeout(() => setIsProcessing(false), 300);
+      setIsProcessing(false);
     }
   };
+  
 
   // function stall(){
   //   return;
@@ -111,11 +112,14 @@ export default function LikeButton({ initialLikeCount, post_id,initialIsLiked })
       console.error("Error toggling like:", error);
     }
   };
+
+
+  
   
 
   return (
     <View style={styles.mainContainer}>
-      <LikeButtonComp onLikeToggle={handleLikeToggle} likes={likeCount} initialIsLiked={initialIsLiked} />
+      <LikeButtonComp onLikeToggle={handleLikeToggle} likes={likeCount} initialIsLiked={initialIsLiked} post_id={post_id}/>
     </View>
   );
 }
