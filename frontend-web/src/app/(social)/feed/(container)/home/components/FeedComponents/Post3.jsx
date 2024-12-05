@@ -27,7 +27,7 @@ import CommentItem from "@/components/cards/components/CommentItem.jsx";
 import { postComment, getComment } from "@/api/feed.js";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useProfileContext } from "@/context/useProfileContext";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef,memo } from "react";
 
 
 const LazyImage = ({ src, alt, onClick }) => {
@@ -76,7 +76,7 @@ const LazyImage = ({ src, alt, onClick }) => {
 };
 
 
-const Post3 = ({
+const Post3 = memo(({
   postId,
   createdAt,
   likesCount,
@@ -330,6 +330,6 @@ const Post3 = ({
       </Modal>
     </>
   );
-};
+});
 
 export default Post3;

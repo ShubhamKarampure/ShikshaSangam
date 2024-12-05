@@ -15,11 +15,15 @@ from rest_framework.pagination import PageNumberPagination
 from django.utils.timesince import timesince
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
+from rest_framework.pagination import LimitOffsetPagination
 
-class PostPagination(PageNumberPagination):
-    page_size = 10  # Number of posts per page
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+
+#GET /social/posts/list_posts/?limit=5&offset=10 example for limit offset
+
+class PostOffsetPagination(LimitOffsetPagination):
+    default_limit = 10  # Number of items per page by default
+    max_limit = 100  # Maximum number of items allowed per request
+
 
 class CommentPagination(PageNumberPagination):
     page_size = 5  # Number of comments per page (adjust as necessary)
@@ -35,7 +39,7 @@ class PostViewSet(viewsets.ModelViewSet):
     # Basic CRUD for Post model
     queryset = Post.objects.all()
     serializer_class = PostSerializer
-    pagination_class = PostPagination
+    pagination_class = PostOffsetPagination
 
     @action(detail=False, methods=['get'])  # GET /social/posts/list_posts/
     def list_posts(self, request):
