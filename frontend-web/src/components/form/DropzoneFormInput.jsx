@@ -12,7 +12,8 @@ const DropzoneFormInput = ({
   showPreview,
   text,
   textClassName,
-  onFileUpload
+  onFileUpload,
+  maxFiles=4
 }) => {
   const {
     selectedFiles,
@@ -23,7 +24,7 @@ const DropzoneFormInput = ({
   return <>
       <FormLabel className={labelClassName}>{label}</FormLabel>
 
-      <Dropzone onDrop={acceptedFiles => handleAcceptedFiles(acceptedFiles, onFileUpload)} maxFiles={5}>
+      <Dropzone onDrop={acceptedFiles => handleAcceptedFiles(acceptedFiles, onFileUpload)} maxFiles={maxFiles}>
         {({
         getRootProps,
         getInputProps

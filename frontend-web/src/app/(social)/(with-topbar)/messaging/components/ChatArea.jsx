@@ -8,7 +8,12 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownToggle,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
   OverlayTrigger,
+  Row,
   Tooltip,
 } from "react-bootstrap";
 import { useForm, Controller } from "react-hook-form";
@@ -16,21 +21,27 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import clsx from "clsx";
 import { FaCircle, FaPaperclip, FaPaperPlane } from "react-icons/fa";
-import { BsPersonCheck, BsThreeDotsVertical, BsTrash } from "react-icons/bs";
+import {
+  BsFileEarmarkText,
+  BsPersonCheck,
+  BsThreeDotsVertical,
+  BsTrash,
+} from "react-icons/bs";
 import { FaCheckDouble, FaFaceSmile } from "react-icons/fa6";
 import data from "@emoji-mart/data";
 import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useLayoutContext } from "@/context/useLayoutContext";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
-import { fetchMessages, sendMessage, clearChat } from "@/api/multimedia";
+import { fetchMessages, sendMessage, clearChat,sendMedia } from "@/api/multimedia";
 import { FaUserFriends, FaCommentDots } from "react-icons/fa";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { SiGooglemeet } from "react-icons/si";
 import { createMeeting } from "../../../live/api";
+import { useNavigate } from "react-router-dom";
+import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 
 const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
-import { useNavigate } from "react-router-dom";
 // Constant for call message type
 const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
@@ -109,9 +120,8 @@ const MeetInvitationMessage = ({ message, onMeetCall, isCurrentUser }) => {
 };
 
 const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
-  // Check if message is a call invitation
-  const isMeetInvitation = message.content.startsWith(MEET_MESSAGE_PREFIX);
-
+  const isMeetInvitation = message.content?.startsWith(MEET_MESSAGE_PREFIX);
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   if (isMeetInvitation) {
     return (
       <MeetInvitationMessage
@@ -145,6 +155,43 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
               )}
             >
               {message.content}
+              {/* Display Media */}
+              {message.media && (
+                <div className="mt-2">
+                  {message.media.match(/\.(jpeg|jpg|gif|png)$/) ? (
+                    <img
+                      src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
+                      alt="attachment"
+                      className="img-fluid rounded"
+                      style={{ maxWidth: "300px" }}
+                    />
+                  ) : message.media.match(/\.(mp4|mov)$/) ? (
+                    <video
+                      controls
+                      className="img-fluid rounded"
+                      style={{ maxWidth: "200px" }}
+                    >
+                      <source
+                        src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
+                        type="video/mp4"
+                      />
+                    </video>
+                  ) : (
+                    <a
+                      href={`https://res.cloudinary.com/${cloudName}/${message.media}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={clsx(
+                        isCurrentUser
+                          ? "bg-primary text-white"
+                          : "bg-light text-secondary"
+                      )}
+                    >
+                      Download attachment
+                    </a>
+                  )}
+                </div>
+              )}
             </div>
             <div className="d-flex my-2">
               <div className="small text-secondary">
@@ -168,7 +215,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
 };
 
 const ChatArea = ({ activeChat }) => {
-  const [chat, setChat ] = useState();
+  const [chat, setChat] = useState();
   const { theme } = useLayoutContext();
   const [messages, setMessages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -179,7 +226,16 @@ const ChatArea = ({ activeChat }) => {
   const { showNotification } = useNotificationContext();
   const [isEmojiPickerOpen, setIsEmojiPickerOpen] = useState(false);
   const navigate = useNavigate();
- const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
+  const [fileOpen, setFileOpen] = useState(false);
+  const [file, setFile] = useState(null);
+
+  const handlefileSubmit = async () => {
+    console.log(file);
+    const response = await sendMedia(activeChat.id, file);
+    setFileOpen(false);
+    setMessages([...messages, response]);
+  };
+  const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const messageSchema = yup.object({
     newMessage: yup.string().required("Please enter a message"),
   });
@@ -192,9 +248,8 @@ const ChatArea = ({ activeChat }) => {
   });
 
   const fetchMessagesHandler = useCallback(async () => {
-    
     if (!activeChat) return;
-    console.log(activeChat)
+    console.log(activeChat);
 
     try {
       const response = await fetchMessages(activeChat.id, {
@@ -223,17 +278,19 @@ const ChatArea = ({ activeChat }) => {
   useEffect(() => {
     // Initial fetch
     if (activeChat && activeChat.id !== chat?.id) {
-      setMessages([]); 
+      setMessages([]);
       setLastMessageTimestamp([]);
     }
-    setChat(activeChat)
+    setChat(activeChat);
     fetchMessagesHandler();
 
     // Start polling
     if (activeChat && activeChat.participants[0].status === profile.status) {
-      pollingIntervalRef.current = setInterval(fetchMessagesHandler, pollingSpeed);
+      pollingIntervalRef.current = setInterval(
+        fetchMessagesHandler,
+        pollingSpeed
+      );
     }
-
 
     // Cleanup interval on unmount or chat change
     return () => {
@@ -493,13 +550,57 @@ const ChatArea = ({ activeChat }) => {
               />
             </DropdownMenu>
           </Dropdown>
-          <Button variant="secondary-soft" size="sm" className="ms-2">
+          <Button
+            variant="secondary-soft"
+            size="sm"
+            className="ms-2"
+            onClick={() => {
+              setFileOpen((prev) => !prev);
+              console.log(fileOpen);
+            }}
+          >
             <FaPaperclip className="fs-6" />
           </Button>
           <Button variant="primary" type="submit" size="sm" className="ms-2">
             <FaPaperPlane className="fs-6" />
           </Button>
         </form>
+        <Modal show={fileOpen} onHide={() => setFileOpen(false)} centered>
+          <ModalHeader closeButton>
+            <h5 className="modal-title">Add file</h5>
+          </ModalHeader>
+          <ModalBody>
+            <Row className="g-4">
+              <div className="mb-3">
+                <DropzoneFormInput
+                  showPreview
+                  helpText="Drop presentation and document here or click to upload."
+                  icon={BsFileEarmarkText}
+                  label="Upload attachment"
+                  onFileUpload={(file) => setFile(file)}
+                  maxFiles={1}
+                />
+              </div>
+            </Row>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              variant="danger-soft"
+              type="button"
+              className="me-2"
+              onClick={() => setFileOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="success-soft"
+              type="button"
+              onClick={handlefileSubmit}
+            >
+              Send
+            </Button>
+          </ModalFooter>
+        </Modal>
       </CardFooter>
     </Card>
   );
