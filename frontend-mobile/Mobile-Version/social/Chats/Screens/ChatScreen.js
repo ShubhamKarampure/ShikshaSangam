@@ -34,7 +34,7 @@ export default function ChatScreen({ navigation, route }) {
       return <ReceiverChatBubble chat={item} />;
     }
   }
-
+  
   function sendHandler(chat) {
     const newChatItem = {
       profile_id: sender_profile_id,
