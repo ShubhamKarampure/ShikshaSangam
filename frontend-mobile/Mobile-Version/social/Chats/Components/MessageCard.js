@@ -3,6 +3,9 @@ import { TouchableOpacity, Text, StyleSheet, Image, View } from "react-native";
 import timePassed from "../../../Utility/timePassed";
 
 const MessageCard = ({ item, onPress }) => {
+  // console.log(item.participants);
+  // console.log(item);
+
   return (
     <TouchableOpacity
       style={styles.messageCard}
@@ -11,7 +14,12 @@ const MessageCard = ({ item, onPress }) => {
     >
       <View style={styles.mainHeader}>
         <Image
-          source={{ uri: item.participants[0].avatar_image }}
+          source={{
+            uri:
+              item.participants[0].avatar_image !== null
+                ? item.participants[0].avatar_image
+                : `https://ui-avatars.com/api/?name=${item.participants[0].full_name}&background=0D8ABC&color=fff`,
+          }}
           style={styles.avatar}
         />
         <View style={styles.headerText}>
@@ -19,12 +27,21 @@ const MessageCard = ({ item, onPress }) => {
             {item.participants[0].full_name}
           </Text>
         </View>
-        <Text style={styles.timeStamp}>
-          {timePassed(item.last_message.timestamp, new Date().toISOString())}
-        </Text>
+        {item.last_message !== null ? (
+          <Text style={styles.timeStamp}>
+            {timePassed(item.last_message.timestamp, new Date().toISOString())}
+          </Text>
+        ) : (
+          <></>
+        )}
       </View>
-
-      <Text style={styles.messageText}>{item.last_message.content}</Text>
+      {item.last_message !== null ? (
+        <Text style={styles.timeStamp}>
+          {item.last_message.content}
+        </Text>
+      ) : (
+        <></>
+      )}
     </TouchableOpacity>
   );
 };
