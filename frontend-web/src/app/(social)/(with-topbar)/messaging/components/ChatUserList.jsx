@@ -4,7 +4,7 @@ import { Offcanvas, OffcanvasBody, OffcanvasHeader } from 'react-bootstrap';
 import ChatUsers from './ChatUsers';
 
 const ChatUserList = ({chat}) => {
-
+  
   const {
     width
   } = useViewPort();

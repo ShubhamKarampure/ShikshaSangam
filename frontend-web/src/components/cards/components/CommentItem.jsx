@@ -22,6 +22,7 @@ const CommentItem = ({
   const [showReplyForm, setShowReplyForm] = useState(false);
   const [replies, setReplies] = useState(children || []);
   const [loadingReplies, setLoadingReplies] = useState(false);
+  const [showReplies, setShowReplies] = useState(false);
   const [repliesLoaded, setRepliesLoaded] = useState(children?.length > 0);
   const { user } = useAuthContext();
 
@@ -30,7 +31,11 @@ const CommentItem = ({
   // Handle the reply form toggle
   const toggleReplyForm = () => {
     setShowReplyForm(!showReplyForm);
-  };
+  };  
+
+  const handleShowReply = () => {
+    setShowReplies(!showReplies);
+  }
 
   // Fetch replies dynamically
   const fetchReplies = async () => {
@@ -97,7 +102,7 @@ const CommentItem = ({
                 </div>
                 <p className="small mb-0">{comment}</p>
                 {image && (
-                  <Card className="p-2 border border-2 rounded mt-2 shadow-none">
+                  <Card className="p-2 border rounded mt-2 shadow-none">
                     <img width={172} height={277} src={image} alt="" />
                   </Card>
                 )}
@@ -124,7 +129,7 @@ const CommentItem = ({
                 </li>
                 {replies?.length > 0 && (
                   <li className="nav-item">
-                    <span className="nav-link" role="button">
+                    <span className="nav-link" role="button" onClick={handleShowReply}>
                       View {replies?.length} replies
                     </span>
                   </li>
@@ -151,8 +156,8 @@ const CommentItem = ({
 
           {/* Nested Replies */}
           <ul className="comment-item-nested list-unstyled">
-            {loadingReplies && <p>Loading replies...</p>}
-            {replies.map((childComment) => (
+            {/* {loadingReplies && <p>Loading replies...</p>} */}
+            {showReplies && replies.map((childComment) => (
               <CommentItem key={childComment.id} {...childComment} />
             ))}
           </ul>

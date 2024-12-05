@@ -7,7 +7,7 @@ import { Button, FormCheck, Form } from 'react-bootstrap';
 import GoogleLoginButton from '../../components/useGoogleSignUp';
 
 const LoginForm = () => {
-  const emailOptions = ['admin@demo.com', 'student@demo.com', 'alumni@demo.com'];  // Predefined email options
+  const emailOptions = [ 'student@demo.com', 'alumni@demo.com','admin@demo.com',];  // Predefined email options
   const { loading: loginLoading, login, control, setValue } = useSignIn(emailOptions);
 
   const handleEmailChange = (event) => {
