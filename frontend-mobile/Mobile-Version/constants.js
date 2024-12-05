@@ -33,6 +33,7 @@ export const API_ROUTES = {
     COLLEGE_POSTS: `${BACKEND_URL}/social/posts/college_posts/`,
     COMMENTS: `${BACKEND_URL}/social/comments/`,
     LIKES: `${BACKEND_URL}/social/likes/`,
+    UNLIKES:`${BACKEND_URL}/social/likes/unlike/`,
     FOLLOWS: `${BACKEND_URL}/social/followers/`,
     FOLLOWERS: `${BACKEND_URL}/social/follows/followers/`,
     FOLLOWING: `${BACKEND_URL}/social/follows/following/`,

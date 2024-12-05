@@ -9,7 +9,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { Pressable, View, StyleSheet, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-
+import { useProfileContext } from "../../Context/ProfileContext";
+import { postlike,postunlike } from "../../api/feed";
 const LikeButtonComp = ({ onLikeToggle, likes }) => {
   const liked = useSharedValue(0);
   const [isLiked, setIsLiked] = useState(false);
@@ -77,13 +78,26 @@ const LikeButtonComp = ({ onLikeToggle, likes }) => {
   );
 };
 
-export default function LikeButton({ initialLikeCount }) {
+export default function LikeButton({ initialLikeCount, post_id }) {
+  const {profile} = useProfileContext()
+  const profile_id = profile.id;
   if(!initialLikeCount) initialLikeCount=0;
   const [likeCount, setLikeCount] = useState(initialLikeCount);
 
-  const handleLikeToggle = (change) => {
-    setLikeCount((prevCount) => prevCount + change);
+  const handleLikeToggle = async (change) => {
+    try {
+      if (change === 1) {
+        await postlike(post_id, profile_id);
+      } else if (change === -1) {
+        await postunlike(post_id, profile_id);
+      }
+  
+      setLikeCount((prevCount) => prevCount + change);
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    }
   };
+  
 
   return (
     <View style={styles.mainContainer}>
