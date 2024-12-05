@@ -7,7 +7,7 @@ import ReplySection from "./ReplySection";
 import timePassed from "../../Utility/timePassed";
 import { processImageUrl } from "../../Utility/urlUtils";
 
-const Comment = memo(({ comment, isDarkMode, onReplyPress }) => { // props comment  
+const Comment = memo(({ comment, isDarkMode, onReplyPress, currentComment }) => { // currently disable the onReplyPress
   
   // const comment = {
   //   comment: {
@@ -86,6 +86,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => { // props comme
             comment={comment}
             isDarkMode={isDarkMode}
             onPress={onReplyPress}
+            currentComment={currentComment}
           />
         </View>
         <View style={{ paddingHorizontal: 8 }}>

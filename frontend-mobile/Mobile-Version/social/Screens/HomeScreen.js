@@ -29,7 +29,7 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
     try {
       const fetchedPosts = await getAllFeed();
       setPosts(fetchedPosts); // Update posts with API data
-      console.log(fetchedPosts);
+      //console.log(fetchedPosts);
       
     } catch (error) {
       console.error("Error fetching posts:", error);

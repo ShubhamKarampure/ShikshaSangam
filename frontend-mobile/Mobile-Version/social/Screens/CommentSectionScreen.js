@@ -18,17 +18,10 @@ import CommentTypingSection from "../Components/CommentTypingSection";
 import timePassed from "../../Utility/timePassed";
 import { useSafeAreaFrame } from "react-native-safe-area-context";
 import { useReplyListContext } from "../../Context/ReplyListContext";
-import { getComment,postComment } from "../../api/feed";
+import { getComment,postComment, postReply } from "../../api/feed";
 import {useProfileContext} from "../../Context/ProfileContext"
 
-export default function CommentSectionScreen({  // This component gets a post_id from route
-  navigation,
-  route,
-  // item,
-  // isDarkMode,
-  // onPress,
-  // isModalVisible
-}) {
+export default function CommentSectionScreen({ navigation, route}) { // post_id is passed via route
   // to get comments of a post   /social/comments/post_comments/{post_id}
 
   // get respective data from current logged in user
@@ -53,9 +46,21 @@ export default function CommentSectionScreen({  // This component gets a post_id
   const { addReply } = useReplyListContext();
 
   function onReplyPress(comment) {
-    setIsReplyPressed((prev) => !prev);
-    setCurrentComment(comment);
-    console.log("Reply to:", comment.user.username);
+    setIsReplyPressed((prev) => {
+      if(prev && currentComment.comment.id===comment.comment.id){
+        setCurrentComment(null);
+        return false;
+      }
+      else if(prev && currentComment.comment.id!==comment.comment.id){
+        setCurrentComment(comment);
+        return true;
+      }
+      else{
+        setCurrentComment(comment);
+        return true;
+      }
+    });
+    //console.log("Reply to content:", comment.comment.content);
   }
 
   
@@ -99,6 +104,23 @@ export default function CommentSectionScreen({  // This component gets a post_id
   const flatListRef = useRef(null); // Reference for FlatList
 
 
+  const onSendHandlerForReply = async (chat) => {
+    if(currentComment!==null){
+      //console.log(currentComment.comment.content + " will get the reply");
+      try {
+        const replyVerified = await postReply(
+          sender_profile_id,
+          currentComment.comment.id,
+          chat.message
+        );
+        //console.log("replyVerifed is ", replyVerified);
+      } catch (error) {
+        console.error("Error posting reply:", error.message);
+      }
+      setIsReplyPressed(false);
+    } 
+  };
+ 
 
   const onSendHandlerForComment = async (chat) => {
     const tempId = sender_profile_id.toString() + new Date().toISOString(); // Temporary ID
@@ -123,7 +145,6 @@ export default function CommentSectionScreen({  // This component gets a post_id
     setCommentList((prevList) => [newCommentItem, ...prevList]);
     flatListRef.current?.scrollToOffset({ animated: true, offset: 0 });
   
-    // the code is working but the problem is that the profile_id, is dummy so it messes with backend, need profile global context
     try {             
       const commentVerified = await postComment(post_id, sender_profile_id, chat.message);
 
@@ -186,11 +207,14 @@ export default function CommentSectionScreen({  // This component gets a post_id
                 <FlatList
                   data={commentList}
                   keyExtractor={(comment) => comment.comment.id.toString()}
-                  renderItem={({ item }) => (  // this item is a comment object
+                  renderItem={(
+                    { item } // this item is a comment object
+                  ) => (
                     <Comment
                       comment={item}
                       isDarkMode={isDarkMode}
                       onReplyPress={onReplyPress.bind(this, item)}
+                      currentComment={currentComment}
                     />
                   )}
                   initialNumToRender={10}
