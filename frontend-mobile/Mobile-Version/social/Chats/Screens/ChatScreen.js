@@ -5,9 +5,13 @@ import SenderChatBubble from "../Components/SenderChatBubble";
 import ReceiverChatBubble from "../Components/ReceiverChatBubble";
 import TypingSection from "../Components/TypingSection";
 import { chatsData } from "../../data/chatsData";
+import { fetchMessages } from "../../../api/multimedia";
 
 export default function ChatScreen({ navigation, route }) {
   const chatInfo = route.params.receiver;
+  const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
+  const [messages, setMessages] = useState([]);
+  
   const [chatList, setChatList] = useState(chatsData);
   const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
 
@@ -16,8 +20,25 @@ export default function ChatScreen({ navigation, route }) {
   const sender_profile_id = 1;
   const sender_avatar = "https://via.placeholder.com/150/FF5733/FFFFFF";
   const sender_username = "John Doe";
-
+  
   useEffect(() => {
+
+    const fetchMessagesHandler = async () => {
+      try {
+        const response = await fetchMessages(chatInfo.id, {
+        after_timestamp: lastMessageTimestamp,
+      });
+        console.log(response)
+      } catch (err) {
+        console.error("Error fetching messages", err);
+      }
+    };
+
+    // Initial fetch
+    fetchMessagesHandler();
+    const latestMessage = response[response.length - 1];
+    setLastMessageTimestamp(latestMessage.timestamp);
+
     // Scroll to the bottom only if the user is at the bottom
     if (
       // isAtBottom &&
@@ -44,7 +65,6 @@ export default function ChatScreen({ navigation, route }) {
       timestamp: chat.timestamp.hoursMinutes,
       isoString: chat.timestamp.isoString,
     };
-
     setChatList((prevList) => [...prevList, newChatItem]);
   }
 
