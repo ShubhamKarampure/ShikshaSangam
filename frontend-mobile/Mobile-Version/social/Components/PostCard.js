@@ -6,6 +6,7 @@ import CommentButton from "../Components/CommentButton";
 import ShareButton from "../Components/ShareButton";
 import CommentSectionCard from "../Screens/CommentSectionScreen";
 import timePassed from "../../Utility/timePassed";
+import { processImageUrl } from "../../Utility/urlUtils";
 
 const PostCard = ({ item, isDarkMode, navigation}) => {
 
@@ -29,7 +30,7 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
           <Image
             source={{
               uri:
-                item.user.avatar !== null ? item.user.avatar : defaultAvatarURL,
+                item.user.avatar !== null ? processImageUrl(item.user.avatar) : defaultAvatarURL,
             }}
             style={styles.avatar}
           />
@@ -56,14 +57,14 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
 
         <Image
           source={{
-            uri: item.post.media !== null ? item.post.media : defaultImageURL,
+            uri: item.post.media !== null ? processImageUrl(item.post.media) : defaultImageURL,
           }}
           style={styles.postImage}
         />
 
         {/* Actions: Like, Comment, Share */}
         <View style={styles.actions}>
-          <LikeButton initialLikeCount={item.post_stats.likes} />
+          <LikeButton initialLikeCount={item.post_stats.likes} post_id={item.post.id} initialIsLiked={item.is_liked}/>
           <CommentButton
             item={item}
             isDarkMode={isDarkMode}

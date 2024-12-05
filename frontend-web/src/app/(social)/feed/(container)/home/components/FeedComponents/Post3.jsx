@@ -21,19 +21,62 @@ import {
   BsSendFill,
   BsShare,
 } from "react-icons/bs";
-import logo11 from "@/assets/images/logo/11.svg";
-import postImg4 from "@/assets/images/post/3by2/03.jpg";
 import { Link } from "react-router-dom";
 import ActionMenu from "./ActionMenu.jsx";
 import CommentItem from "@/components/cards/components/CommentItem.jsx";
-import avatar12 from "@/assets/images/avatar/12.jpg";
-import { useState } from "react";
-import { timeSince } from "@/utils/date";
-import { postComment } from "@/api/feed.js";
+import { postComment, getComment } from "@/api/feed.js";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useProfileContext } from "@/context/useProfileContext";
+import { useState, useEffect, useRef,memo } from "react";
 
-const Post3 = ({
+
+const LazyImage = ({ src, alt, onClick }) => {
+  const [isInView, setIsInView] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsInView(true);
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.1 }
+    );
+
+    if (imgRef.current) {
+      observer.observe(imgRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
+
+  const style = {
+    width: "100%",
+    height: "300px",
+    objectFit: "cover",
+    opacity: isLoaded ? 1 : 0, // Set opacity to 0 initially, 1 when loaded
+    transform: isLoaded ? "scale(1)" : "scale(0.8)", // Scale image when loaded
+    transition: "opacity 0.5s ease-in-out, transform 0.3s ease", // Apply transitions
+  };
+
+  return (
+    <img
+      ref={imgRef}
+      src={isInView ? src : ""}
+      alt={alt}
+      style={style}
+      onClick={onClick}
+      loading="lazy"
+      onLoad={() => setIsLoaded(true)} // Set loaded state on image load
+    />
+  );
+};
+
+
+const Post3 = memo(({
   postId,
   createdAt,
   likesCount,
@@ -56,13 +99,22 @@ const Post3 = ({
   const username = user.username;
   const [showComments, setShowComments] = useState(false);
   // Function to handle modal opening
+  useEffect(() => {
+    const fetchComments = async () => {
+      const postComments = await getComment(postId);
+      setCommentsState(postComments);
+    };
+    fetchComments();
+  }, []);
+
   const handleImageClick = (img) => {
     setModalImage(img);
     setShowModal(true);
   };
-  const handleShowComments = () => {
+  const handleShowComments = async () => {
     setShowComments(!showComments);
-    console.log(showComments);
+    const postComments = await getComment(postId);
+    setCommentsState(postComments);
   };
   // Function to handle modal closing
   const handleCloseModal = () => {
@@ -107,7 +159,7 @@ const Post3 = ({
                 <h6 className="card-title mb-0">
                   <Link to=""> {socialUser?.name} </Link>
                 </h6>
-                {/* <p className="small mb-0">{(createdAt)}</p> */}
+                <p className="small mb-0">{createdAt}</p>
               </div>
             </div>
             <ActionMenu />
@@ -119,7 +171,7 @@ const Post3 = ({
 
         {image && (
           <span role="button">
-            <img
+            <LazyImage
               src={image}
               alt="post-image"
               style={{ width: "100%", height: "300px", objectFit: "cover" }}
@@ -256,11 +308,16 @@ const Post3 = ({
           </form>
         </div>
       </div>
-      {commentsState && showComments &&  (
+      {commentsState && showComments && (
         <>
           <ul className="comment-wrap list-unstyled">
-          {commentsState.map(comment => <CommentItem {...comment}  key={commentsState.comment+commentsState.commentId}/>)}
-        </ul>
+            {commentsState.map((comment) => (
+              <CommentItem
+                {...comment}
+                key={commentsState.comment + commentsState.commentId}
+              />
+            ))}
+          </ul>
         </>
       )}
       <Modal show={showModal} onHide={handleCloseModal} centered>
@@ -273,6 +330,6 @@ const Post3 = ({
       </Modal>
     </>
   );
-};
+});
 
 export default Post3;

@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Card } from 'react-bootstrap';
-import { BsSearch } from 'react-icons/bs';
-import clsx from 'clsx';
-import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient';
-import { useChatContext } from '@/context/useChatContext';
+import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
+import { useState, useEffect } from "react";
+import { Card } from "react-bootstrap";
+import { BsSearch } from "react-icons/bs";
+import clsx from "clsx";
+import { useChatContext } from "@/context/useChatContext";
 
 const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
@@ -16,20 +16,15 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
     `https://ui-avatars.com/api/?name=${fullName}&background=0D8ABC&color=fff`;
   const status = participant?.status;
 
-  // Process last message content
-  let lastMessageContent = last_message?.content || 'No recent messages';
+  let lastMessageContent = last_message?.content || "No recent messages";
   if (lastMessageContent.startsWith(MEET_MESSAGE_PREFIX)) {
-    lastMessageContent = 'Quick Connect';
-  }
-  const MAX_LENGTH = 20;
-  if (lastMessageContent.length > MAX_LENGTH) {
-    lastMessageContent = `${lastMessageContent.slice(0, MAX_LENGTH)}...`;
+    lastMessageContent = "Quick Connect";
   }
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>
       <div
-        className={clsx('nav-link text-start', { active: activeChatId === id })}
+        className={clsx("nav-link text-start", { active: activeChatId === id })}
         id="chat-1-tab"
         data-bs-toggle="pill"
         role="tab"
@@ -37,15 +32,16 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
         <div className="d-flex">
           <div
             className={clsx(
-              'flex-shrink-0 avatar me-2',
-              status === 'online' ? 'status-online' : 'status-offline',
-              { 'avatar-story': isStory }
+              "flex-shrink-0 avatar me-2",
+              status === "online" ? "status-online" : "status-offline",
+              { "avatar-story": isStory }
             )}
           >
             <img
               className="avatar-img rounded-circle"
-              src={avatarUrl}
-              alt={fullName}
+              src={avatar_image}
+              alt={full_name || "Avatar"}
+              loading="lazy"
             />
           </div>
           <div className="flex-grow-1 d-block">
@@ -67,9 +63,11 @@ const ChatUsers = ({ chats }) => {
 
   const handleSearch = (query) => {
     setUsers(
-      query
-        ? chats.filter((chat) =>
-            chat.participants[0].full_name.toLowerCase().includes(query.toLowerCase())
+      text
+        ? chats.filter((u) =>
+            u.participants[0].full_name
+              .toLowerCase()
+              .includes(text.toLowerCase())
           )
         : chats
     );
@@ -93,11 +91,15 @@ const ChatUsers = ({ chats }) => {
             <BsSearch className="fs-5" />
           </button>
         </form>
-        <div className="mt-4" style={{ overflowY: 'auto' }}>
+        <div className="mt-4" style={{ overflowY: "auto" }}>
           <SimplebarReactClient className="chat-tab-list custom-scrollbar">
             <ul className="nav flex-column nav-pills nav-pills-soft">
               {users.map((chat, idx) => (
-                <ChatItem {...chat} key={idx} />
+                <ChatItem
+                  {...chat}
+                  key={idx}
+                  last_message={chat.last_message}
+                />
               ))}
             </ul>
           </SimplebarReactClient>

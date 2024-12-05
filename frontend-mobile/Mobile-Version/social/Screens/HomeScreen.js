@@ -1,6 +1,6 @@
 import React from "react";
-import { View, FlatList, StyleSheet, SafeAreaView, Image, Text, TouchableOpacity } from "react-native";
-import { useState } from "react";
+import { View, FlatList, StyleSheet, SafeAreaView, Image, Text, TouchableOpacity,ActivityIndicator } from "react-native";
+import { useState,useEffect } from "react";
 import { posts } from "../data/postsdata"; // Import your updated dummy data
 import LikeButton from "../Components/LikeButton";
 import CommentButton from "../Components/CommentButton";
@@ -9,13 +9,15 @@ import PostCard from "../Components/PostCard";
 import { useAuthContext } from "../../Context/useAuthContext";
 import { useFocusEffect } from "@react-navigation/native";
 
+import { getAllFeed } from "../../api/feed";
 export default function HomeScreen({navigation}) {   // GET  /social/posts/list_posts/    to get the list of post objects
 
   const isDarkMode = true; // Enforce dark mode by default
 
   const [scrollOffset, setScrollOffset] = React.useState(0);
   const flatListRef = React.useRef(null); // Reference to the FlatList
-
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const handleScroll = (event) => {
     setScrollOffset(event.nativeEvent.contentOffset.y); // Save the scroll offset
   };
@@ -23,6 +25,18 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
   // const handleNavigateToComments = (postId) => {
   //   navigation.navigate("CommentSection", { postId });
   // };
+  const fetchPosts = async () => {
+    try {
+      const fetchedPosts = await getAllFeed();
+      setPosts(fetchedPosts); // Update posts with API data
+      console.log(fetchedPosts);
+      
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useFocusEffect(
     React.useCallback(() => {
@@ -30,16 +44,37 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
       //console.log("HomeScreen is focused");
     }, [])
   );
+  useEffect(() => {
+    //console.log(posts);
+    
+    
+    fetchPosts(); // Fetch posts on component mount
+    // console.log("Post data:", posts);
+
+  }, []);
+
+  
   const renderPost = ({ item }) => (
     <PostCard item={item} isDarkMode={isDarkMode} navigation={navigation} />
   );
+
+  if (loading) {
+    return (
+      <SafeAreaView style={[styles.container]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading posts...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView
       style={[styles.container, isDarkMode && styles.containerDark]}
     >
       <FlatList
-        data={posts}
+        data={posts.results}
         keyExtractor={(item) => item.post.id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.feed}
@@ -78,4 +113,14 @@ const styles = StyleSheet.create({
   content: { fontSize: 14, marginBottom: 10, color: "#333" },
   actions: { flexDirection: "row", justifyContent: "space-between" },
   actionText: { fontSize: 14, color: "#007bff" },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
 });

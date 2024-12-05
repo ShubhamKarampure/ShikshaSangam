@@ -37,25 +37,34 @@ function Meet() {
     // Dynamically load Tailwind CSS only on the /meet page
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/src/app/(social)/live/index.css"; // Path to the stylesheet
-    link.dataset.viteDevId =
-      "D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"; // Same data attribute
+    link.href = "/src/app/(social)/live/index.css"; // Path to the stylesheetattribute
 
     document.head.appendChild(link);
 
     return () => {
-      let styleSheet = document.querySelector(
-        'style[data-vite-dev-id="D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"]'
+      const stylesToRemove = document.querySelectorAll(
+        "style[data-vite-dev-id]"
       );
+      console.log("main",stylesToRemove);
+      
+      // Loop through and remove each style tag
+      stylesToRemove.forEach((style) => {
+        if (
+          String(style["attributes"][1].value).includes("src/app/(social)/live/index.css")
+        ) {
+          console.log("removed",style);
+          
+          style.remove();
+        }
+      });
+      const links=document.querySelectorAll('link[rel="stylesheet"]');
 
-      // Remove it from the DOM
-      if (styleSheet) {
-        styleSheet.remove();
-      }
-      if (link) {
-        document.head.removeChild(link);
-      }
-      console.log(document.head);
+      links.forEach((link)=>{
+        if(link.href.includes('/src/app/(social)/live/index.css')){
+          
+          link.remove();
+        }
+      })
     };
   });
   return (

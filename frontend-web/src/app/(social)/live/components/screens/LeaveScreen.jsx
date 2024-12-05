@@ -8,14 +8,28 @@ export function LeaveScreen({ setIsMeetingLeft }) {
     message: "You left the meeting!",
     variant: "danger",
   });
-  let styleSheet = document.querySelector(
-    'style[data-vite-dev-id="D:/Self/SIH/frontend-web/src/app/(social)/live/index.css"]'
-  );
+  const linkElements = document.querySelectorAll('link[rel="stylesheet"]');
 
-  // Remove it from the DOM
-  if (styleSheet) {
-    styleSheet.remove();
-  }
+  linkElements.forEach(link => {
+    if (link.href.includes('/live/index.css')) {
+      link.remove();
+    }
+  });
+
+  const stylesToRemove = document.querySelectorAll(
+    "style[data-vite-dev-id]"
+  );
+  console.log('Styles to remove',stylesToRemove);
+  
+  // Loop through and remove each style tag
+  stylesToRemove.forEach((style) => {
+    if (
+      style["attributes"] && style["attributes"][1] && String(style["attributes"][1]).includes("src/app/(social)/live/index.css")
+    ) {
+      style.remove();
+    }
+  });
+
   navigate('/messaging');
   return (
    null

@@ -15,51 +15,18 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { getUserProfile, updateUserProfile } from "../../api/UserProfile";
+import {  updateUserProfile } from "../../api/UserProfile";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthContext } from "../../Context/useAuthContext";
+import { useProfileContext } from "../../Context/ProfileContext";
 
 const ProfileScreen = () => {
-  const [profileData, setProfileData] = useState({
-    full_name: "",
-    bio: "",
-    avatar_image: null,
-    banner_image: null,
-    contact_number: "",
-    location: "",
-    social_links: {},
-  });
-  const [isEditing, setIsEditing] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const { user } = useAuthContext(); // Get user data from AuthContext
-  const [userId, setUserId] = useState(null);
-  const [userRole, setUserRole] = useState(null);
-  useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const storedUser = await AsyncStorage.getItem("_SS_AUTH_KEY_");
-        if (!storedUser) throw new Error("User not found");
-    
-        const parsedUser = JSON.parse(storedUser);
-        const profileDetails = await getUserProfile(parsedUser.profile_id);
-             // Process image URLs before setting state
-      setProfileData({
-        ...profileDetails,
-        avatar_image: processImageUrl(profileDetails.avatar_image),
-        banner_image: processImageUrl(profileDetails.banner_image),
-      });
-        setUserId(parsedUser.profile_id); // Store id
-        setUserRole(parsedUser.role);     // Store role
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-        Alert.alert("Error", "Failed to fetch profile data.");
-      } finally {
-        setLoading(false);
-      }
-    };
+  
 
-    fetchProfile();
-  }, []);
+  const [isEditing, setIsEditing] = useState(false);
+  const { user } = useAuthContext(); // Get user data from AuthContext
+  const {profile,setProfile ,loading,setLoading} = useProfileContext()
+  
 
   const pickImage = async (type) => {
     if (!isEditing) {
@@ -82,7 +49,7 @@ const ProfileScreen = () => {
 
     if (!result.canceled) {
       const updatedField = type === "avatar" ? "avatar_image" : "banner_image";
-      setProfileData({ ...profileData, [updatedField]: result.assets[0].uri });
+      setProfile({ ...profile, [updatedField]: result.assets[0].uri });
     } else {
       Alert.alert("Cancelled", "No image was selected.");
     }
@@ -95,37 +62,37 @@ const ProfileScreen = () => {
       const formData = new FormData();
   
       // Add images if they need to be uploaded
-      if (profileData.avatar_image && profileData.avatar_image.startsWith("file://")) {
-        const avatarResponse = await fetch(profileData.avatar_image);
+      if (profile.avatar_image && profile.avatar_image.startsWith("file://")) {
+        const avatarResponse = await fetch(profile.avatar_image);
         const avatarBlob = await avatarResponse.blob();
         formData.append("avatar_image", {
-          uri: profileData.avatar_image,
+          uri: profile.avatar_image,
           name: "avatar.jpg",
           type: avatarBlob.type,
         });
       }
   
-      if (profileData.banner_image && profileData.banner_image.startsWith("file://")) {
-        const bannerResponse = await fetch(profileData.banner_image);
+      if (profile.banner_image && profile.banner_image.startsWith("file://")) {
+        const bannerResponse = await fetch(profile.banner_image);
         const bannerBlob = await bannerResponse.blob();
         formData.append("banner_image", {
-          uri: profileData.banner_image,
+          uri: profile.banner_image,
           name: "banner.jpg",
           type: bannerBlob.type,
         });
       }
   
       // Add other fields
-      formData.append("full_name", profileData.full_name || "");
-      formData.append("bio", profileData.bio || "");
-      formData.append("contact_number", profileData.contact_number || "");
-      formData.append("location", profileData.location || "");
+      formData.append("full_name", profile.full_name || "");
+      formData.append("bio", profile.bio || "");
+      formData.append("contact_number", profile.contact_number || "");
+      formData.append("location", profile.location || "");
       formData.append("id", user.profile_id); // Explicitly add user ID
       formData.append("role", user.role); // Explicitly add user role
       formData.append("user", user.id); // Add the user ID if required by the backend
   
       // Convert social_links to JSON string
-      formData.append("social_links", JSON.stringify(profileData.social_links || {}));
+      formData.append("social_links", JSON.stringify(profile.social_links || {}));
   
       // // Log the FormData content for debugging
       // for (const pair of formData.entries()) {
@@ -136,7 +103,7 @@ const ProfileScreen = () => {
       const updatedProfile = await updateUserProfile(user.profile_id, formData);
       console.log("Updated profile response:", updatedProfile);
       // Update the state with new data from the backend
-      setProfileData((prev) => ({
+      setProfile((prev) => ({
         ...prev,
         avatar_image: processImageUrl(updatedProfile.avatar_image),
         banner_image: processImageUrl(updatedProfile.banner_image),
@@ -164,11 +131,11 @@ const ProfileScreen = () => {
       {isEditing ? (
         <TextInput
           style={styles.input}
-          value={profileData[key]}
-          onChangeText={(text) => setProfileData({ ...profileData, [key]: text })}
+          value={profile[key]}
+          onChangeText={(text) => setProfile({ ...profile, [key]: text })}
         />
       ) : (
-        <Text style={styles.infoText}>{profileData[key] || "N/A"}</Text>
+        <Text style={styles.infoText}>{profile[key] || "N/A"}</Text>
       )}
     </View>
   );
@@ -182,7 +149,7 @@ const ProfileScreen = () => {
       {/* Banner Image */}
       <TouchableOpacity onPress={() => pickImage("banner")}>
       <Image
-  source={{ uri: profileData.banner_image || "https://via.placeholder.com/300" }}
+  source={{ uri: profile.banner_image || "https://via.placeholder.com/300" }}
   style={styles.bannerImage}
 />
       </TouchableOpacity>
@@ -191,11 +158,11 @@ const ProfileScreen = () => {
       <View style={styles.header}>
         <TouchableOpacity onPress={() => pickImage("avatar")}>
           <Image
-            source={{ uri: profileData.avatar_image || "https://via.placeholder.com/100" }}
+            source={{ uri: profile.avatar_image || "https://via.placeholder.com/100" }}
             style={styles.profilePicture}
           />
         </TouchableOpacity>
-        <Text style={styles.name}>{profileData?.full_name || "N/A"}</Text>
+        <Text style={styles.name}>{profile?.full_name || "N/A"}</Text>
       </View>
 
       {/* Editable Sections */}
@@ -207,18 +174,18 @@ const ProfileScreen = () => {
         {isEditing ? (
           <TextInput
             style={styles.input}
-            value={profileData?.social_links?.facebook || ""}
+            value={profile?.social_links?.facebook || ""}
             onChangeText={(text) =>
-              setProfileData({
-                ...profileData,
-                social_links: { ...profileData.social_links, facebook: text },
+              setProfile({
+                ...profile,
+                social_links: { ...profile.social_links, facebook: text },
               })
             }
             placeholder="Facebook Link"
           />
         ) : (
           <Text style={styles.infoText}>
-            {profileData?.social_links?.facebook || "No social links provided"}
+            {profile?.social_links?.facebook || "No social links provided"}
           </Text>
         )}
       </View>
@@ -297,3 +264,32 @@ const styles = StyleSheet.create({
 });
 
 export default ProfileScreen;
+
+
+
+// useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       const storedUser = await AsyncStorage.getItem("_SS_AUTH_KEY_");
+  //       if (!storedUser) throw new Error("User not found");
+    
+  //       const parsedUser = JSON.parse(storedUser);
+  //       const profileDetails = await getUserProfile(parsedUser.profile_id);
+  //            // Process image URLs before setting state
+  //     setProfileData({
+  //       ...profileDetails,
+  //       avatar_image: processImageUrl(profileDetails.avatar_image),
+  //       banner_image: processImageUrl(profileDetails.banner_image),
+  //     });
+  //       setUserId(parsedUser.profile_id); // Store id
+  //       setUserRole(parsedUser.role);     // Store role
+  //     } catch (error) {
+  //       console.error("Error fetching profile:", error);
+  //       Alert.alert("Error", "Failed to fetch profile data.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchProfile();
+  // }, []);
