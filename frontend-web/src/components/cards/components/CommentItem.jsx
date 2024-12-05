@@ -97,7 +97,7 @@ const CommentItem = ({
                 </div>
                 <p className="small mb-0">{comment}</p>
                 {image && (
-                  <Card className="p-2 border border-2 rounded mt-2 shadow-none">
+                  <Card className="p-2 border rounded mt-2 shadow-none">
                     <img width={172} height={277} src={image} alt="" />
                   </Card>
                 )}
@@ -151,7 +151,7 @@ const CommentItem = ({
 
           {/* Nested Replies */}
           <ul className="comment-item-nested list-unstyled">
-            {loadingReplies && <p>Loading replies...</p>}
+            {/* {loadingReplies && <p>Loading replies...</p>} */}
             {replies.map((childComment) => (
               <CommentItem key={childComment.id} {...childComment} />
             ))}
