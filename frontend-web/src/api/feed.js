@@ -172,24 +172,12 @@ export const getAllFeed = async () => {
         : "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Fallback default avatar URL
 
       let comments = [];
-      try {
-        comments = await getComment(p.post.id);
-      } catch (err) {
-        console.error(`Error fetching comments for post ID ${p.post.id}:`, err);
-      }
+      // try {
+      //   comments = await getComment(p.post.id);
+      // } catch (err) {
+      //   console.error(`Error fetching comments for post ID ${p.post.id}:`, err);
+      // }
       
-      // const formattedComments = comments.map((c) => ({
-      //   comment: c.comment.content,
-      //   createdAt: c.comment.created_at,
-      //   socialUser: {
-      //     avatar:
-      //       c.user.avatar ||
-      //       "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      //     name: c.user.username,
-      //   },
-      //   commentId: c.comment.id,
-      //   children: [],
-      // }));
       
       return {
         postId: p.post.id,
