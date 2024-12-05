@@ -106,6 +106,7 @@ const Post3 = memo(
       const fetchComments = async () => {
         const postComments = await getComment(postId);
         setCommentsState(postComments);
+        
       };
       fetchComments();
     }, []);
@@ -329,10 +330,10 @@ const Post3 = memo(
         {commentsState && showComments && (
           <>
             <ul className="comment-wrap list-unstyled">
-              {commentsState.map((comment) => (
+              {commentsState.map((comment,idx) => (
                 <CommentItem
                   {...comment}
-                  key={commentsState.comment + commentsState.commentId}
+                  key={idx}
                 />
               ))}
             </ul>

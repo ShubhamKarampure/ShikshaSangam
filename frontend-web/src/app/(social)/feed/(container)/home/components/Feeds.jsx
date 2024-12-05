@@ -19,9 +19,9 @@ const Feeds = () => {
     const fetchFeeds = async () => {
       try {
         const data = await getAllFeed(limit,offset);
-        console.log(data);
 
         setAllPosts([...allPosts,...data]);
+        
       } catch (err) {
         console.error("Error fetching feeds:", err);
         setError(err);

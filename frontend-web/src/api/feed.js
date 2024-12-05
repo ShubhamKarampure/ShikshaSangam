@@ -30,8 +30,10 @@ export const getComment = async (postId) => {
         "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       name: c.user.username,
     },
+    likesCount: c.likes_count,
     commentId: c.comment.id,
     children: [],
+    is_liked: c.is_liked,
   }));
   return formattedComments;
 };
@@ -129,6 +131,7 @@ export const getReply = async (commentId) => {
       name: r.user.username, // Username
     },
     likesCount: r.likes_count, // Likes count
+    is_liked: r.is_liked, // Whether the user has liked the reply
   }));
   return formattedreplies;
 };
