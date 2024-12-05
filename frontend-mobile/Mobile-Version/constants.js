@@ -49,6 +49,7 @@ export const API_ROUTES = {
     CHAT_CLEAR: (chatId) => `${BACKEND_URL}/multimedia/chats/${chatId}/clear/`, // Clear all messages in a chat
 
     UPLOAD_CSV: `${BACKEND_URL}/users/upload-user-data/`, // Upload CSV file
+    ALL_POSTS: `${BACKEND_URL}/social/posts/list_posts`,     ////////////////////////////////////////// check again
     FEED: `${BACKEND_URL}/social/posts/college_posts`, // Feed
     COMMENT: `${BACKEND_URL}/social/comments/`, // Comment
     REPLY: `${BACKEND_URL}/social/replies/`, // Reply

@@ -5,6 +5,7 @@ import LikeCommentButton from "./LikeCommentButton";
 import ViewRepliesButton from "./ViewRepliesButton";
 import ReplySection from "./ReplySection";
 import timePassed from "../../Utility/timePassed";
+import { processImageUrl } from "../../Utility/urlUtils";
 
 const Comment = memo(({ comment, isDarkMode, onReplyPress }) => { // props comment  
   
@@ -47,7 +48,7 @@ const Comment = memo(({ comment, isDarkMode, onReplyPress }) => { // props comme
             source={{
               uri:
                 comment.user.avatar !== null
-                  ? comment.user.avatar
+                  ? processImageUrl(comment.user.avatar)
                   : "https://via.placeholder.com/150/FF5733/FFFFFF",
             }}
             style={styles.avatar}

@@ -1,5 +1,5 @@
 import React from "react";
-import { View, FlatList, StyleSheet, SafeAreaView, Image, Text, TouchableOpacity } from "react-native";
+import { View, FlatList, StyleSheet, SafeAreaView, Image, Text, TouchableOpacity,ActivityIndicator } from "react-native";
 import { useState,useEffect } from "react";
 import { posts } from "../data/postsdata"; // Import your updated dummy data
 import LikeButton from "../Components/LikeButton";
@@ -45,7 +45,7 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
     }, [])
   );
   useEffect(() => {
-    console.log(posts);
+    //console.log(posts);
     
     
     fetchPosts(); // Fetch posts on component mount
@@ -60,8 +60,11 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
 
   if (loading) {
     return (
-      <SafeAreaView style={[styles.container, isDarkMode && styles.containerDark]}>
-        <View><Text>Loading posts...</Text></View>
+      <SafeAreaView style={[styles.container]}>
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#007AFF" />
+          <Text style={styles.loadingText}>Loading posts...</Text>
+        </View>
       </SafeAreaView>
     );
   }
@@ -71,8 +74,8 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
       style={[styles.container, isDarkMode && styles.containerDark]}
     >
       <FlatList
-        data={posts}
-        keyExtractor={(item) => item.postId.toString()}
+        data={posts.results}
+        keyExtractor={(item) => item.post.id.toString()}
         renderItem={renderPost}
         contentContainerStyle={styles.feed}
         onScroll={handleScroll} // Track scroll position
@@ -110,4 +113,14 @@ const styles = StyleSheet.create({
   content: { fontSize: 14, marginBottom: 10, color: "#333" },
   actions: { flexDirection: "row", justifyContent: "space-between" },
   actionText: { fontSize: 14, color: "#007bff" },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#555",
+  },
 });

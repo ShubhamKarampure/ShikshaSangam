@@ -169,48 +169,41 @@ export const getAllFeed = async () => {
   }
 
   const res = await response.json();
-  const cloudName = CLOUDINARY_CLOUD_NAME;
-  const postsArray = []; // Initialize the array to store posts with comments
+  // const cloudName = CLOUDINARY_CLOUD_NAME;
+  // const postsArray = []; // Initialize the array to store posts with comments
+
+  //console.log(res);
+  //console.log('Seperator');
 
   // Map posts and fetch associated comments
-  const postsWithComments = await Promise.all(
-    res.results.map(async (p) => {
-      const imageUrl = p.post.media
-        ? `https://res.cloudinary.com/${cloudName}/${p.post.media}`
-        : null;
+  // const postsWithComments = await Promise.all(
+  //   res.results.map(async (p) => {
+  //     const imageUrl = p.post.media
+  //       ? `https://res.cloudinary.com/${cloudName}/${p.post.media}`
+  //       : null;
 
-      const avatarUrl = p.user.avatar
-        ? p.user.avatar
-        : "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Default avatar URL
+  //     const avatarUrl = p.user.avatar
+  //       ? p.user.avatar
+  //       : "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"; // Default avatar URL
 
-      let comments = [];
-      try {
-        comments = await getComment(p.post.id);
-      } catch (err) {
-        console.error(`Error fetching comments for post ID ${p.post.id}:`, err);
-      }
+  //     // let comments = [];
+  //     // try {
+  //     //   comments = await getComment(p.post.id);
+  //     // } catch (err) {
+  //     //   console.error(`Error fetching comments for post ID ${p.post.id}:`, err);
+  //     // }
 
-      return {
-        postId: p.post.id,
-        createdAt: p.post_stats.time_since_post,
-        likesCount: p.post_stats.likes,
-        caption: p.post.content,
-        commentsCount: p.comments_count,
-        comments: comments,
-        image: imageUrl,
-        socialUser: {
-          avatar: avatarUrl,
-          name: p.user.username,
-        },
-        bio: p.user.bio,
-      };
-    })
-  );
+      
+
+      
+  //   })
+  // );
 
   // Add all posts with comments to the array
-  postsArray.push(...postsWithComments);
+  //postsArray.push(...postsWithComments);
 
   // Return the final array
-  return postsArray;
+  //return postsArray;
+  return res;
 };
 
