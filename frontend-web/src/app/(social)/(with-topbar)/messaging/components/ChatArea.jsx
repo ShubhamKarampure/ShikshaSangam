@@ -33,7 +33,12 @@ import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useLayoutContext } from "@/context/useLayoutContext";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
-import { fetchMessages, sendMessage, clearChat,sendMedia } from "@/api/multimedia";
+import {
+  fetchMessages,
+  sendMessage,
+  clearChat,
+  sendMedia,
+} from "@/api/multimedia";
 import { FaUserFriends, FaCommentDots } from "react-icons/fa";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { SiGooglemeet } from "react-icons/si";
@@ -155,7 +160,6 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
               )}
             >
               {message.content}
-              {/* Display Media */}
               {message.media && (
                 <div className="mt-2">
                   {message.media.match(/\.(jpeg|jpg|gif|png)$/) ? (
@@ -176,6 +180,14 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                         type="video/mp4"
                       />
                     </video>
+                  ) : message.media.match(/\.(pdf)$/) ? (
+                    <div>
+                      <iframe
+                        src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
+                        width="100%"
+                        height="500px"
+                      />
+                    </div>
                   ) : (
                     <a
                       href={`https://res.cloudinary.com/${cloudName}/${message.media}`}
@@ -303,7 +315,7 @@ const ChatArea = ({ activeChat }) => {
   const sendChatMessage = async (values) => {
     try {
       if (!values.newMessage || values.newMessage.trim() === "") return;
-
+      
       const newMessage = await sendMessage(activeChat.id, values.newMessage);
 
       // Immediately append the message
