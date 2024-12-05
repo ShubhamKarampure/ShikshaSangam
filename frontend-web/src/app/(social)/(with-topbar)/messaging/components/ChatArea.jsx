@@ -303,7 +303,7 @@ const ChatArea = ({ activeChat }) => {
   const sendChatMessage = async (values) => {
     try {
       if (!values.newMessage || values.newMessage.trim() === "") return;
-
+      
       const newMessage = await sendMessage(activeChat.id, values.newMessage);
 
       // Immediately append the message
