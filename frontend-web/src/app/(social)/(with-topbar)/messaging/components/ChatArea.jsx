@@ -163,7 +163,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                       src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
                       alt="attachment"
                       className="img-fluid rounded"
-                      style={{ maxWidth: "300px" }}
+                      style={{ maxWidth: "400px" }}
                     />
                   ) : message.media.match(/\.(mp4|mov)$/) ? (
                     <video
@@ -231,8 +231,8 @@ const ChatArea = ({ activeChat }) => {
 
   const handlefileSubmit = async () => {
     console.log(file);
-    const response = await sendMedia(activeChat.id, file);
     setFileOpen(false);
+    const response = await sendMedia(activeChat.id, file);
     setMessages([...messages, response]);
   };
   const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
