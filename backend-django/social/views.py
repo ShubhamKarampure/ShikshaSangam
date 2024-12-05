@@ -139,7 +139,6 @@ class PostViewSet(viewsets.ModelViewSet):
             
             for post in page:
                 
-                # print(post)
                 user = post.userprofile
                 num_likes =  Like.objects.filter( content_type=post_content_type,object_id=post.id).count()
                 num_comments = Comment.objects.filter(post=post).count()
@@ -150,7 +149,7 @@ class PostViewSet(viewsets.ModelViewSet):
                 has_liked = Like.objects.filter(
                     content_type=post_content_type,
                     object_id=post.id,
-                    user=self.request.user
+                    userprofile=self.request.user.user
                 ).exists()
 
                 post_serializer = self.get_serializer(post)
