@@ -1,23 +1,29 @@
-import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient';
 import { useState, useEffect } from 'react';
 import { Card } from 'react-bootstrap';
 import { BsSearch } from 'react-icons/bs';
 import clsx from 'clsx';
+import SimplebarReactClient from '@/components/wrappers/SimplebarReactClient';
 import { useChatContext } from '@/context/useChatContext';
 
 const MEET_MESSAGE_PREFIX = "MEET_INVITATION";
 
 const ChatItem = ({ id, participants, last_message, isStory }) => {
   const { activeChatId, changeActiveChat } = useChatContext();
-
   const participant = participants[0];
-  const full_name = participant?.full_name;
-  const avatar_image = participant?.avatar_image;
+  const fullName = participant?.full_name || "Unknown User";
+  const avatarUrl =
+    participant?.avatar_image ||
+    `https://ui-avatars.com/api/?name=${fullName}&background=0D8ABC&color=fff`;
   const status = participant?.status;
 
+  // Process last message content
   let lastMessageContent = last_message?.content || 'No recent messages';
   if (lastMessageContent.startsWith(MEET_MESSAGE_PREFIX)) {
     lastMessageContent = 'Quick Connect';
+  }
+  const MAX_LENGTH = 20;
+  if (lastMessageContent.length > MAX_LENGTH) {
+    lastMessageContent = `${lastMessageContent.slice(0, MAX_LENGTH)}...`;
   }
 
   return (
@@ -38,12 +44,12 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
           >
             <img
               className="avatar-img rounded-circle"
-              src={avatar_image}
-              alt={full_name || "Avatar"}
+              src={avatarUrl}
+              alt={fullName}
             />
           </div>
           <div className="flex-grow-1 d-block">
-            <h6 className="mb-0 mt-1">{full_name}</h6>
+            <h6 className="mb-0 mt-1">{fullName}</h6>
             <div className="small text-secondary">{lastMessageContent}</div>
           </div>
         </div>
@@ -59,10 +65,12 @@ const ChatUsers = ({ chats }) => {
     setUsers(chats);
   }, [chats]);
 
-  const search = (text) => {
+  const handleSearch = (query) => {
     setUsers(
-      text
-        ? chats.filter((u) => u.participants[0].full_name.toLowerCase().includes(text.toLowerCase()))
+      query
+        ? chats.filter((chat) =>
+            chat.participants[0].full_name.toLowerCase().includes(query.toLowerCase())
+          )
         : chats
     );
   };
@@ -76,7 +84,7 @@ const ChatUsers = ({ chats }) => {
             type="search"
             placeholder="Search for chats"
             aria-label="Search"
-            onKeyUp={(e) => search(e.target.value)}
+            onKeyUp={(e) => handleSearch(e.target.value)}
           />
           <button
             className="btn bg-transparent text-secondary px-2 py-0 position-absolute top-50 end-0 translate-middle-y"
@@ -85,11 +93,11 @@ const ChatUsers = ({ chats }) => {
             <BsSearch className="fs-5" />
           </button>
         </form>
-        <div className="mt-4" style={{overflowY:'auto'}}>
+        <div className="mt-4" style={{ overflowY: 'auto' }}>
           <SimplebarReactClient className="chat-tab-list custom-scrollbar">
             <ul className="nav flex-column nav-pills nav-pills-soft">
               {users.map((chat, idx) => (
-                <ChatItem {...chat} key={idx} last_message={chat.last_message} />
+                <ChatItem {...chat} key={idx} />
               ))}
             </ul>
           </SimplebarReactClient>
