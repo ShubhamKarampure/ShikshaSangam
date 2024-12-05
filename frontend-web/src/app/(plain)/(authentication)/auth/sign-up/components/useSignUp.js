@@ -13,6 +13,7 @@ const useSignUp = () => {
   const navigate = useNavigate();
   const { showNotification } = useNotificationContext();
   const { saveSession } = useAuthContext();
+  const {user}= useAuthContext();
   
   const signUpSchema = yup.object({
     username: yup.string().required('Please enter your username'),
@@ -57,8 +58,13 @@ const useSignUp = () => {
         message: 'User created successfully. Redirecting....',
         variant: 'success',
       });
-    
-      navigate('/'); // Redirect on success
+      if(!user.profile_id){
+        navigate('/profile-setup');
+        return;
+      }else{
+        navigate('/');
+        return;
+      }
     } catch (e) {
       console.error('Signup error:', e);
       showNotification({
