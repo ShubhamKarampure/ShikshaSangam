@@ -6,6 +6,7 @@ import CommentButton from "../Components/CommentButton";
 import ShareButton from "../Components/ShareButton";
 import CommentSectionCard from "../Screens/CommentSectionScreen";
 import timePassed from "../../Utility/timePassed";
+import { processImageUrl } from "../../Utility/urlUtils";
 
 const PostCard = ({ item, isDarkMode, navigation}) => {
 
@@ -29,7 +30,7 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
           <Image
             source={{
               uri:
-                item.user.avatar !== null ? item.user.avatar : defaultAvatarURL,
+                item.user.avatar !== null ? processImageUrl(item.user.avatar) : defaultAvatarURL,
             }}
             style={styles.avatar}
           />
@@ -56,7 +57,7 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
 
         <Image
           source={{
-            uri: item.post.media !== null ? item.post.media : defaultImageURL,
+            uri: item.post.media !== null ? processImageUrl(item.post.media) : defaultImageURL,
           }}
           style={styles.postImage}
         />
