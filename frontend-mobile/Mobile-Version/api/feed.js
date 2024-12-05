@@ -34,30 +34,33 @@ export const getComment = async (postId) => {
     throw new Error("Token is missing");
   }
 
-  const response = await fetch(`${API_ROUTES.COMMENT}post_comments/${postId}`, {
+  const response = await fetch(`${API_ROUTES.COMMENTS}post_comments/${postId}`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
     },
   });
+  // console.log(response);
+  
 
   if (!response.ok) {
     throw new Error(`Error: ${response.status}`);
   }
 
   const res = await response.json();
-  return res.results.map((c) => ({
-    comment: c.comment.content,
-    createdAt: c.comment.created_at,
-    socialUser: {
-      avatar:
-        c.user.avatar ||
-        "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
-      name: c.user.username,
-    },
-    commentId: c.comment.id,
-    children: [],
-  }));
+  // return res.results.map((c) => ({
+  //   comment: c.comment.content,
+  //   createdAt: c.comment.created_at,
+  //   socialUser: {
+  //     avatar:
+  //       c.user.avatar ||
+  //       "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+  //     name: c.user.username,
+  //   },
+  //   commentId: c.comment.id,
+  //   children: [],
+  // }));
+  return res;
 };
 
 // Function to post a comment
@@ -73,7 +76,7 @@ export const postComment = async (postId, profile_id, data) => {
     content: data,
   };
 
-  const response = await fetch(`${API_ROUTES.COMMENT}`, {
+  const response = await fetch(`${API_ROUTES.COMMENTS}`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -87,7 +90,7 @@ export const postComment = async (postId, profile_id, data) => {
   }
 
   const res = await response.json();
-  return res.results;
+  return res;
 };
 
 // Function to post a reply to a comment

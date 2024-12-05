@@ -5,9 +5,11 @@ import { MessageProvider } from './MessageContext';
 import { SettingsProvider } from './SettingsContext';
 import { ReplyListProvider } from './ReplyListContext';
 import { ChatProvider } from './useChatContext';
+import { ProfileProvider } from './ProfileContext';
 export const GlobalProvider = ({ children }) => {
   return (
     <AuthProvider>
+      <ProfileProvider>
       <NotificationProvider>
         <ChatProvider>
           <MessageProvider>
@@ -19,6 +21,7 @@ export const GlobalProvider = ({ children }) => {
           </MessageProvider>
         </ChatProvider>
       </NotificationProvider>
+      </ProfileProvider>
     </AuthProvider>
   );
 };
