@@ -54,15 +54,29 @@ const GoogleSignIn = () => {
   };
 
   const redirectUser = (loggedInUser) => {
+    console.log("Logged-in user:", loggedInUser);
+  
+    // Redirect to profile-setup if profile_id is missing
+    if (!loggedInUser?.profile_id) {
+      navigate("/profile-setup");
+      return; // Prevent further redirection
+    }
+  
+    // Check for redirect link from search parameters
     const redirectLink = searchParams.get("redirectTo");
     if (redirectLink) {
       navigate(redirectLink);
-    } else if (loggedInUser?.role === "college_admin") {
+      return; // Prevent further redirection
+    }
+  
+    // Redirect based on user role
+    if (loggedInUser?.role === "college_admin") {
       navigate("/admin/dashboard");
     } else {
-      navigate("/");
+      navigate("/"); // Default redirection
     }
   };
+  
 
   const handleLoginFailure = (error) => {
     console.error("Google login failed:", error);

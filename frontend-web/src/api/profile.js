@@ -4,6 +4,8 @@ import { getTokenFromCookie } from "../utils/get-token";
 
 // user profile api crud
 export const createUserProfile = async (profileData) => {
+  console.log(profileData);
+  
   const token = getTokenFromCookie();
   if (!token) throw new Error('Token not found');
   const response = await fetch(API_ROUTES.USERPROFILE, {
@@ -13,7 +15,7 @@ export const createUserProfile = async (profileData) => {
     },
     body: profileData,  // Send the FormData as the body
   });
-
+  
   if (!response.ok) {
     throw new Error(`Error: ${response.status}`);
   }

@@ -182,6 +182,7 @@ class GoogleAuthView(APIView):
             # Step 4: Check if the user exists or create a new user
             user = User.objects.filter(email=email).first()
             if not user:
+                print("Creating new user")
                 with transaction.atomic():
                     user = User.objects.create_user(
                         email=email,
@@ -193,6 +194,7 @@ class GoogleAuthView(APIView):
                     
             # Step 5: Try to get the user's profile ID if it exists
             user_profile_id = None
+            user_profile = None
             try:
                 user_profile = user.user  # Accessing the related UserProfile
                 user_profile_id = user_profile.id
@@ -220,6 +222,7 @@ class GoogleAuthView(APIView):
                 print(profile.role)
                 role=profile.role
             # Step 7: Return the access, refresh, and user details (including profile ID if exists)
+            userStatus=  user_profile.status if user_profile else None
             return Response(
                 {
                     "status": "success",
@@ -232,7 +235,7 @@ class GoogleAuthView(APIView):
                         "username": user.username,
                         "profile_id": user_profile_id,  
                         "role": role,
-                        "status":user_profile.status,
+                        "status": userStatus
                     }
                 },
                 status=status.HTTP_200_OK,
@@ -270,7 +273,8 @@ class UserLogoutView(APIView):
 
             return Response({"status": "success", "message": "Logged out successfully."}, status=status.HTTP_200_OK)
         except UserProfile.DoesNotExist:
-            return Response({"detail": "User profile not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response({"status": "success", "message": "Logged out successfully."}, status=status.HTTP_200_OK)
+            # return Response({"detail": "User profile not found."}, status=status.HTTP_404_NOT_FOUND)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()  # Default queryset to fetch all users

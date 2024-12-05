@@ -1,18 +1,18 @@
 import React, { useState, useEffect } from "react";
-import {
-  FaArrowLeft,
-  FaUpload,
-} from "react-icons/fa";
+import { FaArrowLeft, FaUpload } from "react-icons/fa";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import {
-  createUserProfile,
-} from "@/api/profile";
 import { getColleges } from "@/api/college";
 import { OnboardingProfileLayout } from "@/layouts/ProfileLayout";
 import Loader from "@/components/layout/loadingAnimation";
+import {
+  createUserProfile,
+  createStudentProfile,
+  createAlumnusProfile,
+  createCollegeStaffProfile,
+} from "@/api/profile";
 
 function UserSetup({ role: initialRole, onBackClick }) {
   const { user } = useAuthContext();
@@ -78,7 +78,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
     const fetchColleges = async () => {
       try {
         const response = await getColleges();
-        console.log(response);
+        // console.log(response);
 
         setColleges(response);
       } catch (error) {
@@ -129,7 +129,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
         full_name: fullName,
         bio: bio,
         user: user.id,
-        college_id: selectedCollege,
+        college: selectedCollege,
         contact_number: phoneNumber,
         specialization: specialization,
         location: location,
@@ -179,11 +179,11 @@ function UserSetup({ role: initialRole, onBackClick }) {
       for (const [key, value] of Object.entries(roleProfileData)) {
         formData.append(key, value);
       }
-      for (let [key, value] of formData.entries()) {
-        console.log(key, value);
-      }
-      console.log(formData);
-      
+      // console.log("Formdata values");
+      // for (let [key, value] of formData.entries()) {
+      //   console.log(key, value);
+      // }
+
       // Send the form data to create a user profile
       const userprofile = await createUserProfile(formData);
 
@@ -191,7 +191,22 @@ function UserSetup({ role: initialRole, onBackClick }) {
         message: "User Profile created successfully!",
         variant: "success",
       });
-
+      if (role === "student") {
+        const studentProfile = await createStudentProfile({
+          ...roleProfileData,
+          profile: userprofile.id,
+        });
+      } else if (role === "alumni") {
+        const alumni = await createAlumnusProfile({
+          ...roleProfileData,
+          profile: userprofile.id,
+        });
+      } else if (role === "college_staff") {
+        const collegeStaff = await createCollegeStaffProfile({
+          ...roleProfileData,
+          profile: userprofile.id,
+        });
+      }
       saveProfileStatus("true");
       saveProfileData(userprofile);
 
