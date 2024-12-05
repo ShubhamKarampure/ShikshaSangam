@@ -143,46 +143,46 @@ export default function CommentSectionScreen({  // This component gets a post_id
     console.log("Reply to:", comment.user.username);
   }
 
-  // function onSendHandlerForReply(chat) {
-  //   if(currentComment!==null){
-  //     const replyItem = {
-  //       reply_id: 100, // Generate unique IDs dynamically in a real-world scenario
-  //       profile_id: sender_profile_id,
-  //       username: sender_username,
-  //       avatar: sender_avatar,
-  //       content: chat.message,
-  //       timestamp: timePassed(
-  //         chat.timestamp.isoString,
-  //         chat.timestamp.isoString
-  //       ),
-  //       isoString: chat.timestamp.isoString,
-  //       likes: 0,
-  //     };
+  function onSendHandlerForReply(chat) {
+    if(currentComment!==null){
+      const replyItem = {
+        reply_id: 100, // Generate unique IDs dynamically in a real-world scenario
+        profile_id: sender_profile_id,
+        username: sender_username,
+        avatar: sender_avatar,
+        content: chat.message,
+        timestamp: timePassed(
+          chat.timestamp.isoString,
+          chat.timestamp.isoString
+        ),
+        isoString: chat.timestamp.isoString,
+        likes: 0,
+      };
 
-  //     // Find the comment to which the reply belongs
-  //     const replyToComment = item.comments.find(
-  //       (c) => c.comment_id === currentComment.comment_id
-  //     );
+      // Find the comment to which the reply belongs
+      const replyToComment = item.comments.find(
+        (c) => c.comment_id === currentComment.comment_id
+      );
 
-  //     if (replyToComment) {
-  //       // Ensure `replies` array exists
-  //       if (!replyToComment.replies) {
-  //         replyToComment.replies = [];
-  //       }
+      if (replyToComment) {
+        // Ensure `replies` array exists
+        if (!replyToComment.replies) {
+          replyToComment.replies = [];
+        }
 
-  //       // Append the reply
-  //       replyToComment.replies.push(replyItem);
+        // Append the reply
+        replyToComment.replies.push(replyItem);
 
-  //       // Update the parent `item.comments` (if necessary for re-render)
-  //       item.comments = item.comments.map((c) =>
-  //         c.comment_id === currentComment.comment_id ? replyToComment : c
-  //       );
-  //     }
-  //   }
-  //   else{
-  //     console.log('No current comment to Reply to');
-  //   }
-  // }
+        // Update the parent `item.comments` (if necessary for re-render)
+        item.comments = item.comments.map((c) =>
+          c.comment_id === currentComment.comment_id ? replyToComment : c
+        );
+      }
+    }
+    else{
+      console.log('No current comment to Reply to');
+    }
+  }
 
   function modalCloseHandler() {
     Animated.timing(slideAnim, {
