@@ -298,7 +298,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
 
         reply_content_type = ContentType.objects.get_for_model(Reply)
         replies = Reply.objects.filter(comment__id=comment_pk).order_by('created_at')
-        
+
         page = self.paginate_queryset(replies)
         if page is not None:
             response_data = [
