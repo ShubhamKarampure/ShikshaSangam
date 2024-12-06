@@ -219,7 +219,7 @@ const Post3 = memo(
                   <BsHeart size={18} className="pe-1" />
                   Liked ({likeCounter})
                 </Link>
-                <style jsx>{`
+                <style>{`
                   .nav-link:focus {
                     color: var(--bs-nav-link-color); /* Set the desired focus color */
                     outline: none; /* Remove the default outline if desired */
@@ -320,6 +320,7 @@ const Post3 = memo(
                 placeholder="Add a comment..."
                 defaultValue={""}
                 onChange={(e) => setUserComment(e.target.value)}
+                id={postId}
               />
               <button
                 className="nav-link bg-transparent px-3 position-absolute top-50 end-0 translate-middle-y border-0"

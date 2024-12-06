@@ -272,7 +272,7 @@ const PostCard = ({
               </div>
 
               <form className="w-100 position-relative">
-                <textarea data-autoresize className="form-control pe-4 bg-light" rows={1} placeholder="Add a comment..." defaultValue={''} />
+                <textarea data-autoresize className="form-control pe-4 bg-light" rows={1} placeholder="Add a comment..." defaultValue={''} id={createdAt} />
                 <div className="position-absolute top-0 end-0">
                   <button className="btn" type="button">
                     🙂
