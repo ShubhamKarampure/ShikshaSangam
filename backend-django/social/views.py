@@ -359,7 +359,7 @@ class LikeViewSet(viewsets.ModelViewSet):
 
         # Delete the like (unlike)
         like.delete()
-        return Response({'message': 'Successfully unliked'}, status=204)
+        return Response({'message': 'Successfully unliked'}, status=201)
 
    
 class FollowViewSet(viewsets.ModelViewSet):

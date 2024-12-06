@@ -17,7 +17,7 @@
 //   const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
 //   const [messages, setMessages] = useState([]);
 
-//   const [chatList, setChatList] = useState(null); 
+//   const [chatList, setChatList] = useState(null);
 //   const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
 
 //   const flatListRef = useRef(null); // Ref for the FlatList
@@ -40,49 +40,48 @@
 //   // console.log("sender = ", sender_username);
 //   // console.log("receiver = ", reciever_username);
 //   // Mapping of senders to their avatars
-  
+
 //   const avatars = {  // use names as keys
 //     [reciever_username] : receiver_avatar,
 //     [sender_username] : sender_avatar,
 //   };
 //   // console.log(avatars);
 
-  // const fetchMessagesHandler = async () => {   // for new chats
-  //   try {  
-  //     const response = await fetchMessages(chatInfo.id, {
-  //       after_timestamp: lastMessageTimestamp,
-  //     });
-  //     //console.log("response = ", response);
-  //     //console.log("response in fetchMessagesHandler = ", response);
-  //     if(response.length > 0){
-  //       console.log('response = ',response);
-  //       const latestMessage = response[response.length - 1];
-  //       console.log('lastestmessage = ',latestMessage);
-  //       setLastMessageTimestamp(() => {
-  //         if (latestMessage !== null) return latestMessage.timestamp;
-  //         else return null;
-  //       });
+// const fetchMessagesHandler = async () => {   // for new chats
+//   try {
+//     const response = await fetchMessages(chatInfo.id, {
+//       after_timestamp: lastMessageTimestamp,
+//     });
+//     //console.log("response = ", response);
+//     //console.log("response in fetchMessagesHandler = ", response);
+//     if(response.length > 0){
+//       console.log('response = ',response);
+//       const latestMessage = response[response.length - 1];
+//       console.log('lastestmessage = ',latestMessage);
+//       setLastMessageTimestamp(() => {
+//         if (latestMessage !== null) return latestMessage.timestamp;
+//         else return null;
+//       });
 
-  //       // Create a new array with the additional avatar field
-  //       const updatedResponse = response.map((message) => ({
-  //         ...message,
-  //         avatar: avatars[message.sender], // Add avatar field;
-  //       }));
-  //       //console.log(avatars);
+//       // Create a new array with the additional avatar field
+//       const updatedResponse = response.map((message) => ({
+//         ...message,
+//         avatar: avatars[message.sender], // Add avatar field;
+//       }));
+//       //console.log(avatars);
 
-  //       setChatList((prevList) => {
-  //         if (prevList === null) {
-  //           return updatedResponse;
-  //         } 
-  //         return [...prevList, ...updatedResponse];
-  //       });
-  //     }
-      
+//       setChatList((prevList) => {
+//         if (prevList === null) {
+//           return updatedResponse;
+//         }
+//         return [...prevList, ...updatedResponse];
+//       });
+//     }
 
-  //   } catch (err) {
-  //     console.error("Error fetching messages", err);
-  //   }
-  // };
+//   } catch (err) {
+//     console.error("Error fetching messages", err);
+//   }
+// };
 
 //   useEffect(() => {
 //     // need to think when to fetch
@@ -112,8 +111,6 @@
 //   //     flatListRef.current?.scrollToEnd({ animated: true });
 //   //   }
 //   // }, [chatList, isAtBottom]);
-
-  
 
 //   function renderChatBubble({ item }) {
 //     if(item.content!==null){   // some picture only media exists with no content
@@ -193,10 +190,7 @@
 //   },
 // });
 
-
-
-
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, useId } from "react";
 import { View, FlatList, StyleSheet } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import SenderChatBubble from "../Components/SenderChatBubble";
@@ -209,13 +203,12 @@ import { useFocusEffect } from "@react-navigation/native";
 
 export default function ChatScreen({ navigation, route }) {
   const { profile } = useProfileContext();
-
   const chatInfo = route.params.receiver; // info about the reciever side of chat
 
   const [lastMessageTimestamp, setLastMessageTimestamp] = useState(null);
   const [messages, setMessages] = useState([]);
 
-  const [chatList, setChatList] = useState(null);
+  const [chatList, setChatList] = useState([]);
   const [isAtBottom, setIsAtBottom] = useState(true); // Track if user is at the bottom
 
   const flatListRef = useRef(null);
@@ -263,13 +256,16 @@ export default function ChatScreen({ navigation, route }) {
           ...message,
           avatar: avatars[message.sender], // Add avatar field;
         }));
+
+        
         //console.log(avatars);
 
-        setChatList((prevList) => {
-          if (prevList === null) {
-            return updatedResponse;
-          }
-          return [...prevList, ...updatedResponse];
+        setChatList((prevMessages) => {
+          const newMessages = updatedResponse.filter(
+            (newMsg) =>
+              !prevMessages.some((existingMsg) => existingMsg.id === newMsg.id)
+          );
+          return [...prevMessages, ...newMessages];
         });
       }
     } catch (err) {
@@ -334,7 +330,7 @@ export default function ChatScreen({ navigation, route }) {
           ref={flatListRef}
           data={chatList}
           keyExtractor={(item) =>
-            item.id.toString()+ item.timestamp
+            item.id.toString()
           }
           renderItem={renderChatBubble}
           contentContainerStyle={styles.listContent}
@@ -361,4 +357,3 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
-
