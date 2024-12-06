@@ -45,4 +45,5 @@ export const API_ROUTES = {
   REPLY: `${API_BASE_URL}/social/replies/`, // Reply
   LIKES: `${API_BASE_URL}/social/likes/`, // Likes
   UNLIKE: `${API_BASE_URL}/social/likes/unlike/`, // Unlike
+  FOLLOWERS_SUMMARY: `${API_BASE_URL}/social/followers/summary/`, // Followers summary
 }
