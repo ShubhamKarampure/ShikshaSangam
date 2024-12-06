@@ -12,6 +12,7 @@ const EventCard = ({
   label,
   id
 }) => {
+  const dateObj = new Date(date);
   return <Card className="h-100">
       <div className="position-relative">
         <img className="img-fluid rounded-top" src={image} alt="image" />
@@ -30,13 +31,13 @@ const EventCard = ({
         <p className="mb-0 small">
           
           <BsCalendarCheck size={17} className="pe-1" />
-          {date.toLocaleString('en-US', {
+          {dateObj.toLocaleString('en-US', {
           weekday: 'short',
           month: 'short',
           day: '2-digit',
           year: 'numeric'
-        })} at
-          {date.toLocaleString('en-US', {
+        })} at 
+          {" "+dateObj.toLocaleString('en-US', {
           hour: 'numeric',
           minute: 'numeric',
           hour12: true
