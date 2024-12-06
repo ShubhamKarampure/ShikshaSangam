@@ -34,6 +34,7 @@ export const getComment = async (postId) => {
     commentId: c.comment.id,
     children: [],
     is_liked: c.is_liked,
+    fullName: c.user.full_name,
   }));
   return formattedComments;
 };
@@ -132,6 +133,7 @@ export const getReply = async (commentId) => {
     },
     likesCount: r.likes_count, // Likes count
     is_liked: r.is_liked, // Whether the user has liked the reply
+    fulName: r.user.full_name,
   }));
   return formattedreplies;
 };
@@ -195,6 +197,7 @@ export const getAllFeed = async (limit = 3, offset = 0) => {
         },
         bio: p.user.bio,
         is_liked: p.is_liked,
+        fullName: p.user.full_name,
       };
     })
   );
