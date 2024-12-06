@@ -1,6 +1,8 @@
 import React, { memo } from "react";
-import { View, Text, StyleSheet, Pressable } from "react-native";
+import { View, Text, StyleSheet, Pressable, Image } from "react-native";
 import hoursMinutes from "../../../Utility/hoursMinutes";
+import { processImageUrl } from "../../../Utility/urlUtils";
+
 
 const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
   // const chat = {
@@ -18,9 +20,24 @@ const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
       android_ripple={{ color: "#261d01" }}
     >
       <View style={[styles.bubble, isDarkMode && styles.darkModeBubble]}>
-        <Text style={[styles.messageText, isDarkMode && styles.darkModeText]}>
-          {chat.content}
-        </Text>
+        {chat.content !== null ? (
+          <Text style={[styles.messageText, isDarkMode && styles.darkModeText]}>
+            {chat.content}
+          </Text>
+        ) : (
+          <></>
+        )}
+        {chat.media !== null ? (
+          <Image
+            source={{
+              uri: processImageUrl(chat.media),
+            }}
+            style={styles.postImage}
+          />
+        ) : (
+          <></>
+        )}
+
         <Text
           style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
         >
@@ -47,17 +64,23 @@ const styles = StyleSheet.create({
     //paddingRight:20,
     borderRadius: 15,
     borderTopRightRadius: 0, // WhatsApp style bubble
-    borderBottomLeftRadius:30,
+    borderBottomLeftRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 3, // Adds a subtle shadow for Android
   },
+  postImage: {
+    width: 250,
+    height: 250,
+    marginVertical: 10,
+    borderRadius: 10,
+  },
   messageText: {
     fontSize: 14,
     color: "#000",
-    paddingRight:20,
+    paddingRight: 20,
   },
   timestamp: {
     fontSize: 10,
