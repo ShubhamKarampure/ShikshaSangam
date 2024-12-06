@@ -13,11 +13,12 @@ import { Pressable, View, StyleSheet, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useProfileContext } from "../../Context/ProfileContext";
 import { postlike,postunlike } from "../../api/feed";
-const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
+
+const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
   const {profile} = useProfileContext()
   const profile_id = profile.id;
   const liked = useSharedValue(initialIsLiked ? 1 : 0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isProcessing, setIsProcessing] = useState(false); // Lock for preventing rapid taps
 
   const outlineStyle = useAnimatedStyle(() => ({
@@ -37,30 +38,27 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
     if (isProcessing) return;
     setIsProcessing(true);
   
-    const currentLiked = liked.value === 1;
-    liked.value = withSpring(currentLiked ? 0 : 1);
+    const isCurrentLiked = liked.value === 1;
+    liked.value = withSpring(isCurrentLiked ? 0 : 1);
   
     try {
-      if (currentLiked) {
+      if (isCurrentLiked) {
         await postunlike(post_id);
+        // setIsLiked(false);   ///testing
         onLikeToggle(-1);
       } else {
         await postlike(profile_id, post_id);
+        // setIsLiked(true);
         onLikeToggle(1);
       }
     } catch (error) {
       console.error("Error toggling like:", error);
-      liked.value = withSpring(currentLiked ? 1 : 0);
+      liked.value = withSpring(isCurrentLiked ? 1 : 0);
     } finally {
       setIsProcessing(false);
     }
   };
   
-
-  // function stall(){
-  //   return;
-  // }
-
   return (
     <Pressable onPress={toggleLike} style={styles.container}>
       <Animated.View style={[StyleSheet.absoluteFillObject, outlineStyle]}>
@@ -86,7 +84,7 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
   );
 };
 
-export default function LikeButton({ initialLikeCount, post_id,initialIsLiked }) {
+export default function LikeButton({ initialLikeCount, post_id, initialIsLiked }) {
   const {profile} = useProfileContext()
   const profile_id = profile.id;
   // if(!initialLikeCount) initialLikeCount=0;
@@ -105,13 +103,12 @@ export default function LikeButton({ initialLikeCount, post_id,initialIsLiked })
   //     console.error("Error toggling like:", error);
   //   }
   // };
-  const handleLikeToggle = async (change) => {
-    try {
-      setLikeCount((prevCount) => prevCount + change);
-    } catch (error) {
-      console.error("Error toggling like:", error);
-    }
+  
+  const handleLikeToggle = (change) => {
+    console.log("Change in like count:", change); // Debug log
+    setLikeCount((prevCount) => prevCount + change);
   };
+  
 
 
   
