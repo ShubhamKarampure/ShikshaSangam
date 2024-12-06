@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import hoursMinutes from "../../../Utility/hoursMinutes";
 
 const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
   // const chat = {
@@ -22,7 +23,7 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
           style={[styles.bubbleContainer, isDarkMode && styles.darkModeBubble]}
         >
           <Text style={[styles.username]}>
-            {chat.username}
+            {chat.sender}
           </Text>
           <Text style={[styles.messageText, isDarkMode && styles.darkModeText]}>
             {chat.content}
@@ -30,7 +31,7 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
           <Text
             style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
           >
-            {chat.timestamp}
+            {hoursMinutes(chat.timestamp)}
           </Text>
         </View>
       </Pressable>

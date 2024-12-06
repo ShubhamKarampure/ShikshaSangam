@@ -1,5 +1,6 @@
 import React, { memo } from "react";
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import hoursMinutes from "../../../Utility/hoursMinutes";
 
 const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
   // const chat = {
@@ -23,7 +24,7 @@ const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
         <Text
           style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
         >
-          {chat.timestamp}
+          {hoursMinutes(chat.timestamp)}
         </Text>
       </View>
     </Pressable>
