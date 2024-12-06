@@ -259,3 +259,24 @@ export const unlikeContent = async (postId,content_type) => {
     console.log("Post unliked");
   }
 };
+
+export const fetchFollowersSummary= async () => {
+  const token= getTokenFromCookie();
+  if(!token){
+    throw new Error("Token is missing");
+  }
+  const response = await fetch(`${API_ROUTES.FOLLOWERS_SUMMARY}`, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  } else {
+    console.log("Got all followers summary");
+  }
+  const res=await response.json();
+  console.log(res);
+  return res;
+}
