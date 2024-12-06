@@ -348,6 +348,7 @@ const ChatArea = ({ activeChat }) => {
     const response = await sendMedia(activeChat.id, file);
     setMessages([...messages, response]);
   };
+
   const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const messageSchema = yup.object({
     newMessage: yup.string().required(""),

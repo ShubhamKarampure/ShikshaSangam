@@ -85,6 +85,70 @@ export const sendMessage = async (chatId, messageContent) => {
   return await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), "POST", body);
 };
 
+// Send a Image to a specific chat  // aryan was trying
+export const sendMedia = async (chatId, content, file) => {
+  const formData = new FormData();
+  formData.append("chat", chatId);
+  if(content!==""){
+    formData.append("content", content);
+  }
+  if (file) {  // if file is image
+    try {
+      const response = await fetch(file);
+      //console.log("response = ",response);
+      const blob = await response.blob();
+      //console.log("blob = ",blob);
+
+      const imageName = file.split("/").pop(); // Extract file name
+      const fileType = blob.type || "image/jpeg"; // Get MIME type, default to 'image/jpeg'
+
+      formData.append("media", {
+        uri: file,
+        type: fileType,
+        name: imageName || "image.jpg",
+      });
+      console.log("sendMedia file = ", file);
+      console.log("form = ",formData);
+    } catch (error) {
+      console.error("Error fetching file:", error);
+      alert("Failed to send the image. Please try again.");
+      return;
+    }
+  }
+
+  
+
+  const token = await getAccessToken();
+  if (!token) {
+    throw new Error("Authentication token is missing.");
+  }
+
+  // const headers = {
+  //   Authorization: `Bearer ${token}`,
+  // };
+  console.log("formData = ",formData);
+
+  // const response = await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), {
+  //   method: "POST",
+  //   headers,
+  //   body: formData,
+  // });
+  const response = await fetch(API_ROUTES.MESSAGE_CREATE(chatId), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData, 
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
+
 // Clear all messages in a chat
 export const clearChat = async (chatId) => {
   return await handleFetch(API_ROUTES.CHAT_CLEAR(chatId), "DELETE");

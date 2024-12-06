@@ -203,9 +203,11 @@ import SenderChatBubble from "../Components/SenderChatBubble";
 import ReceiverChatBubble from "../Components/ReceiverChatBubble";
 import TypingSection from "../Components/TypingSection";
 import { chatsData } from "../../data/chatsData";
-import { fetchMessages, sendMessage } from "../../../api/multimedia";
+import { fetchMessages, sendMessage, sendMedia } from "../../../api/multimedia";
 import { useProfileContext } from "../../../Context/ProfileContext";
 import { useFocusEffect } from "@react-navigation/native";
+import { CHATSCREEN_POOLING } from "../../../constants";
+import { defaultAvatar } from "../../../Utility/urlUtils";
 
 export default function ChatScreen({ navigation, route }) {
   const { profile } = useProfileContext();
@@ -222,17 +224,21 @@ export default function ChatScreen({ navigation, route }) {
   const isMounted = useRef(true);
 
   const sender_profile_id = profile.id;
+
+  const sender_username = profile.full_name;
   const sender_avatar =
     profile.avatar_image !== null
       ? profile.avatar_image
-      : `https://ui-avatars.com/api/?name=${profile.full_name}&background=0D8ABC&color=fff`;
+      : defaultAvatar(sender_username);
 
-  const sender_username = profile.full_name;
+  
+  const reciever_username = chatInfo.participants[0].full_name;
   const receiver_avatar =
     chatInfo.participants.avatar_image !== null
       ? chatInfo.participants[0].avatar_image
-      : `https://ui-avatars.com/api/?name=${chatInfo.participants[0].full_name}&background=0D8ABC&color=fff`;
-  const reciever_username = chatInfo.participants[0].full_name;
+      : defaultAvatar(reciever_username);
+
+  
 
   const avatars = {
     // use names as keys
@@ -264,6 +270,17 @@ export default function ChatScreen({ navigation, route }) {
           avatar: avatars[message.sender], // Add avatar field;
         }));
         //console.log(avatars);
+        // setChatList((prevMessages) => {
+        //   const newMessages = response.filter(
+        //     (newMsg) =>
+        //       !prevMessages.some((existingMsg) => existingMsg.id === newMsg.id)
+        //   );
+        //   const newMessagesWithAvatar = newMessages.map((message) => ({
+        //     ...message,
+        //     avatar: avatars[message.sender], // Add avatar field;
+        //   }));
+        //   return [...prevMessages, ...newMessagesWithAvatar];
+        // });
 
         setChatList((prevList) => {
           if (prevList === null) {
@@ -287,7 +304,7 @@ export default function ChatScreen({ navigation, route }) {
     React.useCallback(() => {
       const intervalId = setInterval(() => {
         fetchMessagesHandler();
-      }, 1000);
+      }, CHATSCREEN_POOLING);
 
       // Cleanup the interval when focus is lost
       return () => clearInterval(intervalId);
@@ -313,13 +330,20 @@ export default function ChatScreen({ navigation, route }) {
     // };
 
     try {
-      const newChatItem = await sendMessage(chatInfo.id, chat.message);
+      let newChatItem;
+      if(chat.media===null){
+        newChatItem = await sendMessage(chatInfo.id, chat.content); 
+      }
+      else{
+        newChatItem = await sendMedia(chatInfo.id, chat.content, chat.media);
+      }
+      
       console.log("newChatItem = ", newChatItem);
 
-      const formattedChatItem = {
-        ...newChatItem,
-        avatar: sender_avatar,
-      };
+      // const formattedChatItem = {
+      //   ...newChatItem,
+      //   avatar: sender_avatar,
+      // };
 
       //setChatList((prevList) => [...prevList, formattedChatItem]);
     } catch (err) {
@@ -327,14 +351,18 @@ export default function ChatScreen({ navigation, route }) {
     }
   };
 
+
   return (
     <View style={styles.container}>
       <View style={styles.chatArea}>
         <FlatList
           ref={flatListRef}
           data={chatList}
-          keyExtractor={(item) =>
-            item.id.toString() + new Date().toDateString()
+          // keyExtractor={(item) =>
+          //   item.id.toString() + item.timestamp
+          // }
+          keyExtractor={(item, index) =>
+            `${item.id}-${item.timestamp}-${index}`
           }
           renderItem={renderChatBubble}
           contentContainerStyle={styles.listContent}

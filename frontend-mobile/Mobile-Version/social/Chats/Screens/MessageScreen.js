@@ -4,6 +4,7 @@ import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import MessageCard from "../Components/MessageCard";
 import { fetchChats } from "../../../api/multimedia";
 import { useChatContext } from "../../../Context/useChatContext";
+import { MESSAGESCREEN_POOLING } from "../../../constants";
 
 const MessageScreen = ({ navigation }) => {
   const [chats, setChats] = useState([]);
@@ -45,7 +46,7 @@ const MessageScreen = ({ navigation }) => {
       // Start polling when screen gains focus
       intervalId.current = setInterval(() => {
         getAllChats();
-      }, 10000);
+      }, MESSAGESCREEN_POOLING);
 
       // Cleanup interval when screen loses focus
       return () => clearInterval(intervalId.current);

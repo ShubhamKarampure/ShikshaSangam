@@ -13,7 +13,8 @@ import { Pressable, View, StyleSheet, Text } from "react-native";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useProfileContext } from "../../Context/ProfileContext";
 import { postlike,postunlike } from "../../api/feed";
-const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
+
+const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
   const {profile} = useProfileContext()
   const profile_id = profile.id;
   const liked = useSharedValue(initialIsLiked ? 1 : 0);
@@ -37,11 +38,11 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
     if (isProcessing) return;
     setIsProcessing(true);
   
-    const currentLiked = liked.value === 1;
-    liked.value = withSpring(currentLiked ? 0 : 1);
+    const isCurrentLiked = liked.value === 1;
+    liked.value = withSpring(isCurrentLiked ? 0 : 1);
   
     try {
-      if (currentLiked) {
+      if (isCurrentLiked) {
         await postunlike(post_id);
         onLikeToggle(-1);
       } else {
@@ -50,7 +51,7 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
       }
     } catch (error) {
       console.error("Error toggling like:", error);
-      liked.value = withSpring(currentLiked ? 1 : 0);
+      liked.value = withSpring(isCurrentLiked ? 1 : 0);
     } finally {
       setIsProcessing(false);
     }
@@ -86,7 +87,7 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked,post_id }) => {
   );
 };
 
-export default function LikeButton({ initialLikeCount, post_id,initialIsLiked }) {
+export default function LikeButton({ initialLikeCount, post_id, initialIsLiked }) {
   const {profile} = useProfileContext()
   const profile_id = profile.id;
   // if(!initialLikeCount) initialLikeCount=0;

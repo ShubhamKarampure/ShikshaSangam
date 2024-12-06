@@ -231,7 +231,7 @@ export const postunlike = async (post_id) => {
 
     // Prepare the request payload
     const requestData = {
-      content_type: 20, // Fixed value for posts
+      content_type: "post",//20, // Fixed value for posts
       object_id: post_id, // Post ID
     };
 
