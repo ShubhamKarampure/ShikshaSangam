@@ -73,12 +73,17 @@ import {
   Text,
   View,
   TouchableOpacity,
+  
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Animated } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAuthContext } from "../../Context/useAuthContext";
+import { useEffect } from "react";
 
 export function WelcomeScreen(props) {
   const welcomeOpacity = new Animated.Value(0);
+  const {clearTokensOnAppStart} = useAuthContext()
 
   // Fade-in animation for welcome text
   React.useEffect(() => {
@@ -87,6 +92,10 @@ export function WelcomeScreen(props) {
       duration: 500,
       useNativeDriver: true,
     }).start();
+  }, []);
+
+  useEffect(() => {
+    clearTokensOnAppStart();
   }, []);
 
   return (

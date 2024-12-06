@@ -34,8 +34,8 @@ export const ProfileProvider = ({ children }) => {
         const profileDetails = await getUserProfile(user.profile_id);
         setProfile({
           ...profileDetails,
-          avatar_image: processImageUrl(profileDetails.avatar_image),
-          banner_image: processImageUrl(profileDetails.banner_image),
+          avatar_image: processImageUrl(profileDetails?.avatar_image),
+          banner_image: processImageUrl(profileDetails?.banner_image),
         });
       } catch (error) {
         console.error("Error fetching profile data:", error);
