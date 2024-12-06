@@ -287,7 +287,7 @@ export default function ChatScreen({ navigation, route }) {
     React.useCallback(() => {
       const intervalId = setInterval(() => {
         fetchMessagesHandler();
-      }, 10000);
+      }, 1000);
 
       // Cleanup the interval when focus is lost
       return () => clearInterval(intervalId);
