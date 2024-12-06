@@ -1,6 +1,6 @@
 
 yourIp = "192.168.29.139" // Give your IP for identifying where backend is running to mobile
-yourIp = " 192.168.1.239" // Give your IP for identifying where backend is running to mobile
+ // Give your IP for identifying where backend is running to mobile
 const BACKEND_URL = "http://" + yourIp + ":8000";
 
 export default BACKEND_URL;
