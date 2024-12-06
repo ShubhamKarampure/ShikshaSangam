@@ -1,17 +1,19 @@
-import React, { memo } from "react";
-import { View, Text, StyleSheet, Image, Pressable} from "react-native";
+import React, { memo, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  Pressable,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import hoursMinutes from "../../../Utility/hoursMinutes";
-import { processImageUrl, defaultAvatar} from "../../../Utility/urlUtils";
+import { processImageUrl, defaultAvatar } from "../../../Utility/urlUtils";
 
 const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
-  // const chat = {
-  //   profile_id : 2,
-  //   avatar: "https://via.placeholder.com/150/FF5733/FFFFFF",
-  //   username: "Alice Johnson",
-  //   content:
-  //     "JavaScript is the backbone of web development and is increasingly used in mobile app development. Here are some tips to master JavaScript for mobile app development.",
-  //   timestamp: "03:59",
-  // };
+  const [isModalVisible, setModalVisible] = useState(false);
 
   return (
     <View style={{ maxWidth: "100%", backgroundColor: "", minWidth: "50%" }}>
@@ -38,19 +40,19 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
             >
               {chat.content}
             </Text>
-          ) : (
-            <></>
-          )}
+          ) : null}
+
           {chat.media !== null ? (
-            <Image
-              source={{
-                uri: processImageUrl(chat.media),
-              }}
-              style={styles.postImage}
-            />
-          ) : (
-            <></>
-          )}
+            <Pressable onPress={() => setModalVisible(true)}>
+              <Image
+                source={{
+                  uri: processImageUrl(chat.media),
+                }}
+                style={styles.postImage}
+              />
+            </Pressable>
+          ) : null}
+
           <Text
             style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
           >
@@ -58,6 +60,30 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
           </Text>
         </View>
       </Pressable>
+
+      {/* Full-Screen Image Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <MaterialCommunityIcons name="close" size={30} color="#fff" />
+          </TouchableOpacity>
+          <Image
+            source={{
+              uri: processImageUrl(chat.media),
+            }}
+            style={styles.fullScreenImage}
+            resizeMode="contain"
+          />
+        </View>
+      </Modal>
     </View>
   );
 });
@@ -89,7 +115,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 15,
     borderTopLeftRadius: 0, // WhatsApp style bubble (flat left edge)
-    //borderBottomLeftRadius:30,
     borderBottomRightRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -125,5 +150,22 @@ const styles = StyleSheet.create({
   },
   darkModeTimestamp: {
     color: "#888",
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenImage: {
+    width: "100%",
+    height: "80%",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
 });

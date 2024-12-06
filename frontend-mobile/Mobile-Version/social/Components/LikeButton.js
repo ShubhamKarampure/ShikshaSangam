@@ -44,11 +44,11 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
     try {
       if (isCurrentLiked) {
         await postunlike(post_id);
-        // setIsLiked(false);   ///testing
+        setIsLiked(false);   ///testing
         onLikeToggle(-1);
       } else {
         await postlike(profile_id, post_id);
-        // setIsLiked(true);
+        setIsLiked(true);
         onLikeToggle(1);
       }
     } catch (error) {
