@@ -1,6 +1,7 @@
 export const CLOUDINARY_BASE_URL = "https://res.cloudinary.com/dhp4wuv2x";
 export const CLOUDINARY_CLOUD_NAME= "dhp4wuv2x"
 export const processImageUrl = (partialUrl) => {
+  if(!partialUrl) return null;
   if (!partialUrl.startsWith("http")) {
     return `${CLOUDINARY_BASE_URL}/${partialUrl}`;
   }
