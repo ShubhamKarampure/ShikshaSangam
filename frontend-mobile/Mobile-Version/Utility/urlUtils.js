@@ -5,7 +5,7 @@ export const processImageUrl = (partialUrl) => {
     console.log('Got partialUrl as null');
     return;
   }
-  if (!partialUrl.startsWith("http")) {
+  if (!partialUrl?.startsWith("http")) {
     return `${CLOUDINARY_BASE_URL}/${partialUrl}`;
   }
   return partialUrl; // Already a full URL
