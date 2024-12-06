@@ -8,7 +8,7 @@ import ShareButton from "../Components/ShareButton";
 import PostCard from "../Components/PostCard";
 import { useAuthContext } from "../../Context/useAuthContext";
 import { useFocusEffect } from "@react-navigation/native";
-
+import { getToken } from "../../api/feed";
 import { getAllFeed } from "../../api/feed";
 export default function HomeScreen({navigation}) {   // GET  /social/posts/list_posts/    to get the list of post objects
 
@@ -21,10 +21,12 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
   const handleScroll = (event) => {
     setScrollOffset(event.nativeEvent.contentOffset.y); // Save the scroll offset
   };
-
+  const {user} = useAuthContext();
   // const handleNavigateToComments = (postId) => {
   //   navigation.navigate("CommentSection", { postId });
   // };
+
+
   const fetchPosts = async () => {
     try {
       const fetchedPosts = await getAllFeed();
@@ -38,20 +40,48 @@ export default function HomeScreen({navigation}) {   // GET  /social/posts/list_
     }
   };
 
+
+  // const fetchPosts = async () => {
+  //   try {
+  //     const token = await getToken(); // Get the latest token
+  //     if (!token) {
+  //       console.error("Access token is missing, cannot fetch posts");
+  //       return;
+  //     }
+  
+  //     // Fetch posts from the API with the token in the Authorization header
+  //     const response = await getAllFeed(); // Pass token to API call function
+  //     if (response && response.results) {
+  //       setPosts(response.results); // Update posts with API data
+  //     } else {
+  //       console.error("No posts found in response");
+  //     }
+  //     console.log("Fetched posts:", response);
+  
+  //   } catch (error) {
+  //     console.error("Error fetching posts:", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  
+  // Fetch posts on user change
+  useEffect(() => {
+    if (user) {
+      setPosts([]); // Clear old posts to avoid showing stale data
+      fetchPosts();
+    }
+  }, [user]);
+
+  // Refetch posts when screen gains focus
   useFocusEffect(
     React.useCallback(() => {
-      // Load data or perform updates here
-      //console.log("HomeScreen is focused");
-    }, [])
+      if (user) {
+        fetchPosts();
+      }
+    }, [user])
   );
-  useEffect(() => {
-    //console.log(posts);
-    
-    
-    fetchPosts(); // Fetch posts on component mount
-    // console.log("Post data:", posts);
-
-  }, []);
 
   
   const renderPost = ({ item }) => (
