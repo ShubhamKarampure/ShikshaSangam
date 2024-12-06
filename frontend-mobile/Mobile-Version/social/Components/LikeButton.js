@@ -18,7 +18,7 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
   const {profile} = useProfileContext()
   const profile_id = profile.id;
   const liked = useSharedValue(initialIsLiked ? 1 : 0);
-  const [isLiked, setIsLiked] = useState(false);
+  const [isLiked, setIsLiked] = useState(initialIsLiked);
   const [isProcessing, setIsProcessing] = useState(false); // Lock for preventing rapid taps
 
   const outlineStyle = useAnimatedStyle(() => ({
@@ -44,9 +44,11 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
     try {
       if (isCurrentLiked) {
         await postunlike(post_id);
+        // setIsLiked(false);   ///testing
         onLikeToggle(-1);
       } else {
         await postlike(profile_id, post_id);
+        // setIsLiked(true);
         onLikeToggle(1);
       }
     } catch (error) {
@@ -57,11 +59,6 @@ const LikeButtonComp = ({ onLikeToggle, likes , initialIsLiked, post_id }) => {
     }
   };
   
-
-  // function stall(){
-  //   return;
-  // }
-
   return (
     <Pressable onPress={toggleLike} style={styles.container}>
       <Animated.View style={[StyleSheet.absoluteFillObject, outlineStyle]}>
@@ -106,13 +103,12 @@ export default function LikeButton({ initialLikeCount, post_id, initialIsLiked }
   //     console.error("Error toggling like:", error);
   //   }
   // };
-  const handleLikeToggle = async (change) => {
-    try {
-      setLikeCount((prevCount) => prevCount + change);
-    } catch (error) {
-      console.error("Error toggling like:", error);
-    }
+  
+  const handleLikeToggle = (change) => {
+    console.log("Change in like count:", change); // Debug log
+    setLikeCount((prevCount) => prevCount + change);
   };
+  
 
 
   

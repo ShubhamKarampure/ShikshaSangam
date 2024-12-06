@@ -222,6 +222,46 @@ console.log("Token being sent:", token);
 
 
 
+// export const postunlike = async (post_id) => {
+//   try {
+//     const token = await getToken(); // Retrieve token
+//     if (!token) {
+//       throw new Error("Token is missing");
+//     }
+
+//     // Prepare the request payload
+//     const requestData = {
+//       content_type: "post", // Fixed value for posts
+//       object_id: post_id, // Post ID
+//     };
+
+    
+//     const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
+//       method: "DELETE",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+
+//       },
+//       // body: JSON.stringify(requestData)
+//     });
+    
+
+//     // Parse and return the response
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+//     }
+
+//     const responseData = await response.json();
+//     return responseData; // Return the response data
+//   } catch (error) {
+//     console.error("Error in postunlike:", error.message);
+//     throw error; // Re-throw the error for the caller to handle
+//   }
+// };
+
+
 export const postunlike = async (post_id) => {
   try {
     const token = await getToken(); // Retrieve token
@@ -231,23 +271,29 @@ export const postunlike = async (post_id) => {
 
     // Prepare the request payload
     const requestData = {
-      content_type: "post",//20, // Fixed value for posts
-      object_id: post_id, // Post ID
+      content_type: "post", // Fixed value for posts
+      object_id: post_id,   // Post ID
     };
 
-    
-    const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
+    // Send DELETE request with body
+    const response = await fetch(`${API_ROUTES.UNLIKES}`, {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify(requestData), // Include object_id and content_type in body
     });
-    
 
     // Parse and return the response
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+    }
+
+    // Handle 204 No Content case
+    if (response.status === 204) {
+      return; // No content to return, successful operation
     }
 
     const responseData = await response.json();
@@ -257,4 +303,5 @@ export const postunlike = async (post_id) => {
     throw error; // Re-throw the error for the caller to handle
   }
 };
+
 
