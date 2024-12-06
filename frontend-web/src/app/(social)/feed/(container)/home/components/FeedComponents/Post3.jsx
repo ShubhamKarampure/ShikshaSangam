@@ -120,6 +120,8 @@ const Post3 = memo(
     const handleShowComments = async () => {
       setShowComments(!showComments);
       const postComments = await getComment(postId);
+      console.log(postComments);
+      
       setCommentsState(postComments);
     };
     // Function to handle modal closing
