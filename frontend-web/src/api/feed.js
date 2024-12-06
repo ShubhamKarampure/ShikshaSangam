@@ -198,7 +198,7 @@ export const getAllFeed = async (limit = 3, offset = 0) => {
       };
     })
   );
-  console.log(postsArray);
+  // console.log(postsArray);
 
   postsArray.push(...postsWithComments);
   return postsArray;

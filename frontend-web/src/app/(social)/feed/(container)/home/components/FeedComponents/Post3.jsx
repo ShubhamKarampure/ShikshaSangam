@@ -102,6 +102,7 @@ const Post3 = memo(
     const [likeCounter,setLikeCounter] = useState(likesCount);
     const [commentCounter,setCommentCounter] = useState(commentsCount);
     // Function to handle modal opening
+    
     useEffect(() => {
       const fetchComments = async () => {
         const postComments = await getComment(postId);
@@ -150,7 +151,9 @@ const Post3 = memo(
           },
         },
       ]);
+      setCommentCounter(commentCounter+1);
       postComment(postId, profile_id, data);
+
     };
     const [userComment, setUserComment] = useState("");
     return (
@@ -300,7 +303,7 @@ const Post3 = memo(
               <span role="button">
                 <img
                   className="avatar-img rounded-circle"
-                  src={`https://res.cloudinary.com//${cloudName}/${profile.avatar_image}`}
+                  src={`https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`}
                   alt="avatar12"
                 />
               </span>
