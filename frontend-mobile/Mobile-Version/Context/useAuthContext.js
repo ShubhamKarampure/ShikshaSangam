@@ -92,7 +92,7 @@ export const AuthProvider = ({ children }) => {
       const sessionData = await AsyncStorage.getItem(authSessionKey);
       if (sessionData) {
         console.log('Session data retrieved:', JSON.parse(sessionData));// Log session data
-        console.log(sessionData.access);
+        // console.log(sessionData.access);
         
         return JSON.parse(sessionData);
       } else {
@@ -105,22 +105,30 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  // useEffect(() => {
+  //   const initializeSession = async () => {
+  //     const session = await getSession();
+  //     setUser(session);
+  //   };
+  //   initializeSession();
+  // }, []);
   useEffect(() => {
     const initializeSession = async () => {
       const session = await getSession();
-      setUser(session);
+      setUser(session?.user || null); // Set null if no session is found
     };
     initializeSession();
   }, []);
+  
 
   const saveSession = async (sessionData) => {
     try {
-      console.log("Logging user details:", sessionData.user); // Log user details (username, email, etc.)
-      console.log("Access Token:", sessionData.access);
-      // console.log("Refresh Token:", sessionData.refresh);
+      // console.log("Logging user details:", sessionData.user); // Log user details (username, email, etc.)
+      // console.log("Access Token:", sessionData.access);
+      console.log("Refresh Token:", sessionData.refresh);
       await AsyncStorage.setItem("access_token", sessionData.access);
       await AsyncStorage.setItem("refresh_token", sessionData.refresh);
-      await AsyncStorage.setItem(authSessionKey, JSON.stringify(sessionData.user));
+      await AsyncStorage.setItem(authSessionKey, JSON.stringify(sessionData));
       setUser(sessionData.user);
       console.log("session created succesfully");
       

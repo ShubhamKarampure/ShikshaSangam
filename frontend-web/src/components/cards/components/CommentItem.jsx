@@ -5,9 +5,8 @@ import { useAuthContext } from '@/context/useAuthContext';
 import { Link } from 'react-router-dom';
 import { Card } from 'react-bootstrap';
 import { useState,useEffect } from 'react';
-import { BsReplyFill, BsSendFill } from 'react-icons/bs'; // Reply icons
-import { postReply } from '@/api/feed'; // Assuming this function sends a reply to the backend
-import { getReply } from "@/api/feed"; // API call to fetch replies
+import { BsReplyFill, BsSendFill } from 'react-icons/bs'; 
+import { getReply,likeContent,unlikeContent,postReply } from "@/api/feed";
 
 const CommentItem = ({
   comment,
@@ -17,6 +16,8 @@ const CommentItem = ({
   createdAt,
   image,
   commentId,
+  is_liked,
+  replyId,
 }) => {
   const [userReply, setUserReply] = useState('');
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -25,6 +26,8 @@ const CommentItem = ({
   const [showReplies, setShowReplies] = useState(false);
   const [repliesLoaded, setRepliesLoaded] = useState(children?.length > 0);
   const { user } = useAuthContext();
+  const [likeState,setLikeState] = useState(is_liked);
+  const [likeCounter,setLikeCounter] = useState(likesCount);
 
   const profile_id = user.profile_id;
 
@@ -36,14 +39,24 @@ const CommentItem = ({
   const handleShowReply = () => {
     setShowReplies(!showReplies);
   }
+  const handleLike = () => {
+    if(likeState){
+      setLikeCounter(likeCounter-1);
+      setLikeState(false);
+      unlikeContent((!replyId)?commentId:replyId,(!replyId)?"comment":"reply")
+    }else{
+      setLikeCounter(likeCounter+1);
+      setLikeState(true);
+      likeContent((!replyId)?commentId:replyId, profile_id,(!replyId)?21:22);
+    }
 
+  };
   // Fetch replies dynamically
   const fetchReplies = async () => {
     setLoadingReplies(true);
     try {
       const fetchedReplies = await getReply(commentId);
       setReplies(fetchedReplies);
-      console.log(fetchedReplies);
       
       setRepliesLoaded(true);
     } catch (error) {
@@ -110,8 +123,8 @@ const CommentItem = ({
 
               <ul className="nav nav-divider py-2 small">
                 <li className="nav-item">
-                  <span className="nav-link" role="button">
-                    Like ({likesCount})
+                  <span className={`nav-link ${is_liked?"active":""}`} role="button" onClick={handleLike}>
+                    Like ({likeCounter})
                   </span>
                 </li>
                 <li className="nav-item">

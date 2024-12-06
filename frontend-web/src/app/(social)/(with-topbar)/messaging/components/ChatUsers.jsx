@@ -16,10 +16,14 @@ const ChatItem = ({ id, participants, last_message, isStory }) => {
     `https://ui-avatars.com/api/?name=${fullName}&background=0D8ABC&color=fff`;
   const status = participant?.status;
 
-  let lastMessageContent = last_message?.content || "No recent messages";
-  if (lastMessageContent.startsWith(MEET_MESSAGE_PREFIX)) {
-    lastMessageContent = "Quick Connect";
-  }
+let lastMessageContent = last_message?.content || "No recent messages";
+
+if (lastMessageContent.startsWith(MEET_MESSAGE_PREFIX)) {
+  lastMessageContent = "Quick Connect";
+} else if (lastMessageContent.length > 50) {
+  lastMessageContent = lastMessageContent.substring(0, 47) + "..."; // shorten the message and add "..."
+}
+
 
   return (
     <li data-bs-dismiss="offcanvas" onClick={() => changeActiveChat(id)}>

@@ -2,19 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_ROUTES } from "../constants";
 import { CLOUDINARY_CLOUD_NAME } from '../Utility/urlUtils';
 
-let cachedToken = null;
-
-// Function to get token with caching
+// Function to get token without caching
 export const getToken = async () => {
-  if (cachedToken) {
-    return cachedToken;
-  }
   try {
-    const token = await AsyncStorage.getItem('access_token');
+    const token = await AsyncStorage.getItem('access_token'); // Always fetch from AsyncStorage
     if (!token) {
       console.error("Access token is missing");
+      return null;
     }
-    cachedToken = token; // Cache the token
     return token;
   } catch (error) {
     console.error("Error retrieving token from AsyncStorage:", error);
@@ -22,9 +17,14 @@ export const getToken = async () => {
   }
 };
 
-// Function to clear the cached token (e.g., during logout)
-export const clearCachedToken = () => {
-  cachedToken = null;
+// Function to clear the token (e.g., during logout)
+export const clearToken = async () => {
+  try {
+    await AsyncStorage.removeItem('access_token'); // Clear token from AsyncStorage
+    console.log("Token cleared successfully");
+  } catch (error) {
+    console.error("Error clearing token:", error);
+  }
 };
 
 // Function to get comments for a post
@@ -157,6 +157,7 @@ export const getReply = async (commentId) => {
 // Function to get all feed posts
 export const getAllFeed = async () => {
   const token = await getToken(); // Call getToken directly
+  console.log("token",token);
   if (!token) {
     throw new Error("Token is missing");
   }
@@ -234,15 +235,7 @@ export const postunlike = async (post_id) => {
       object_id: post_id, // Post ID
     };
 
-    // Make the API call
-    // const response = await fetch(`${API_ROUTES.UNLIKES}`, {
-    //   method: "DELETE",
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(requestData),
-    // });
+    
     const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
       method: "DELETE",
       headers: {

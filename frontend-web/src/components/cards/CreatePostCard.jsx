@@ -70,7 +70,7 @@ const CreatePostCard = () => {
           </div>
 
           <form className="w-100">
-            <textarea className="form-control pe-4 border-0" rows={2} data-autoresize placeholder="Share your thoughts..." defaultValue={''} />
+            <textarea className="form-control pe-4 border-0" rows={2} data-autoresize placeholder="Share your thoughts..." defaultValue={''} id="Create Post"/>
           </form>
         </div>
 

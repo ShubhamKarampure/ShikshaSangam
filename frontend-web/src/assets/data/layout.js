@@ -33,7 +33,7 @@ export const profilePanelLinksData1 = [{
 }, {
   image: calendarImg,
   name: 'Events',
-  link: '/profile/events'
+  link: '/feed/events'
 }, {
   image: chatImg,
   name: 'Groups',

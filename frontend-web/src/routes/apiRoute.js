@@ -43,4 +43,6 @@ export const API_ROUTES = {
   FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed
   COMMENT: `${API_BASE_URL}/social/comments/`, // Comment
   REPLY: `${API_BASE_URL}/social/replies/`, // Reply
+  LIKES: `${API_BASE_URL}/social/likes/`, // Likes
+  UNLIKE: `${API_BASE_URL}/social/likes/unlike/`, // Unlike
 }
