@@ -199,7 +199,7 @@ const Followers = () => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {follower.full_name || "No username"}
+                        {follower.full_name || follower.username}
                       </Link>
                       <p
                         className="mb-0 small text-truncate"

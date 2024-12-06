@@ -1,6 +1,6 @@
 import useToggle from '@/hooks/useToggle';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { Fragment, useState } from 'react';
+import { Fragment, useState,useEffect } from 'react';
 import { Button, Card, CardBody, CardHeader, Col, Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, Row, TabContainer, TabContent, TabPane } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { BsCalendar2Event, BsFileEarmarkText } from 'react-icons/bs';
@@ -19,11 +19,61 @@ import avatar4 from '@/assets/images/avatar/04.jpg';
 import avatar5 from '@/assets/images/avatar/05.jpg';
 import avatar6 from '@/assets/images/avatar/06.jpg';
 import avatar7 from '@/assets/images/avatar/07.jpg';
+import { fetchEvents } from '@/api/events';
+
+const mapEventToCardFormat = (event) => {
+  return {
+    id: event.id.toString(), // Ensure it's a string
+    title: event.name || "Untitled Event",
+    category: event.type || "General",
+    image: event.poster || avatar1,
+    label: event.mode || "Offline",
+    date: new Date(event.date_time).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric", 
+    }),
+    location: event.location || "Not Specified",
+    attendees: Array(event.registrations_count || 0).fill(avatar1), // Use placeholder avatars for attendees
+    type: event.mode || "offline",
+  };
+};
+  
 const AllEvents = () => {
-  const eventCategories = ['all', 'local', 'this-week', 'online', 'friends', 'following'];
+  const eventCategories = ['all', 'online'];
+  
   // const allEvents = useFetchData(getAllEvents)
-  const allEvents = eventData;
+  const [error, setError] = useState(null); // State to handle errors
+  const [loading, setLoading] = useState(true); // State to manage loading
   const [events, setEvents] = useState(eventData);
+
+  
+  
+  useEffect(() => {
+   
+    const loadEvents = async () => {
+      try {
+        setLoading(true);
+        const response = await fetchEvents(); // Fetch events from API
+        console.log("Raw events:", response);
+
+        // Transform events to match the card format
+        const transformedEvents = response.results.map(mapEventToCardFormat);
+        console.log("Transformed events:", transformedEvents);
+
+        setEvents(transformedEvents); // Update state with transformed events
+      } catch (err) {
+        setError(err.message || "Failed to fetch events");
+        console.error("Error fetching events:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadEvents();
+  }, []);
+  
+ 
   const filterEvents = category => {
     setTimeout(() => {
       const event = category === 'all' ? allEvents : allEvents?.filter(event => event.type?.includes(category));
@@ -64,21 +114,7 @@ const AllEvents = () => {
                 
                 <NavLink eventKey="all" onClick={() => filterEvents('all')}>
                   
-                  Top
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                
-                <NavLink eventKey="local" onClick={() => filterEvents('local')}>
-                  
-                  Local
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                
-                <NavLink eventKey="this-week" onClick={() => filterEvents('this-week')}>
-                  
-                  This week
+                  All
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -90,22 +126,19 @@ const AllEvents = () => {
               </NavItem>
               <NavItem>
                 
-                <NavLink eventKey="friends" onClick={() => filterEvents('friends')}>
+                <NavLink eventKey="offline" onClick={() => filterEvents('this-week')}>
                   
-                  Friends
+                  Offline
                 </NavLink>
               </NavItem>
               <NavItem>
                 
-                <NavLink eventKey="following" onClick={() => filterEvents('following')}>
-                  
-                  Following
-                </NavLink>
+                
               </NavItem>
             </Nav>
             <TabContent className="mb-0 pb-0">
               {eventCategories.map((category, idx) => <Fragment key={idx}>
-                  {events.length != 0 ? <TabPane eventKey={category} className="fade" id="tab-1">
+                  {events.length != 1 ? <TabPane eventKey={category} className="fade" id="tab-1">
                       <Row className="g-4">
                         {events?.map((event, idx) => <Col sm={6} xl={4} key={idx}>
                             <EventCard {...event} />

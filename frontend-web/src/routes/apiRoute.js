@@ -38,6 +38,15 @@ export const API_ROUTES = {
   MESSAGE_LIST: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/`, // List messages for a specific chat
   MESSAGE_CREATE: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message in a chat
   CHAT_CLEAR: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/clear/`, // Clear all messages in a chat
+  
+  LIST_EVENTS: `${API_BASE_URL}/events/events/`, // Endpoint for listing all events
+  CREATE_EVENT: `${API_BASE_URL}/events/events/`, // Endpoint for creating an event
+  GET_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Event details by ID
+  UPDATE_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Update event by ID
+  DELETE_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Delete event by ID
+  EVENT_REGISTRATION: `${API_BASE_URL}/registrations/`, // Event registration CRUD
+  EVENT_FAQS: `${API_BASE_URL}/faqs/`, // Event FAQ CRUD
+  EVENT_LIKES: `${API_BASE_URL}/likes/`, // Event like CRUD
 
   UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
   FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed

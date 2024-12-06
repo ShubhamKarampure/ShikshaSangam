@@ -109,7 +109,8 @@ class PostViewSet(viewsets.ModelViewSet):
                     'profile_id': user.id,
                     'avatar':user.avatar_image.url if user.avatar_image else None,
                     'num_followers': num_followers,
-                    'bio': user.bio
+                    'bio': user.bio,
+                    'full_name': user.full_name,
                 },
                 'post_stats': {
                     'likes': num_likes,
@@ -161,7 +162,8 @@ class PostViewSet(viewsets.ModelViewSet):
                         'profile_id': user.id,
                         'num_followers': num_followers,
                         'avatar':user.avatar_image.url if user.avatar_image else None,
-                        'bio': user.bio
+                        'bio': user.bio,
+                        'full_name': user.full_name,
                     },
                     'post_stats': {
                         'likes': num_likes,
@@ -219,7 +221,8 @@ class PostViewSet(viewsets.ModelViewSet):
                 'profile_id': user.id,
                 'avatar': user.avatar_image.url if user.avatar_image else None,
                 'num_followers': num_followers,
-                'bio': user.bio
+                'bio': user.bio,
+                'full_name': user.full_name,
             },
             'post_stats': {
                 'likes': num_likes,
@@ -268,6 +271,7 @@ class CommentViewSet(viewsets.ModelViewSet):
                         'avatar': comment.userprofile.avatar_image.url if comment.userprofile.avatar_image else None,
                         'profile_id': comment.userprofile.id,
                         'role': comment.userprofile.role,
+                        'full_name': comment.userprofile.full_name,
                     },
 
                     'likes_count': Like.objects.filter(content_type=comment_content_type, object_id=comment.id).count(),  # Count likes for this comment
@@ -309,6 +313,7 @@ class ReplyViewSet(viewsets.ModelViewSet):
                         'avatar': reply.userprofile.avatar_image.url if reply.userprofile.avatar_image else None,
                         'profile_id': reply.userprofile.id,
                         'role': reply.userprofile.role,
+                        'full_name': reply.userprofile.full_name,
                     },
                     'likes_count': Like.objects.filter(content_type=reply_content_type, object_id=reply.id).count(),  # Count likes for this reply
                     'is_liked': Like.objects.filter(  content_type=reply_content_type, object_id=reply.id,userprofile=self.request.user.user).exists()
@@ -407,6 +412,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'expected_graduation_year': follower.studentprofile.expected_graduation_year,
                     'enrollment_year':follower.studentprofile.enrollment_year,
                     'role': follower.role,
+                    'username':follower.user.username,
                 })
             elif follower.role == 'alumni' and hasattr(follower, 'alumnusprofile'):
                 response_data.append({
@@ -417,6 +423,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'graduation_year': follower.alumnusprofile.graduation_year,
                     'role': follower.role,
                     'location':follower.alumnusprofile.location,
+                    'username':follower.user.username,
                 })
             else:
                    response_data.append({
@@ -424,6 +431,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'full_name': follower.full_name,
                     'avatar_image': follower.avatar_image.url if follower.avatar_image else None,
                     'role': follower.role,
+                    'username':follower.user.username,
                 })
 
 
@@ -451,6 +459,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                      'location':followed.studentprofile.location,
                     'expected_graduation_year': followed.studentprofile.expected_graduation_year,
                     'role': followed.role,
+                    'username':followed.user.username,
                 })
             elif followed.role == 'alumni' and hasattr(followed, 'alumnusprofile'):
                 response_data.append({
@@ -461,6 +470,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'graduation_year': followed.alumnusprofile.graduation_year,
                     'location':followed.alumnusprofile.location,
                     'role': followed.role,
+                    'username':followed.user.username,
                 })
 
         return Response(response_data)
@@ -500,6 +510,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'specialization': user.studentprofile.specialization,
                     'expected_graduation_year': user.studentprofile.expected_graduation_year,
                     'role': user.role,
+                    'username':user.user.username,
                 })
             elif user.role == 'alumni' and hasattr(user, 'alumnusprofile'):
                 response_data.append({
@@ -509,6 +520,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'specialization': user.alumnusprofile.specialization,
                     'graduation_year': user.alumnusprofile.graduation_year,
                     'role': user.role,
+                    'username':user.user.username,
                 })
 
         return Response(response_data)
@@ -542,6 +554,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'specialization': user.studentprofile.specialization,
                     'expected_graduation_year': user.studentprofile.expected_graduation_year,
                     'role': user.role,
+                    'username':user.user.username,
                 })
             elif user.role == 'alumni' and hasattr(user, 'alumnusprofile'):
                 response_data.append({
@@ -551,6 +564,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'specialization': user.alumnusprofile.specialization,
                     'graduation_year': user.alumnusprofile.graduation_year,
                     'role': user.role,
+                    'username':user.user.username,
                 })
 
         return Response(response_data)
