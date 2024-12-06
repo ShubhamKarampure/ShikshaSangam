@@ -18,6 +18,7 @@ const CommentItem = ({
   commentId,
   is_liked,
   replyId,
+  fullName
 }) => {
   const [userReply, setUserReply] = useState('');
   const [showReplyForm, setShowReplyForm] = useState(false);
@@ -109,7 +110,7 @@ const CommentItem = ({
               <div className="bg-light rounded-start-top-0 p-3 rounded">
                 <div className="d-flex justify-content-between">
                   <h6 className="mb-1">
-                    <Link to="">{socialUser.name}</Link>
+                    <Link to="">{fullName || socialUser.name}</Link>
                   </h6>
                   <small className="ms-2">{timeSince(createdAt)}</small>
                 </div>

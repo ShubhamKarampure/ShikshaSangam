@@ -22,7 +22,7 @@ const ProfilePanel = ({
     : bgBannerImg
   
    const full_name = profile && profile.full_name ?
-     profile.full_name : 'No username'
+     profile.full_name : user.username
   
   const bio = user.role !== 'college_staff' && profile && profile.bio ? 
     profile.bio : 'Here to connect, learn, and grow.'

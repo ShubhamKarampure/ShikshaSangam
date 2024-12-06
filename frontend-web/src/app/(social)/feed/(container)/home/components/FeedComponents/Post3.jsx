@@ -87,7 +87,8 @@ const Post3 = memo(
     socialUser,
     photos,
     isVideo,
-    is_liked
+    is_liked,
+    fullName,
   }) => {
     const { user } = useAuthContext();
     const profile_id = user.profile_id;
@@ -173,7 +174,7 @@ const Post3 = memo(
                 </div>
                 <div>
                   <h6 className="card-title mb-0">
-                    <Link to=""> {socialUser?.name} </Link>
+                    <Link to="">{fullName || socialUser?.name} </Link>
                   </h6>
                   <p className="small mb-0">{createdAt}</p>
                 </div>

@@ -39,7 +39,7 @@ const ProfileDropdown = () => {
       : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
 
   const full_name =
-    profile && profile.full_name ? profile.full_name : "No username";
+    profile && profile.full_name ? profile.full_name : user.username;
 
   const themeModes = [
     {
