@@ -27,8 +27,8 @@ import CommentItem from "@/components/cards/components/CommentItem.jsx";
 import { postComment, getComment } from "@/api/feed.js";
 import { useAuthContext } from "@/context/useAuthContext";
 import { useProfileContext } from "@/context/useProfileContext";
-import { useState, useEffect, useRef,memo } from "react";
-
+import { useState, useEffect, useRef, memo } from "react";
+import { likeContent,unlikeContent } from "@/api/feed.js";
 
 const LazyImage = ({ src, alt, onClick }) => {
   const [isInView, setIsInView] = useState(false);
@@ -75,112 +75,128 @@ const LazyImage = ({ src, alt, onClick }) => {
   );
 };
 
+const Post3 = memo(
+  ({
+    postId,
+    createdAt,
+    likesCount,
+    caption,
+    comments,
+    commentsCount,
+    image,
+    socialUser,
+    photos,
+    isVideo,
+    is_liked
+  }) => {
+    const { user } = useAuthContext();
+    const profile_id = user.profile_id;
+    const { profile } = useProfileContext();
+    const [showModal, setShowModal] = useState(false);
+    const [modalImage, setModalImage] = useState(null);
+    const [like, setLike] = useState(is_liked);
+    const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+    const [commentsState, setCommentsState] = useState(comments);
+    const username = user.username;
+    const [showComments, setShowComments] = useState(false);
+    const [likeCounter,setLikeCounter] = useState(likesCount);
+    const [commentCounter,setCommentCounter] = useState(commentsCount);
+    // Function to handle modal opening
+    
+    useEffect(() => {
+      const fetchComments = async () => {
+        const postComments = await getComment(postId);
+        setCommentsState(postComments);
+        
+      };
+      fetchComments();
+    }, []);
 
-const Post3 = memo(({
-  postId,
-  createdAt,
-  likesCount,
-  caption,
-  comments,
-  commentsCount,
-  image,
-  socialUser,
-  photos,
-  isVideo,
-}) => {
-  const { user } = useAuthContext();
-  const profile_id = user.profile_id;
-  const { profile } = useProfileContext();
-  const [showModal, setShowModal] = useState(false);
-  const [modalImage, setModalImage] = useState(null);
-  const [like, setLike] = useState(false);
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const [commentsState, setCommentsState] = useState(comments);
-  const username = user.username;
-  const [showComments, setShowComments] = useState(false);
-  // Function to handle modal opening
-  useEffect(() => {
-    const fetchComments = async () => {
+    const handleImageClick = (img) => {
+      setModalImage(img);
+      setShowModal(true);
+    };
+    const handleShowComments = async () => {
+      setShowComments(!showComments);
       const postComments = await getComment(postId);
       setCommentsState(postComments);
     };
-    fetchComments();
-  }, []);
+    // Function to handle modal closing
+    const handleCloseModal = () => {
+      setShowModal(false);
+      setModalImage(null);
+    };
+    const handleLike = () => {
+      if(like){
+        setLikeCounter(likeCounter-1);
+        setLike(false);
+        unlikeContent(postId,"post")
+      }else{
+        setLikeCounter(likeCounter+1);
+        setLike(true);
+        likeContent(postId, profile_id,20);
+      }
 
-  const handleImageClick = (img) => {
-    setModalImage(img);
-    setShowModal(true);
-  };
-  const handleShowComments = async () => {
-    setShowComments(!showComments);
-    const postComments = await getComment(postId);
-    setCommentsState(postComments);
-  };
-  // Function to handle modal closing
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setModalImage(null);
-  };
-  const handleLike = () => {
-    setLike(!like);
-  };
-  const handleComment = async (e, data) => {
-    e.preventDefault();
-    postComment(postId, profile_id, data);
-    setCommentsState([
-      ...commentsState,
-      {
-        comment: data,
-        createdAt: new Date(),
-        socialUser: {
-          avatar: `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`,
-          name: username,
+    };
+    const handleComment = async (e, data) => {
+      e.preventDefault();
+      setCommentsState([
+        ...commentsState,
+        {
+          comment: data,
+          createdAt: new Date(),
+          socialUser: {
+            avatar: `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`,
+            name: username,
+          },
         },
-      },
-    ]);
-  };
-  const [userComment, setUserComment] = useState("");
-  return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="d-flex align-items-center justify-content-between">
-            <div className="d-flex align-items-center">
-              <div className="avatar me-2">
-                <span role="button">
-                  <img
-                    className="avatar-img rounded-circle"
-                    src={socialUser?.avatar}
-                    alt="logo"
-                  />
-                </span>
+      ]);
+      setCommentCounter(commentCounter+1);
+      postComment(postId, profile_id, data);
+
+    };
+    const [userComment, setUserComment] = useState("");
+    return (
+      <>
+        <Card>
+          <CardHeader>
+            <div className="d-flex align-items-center justify-content-between">
+              <div className="d-flex align-items-center">
+                <div className="avatar me-2">
+                  <span role="button">
+                    <img
+                      className="avatar-img rounded-circle"
+                      src={socialUser?.avatar}
+                      alt="logo"
+                    />
+                  </span>
+                </div>
+                <div>
+                  <h6 className="card-title mb-0">
+                    <Link to=""> {socialUser?.name} </Link>
+                  </h6>
+                  <p className="small mb-0">{createdAt}</p>
+                </div>
               </div>
-              <div>
-                <h6 className="card-title mb-0">
-                  <Link to=""> {socialUser?.name} </Link>
-                </h6>
-                <p className="small mb-0">{createdAt}</p>
-              </div>
+              <ActionMenu />
             </div>
-            <ActionMenu />
-          </div>
-        </CardHeader>
-        <CardBody>
-          <p className="mb-0">{caption}</p>
-        </CardBody>
+          </CardHeader>
+          <CardBody>
+            <p className="mb-0">{caption}</p>
+          </CardBody>
 
-        {image && (
-          <span role="button">
-            <LazyImage
-              src={image}
-              alt="post-image"
-              style={{ width: "100%", height: "300px", objectFit: "cover" }}
-              onClick={() => handleImageClick(image)}
-            />
-          </span>
-        )}
+          {image && (
+            <span role="button">
+              <LazyImage
+                src={image}
+                alt="post-image"
+                style={{ width: "100%", height: "300px", objectFit: "cover" }}
+                onClick={() => handleImageClick(image)}
+              />
+            </span>
+          )}
 
-        {/* <CardBody className="position-relative bg-light">
+          {/* <CardBody className="position-relative bg-light">
         <Link to="" className="small stretched-link">
           https://blogzine.webestica.com
         </Link>
@@ -192,144 +208,152 @@ const Post3 = memo(({
         </p>
       </CardBody> */}
 
-        <CardFooter className="py-3">
-          <ul className="nav nav-fill nav-stack small">
-            <li className="nav-item">
-              <Link
-                className={`nav-link mb-0 ${like ? "active" : ""}`}
-                to=""
-                onClick={handleLike}
-              >
-                <BsHeart size={18} className="pe-1" />
-                Liked ({likesCount})
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link
-                className="nav-link mb-0"
-                to=""
-                onClick={handleShowComments}
-              >
-                <BsChatFill size={18} className="pe-1" />
-                Comments ({commentsCount})
-              </Link>
-            </li>
+          <CardFooter className="py-3">
+            <ul className="nav nav-fill nav-stack small">
+              <li className="nav-item">
+                <Link
+                  className={`nav-link mb-0 ${like ? "active" : ""}`}
+                  to=""
+                  onClick={handleLike}
+                >
+                  <BsHeart size={18} className="pe-1" />
+                  Liked ({likeCounter})
+                </Link>
+                <style>{`
+                  .nav-link:focus {
+                    color: var(--bs-nav-link-color); /* Set the desired focus color */
+                    outline: none; /* Remove the default outline if desired */
+                  }
+                `}</style>
+              </li>
+              <li className="nav-item">
+                <Link
+                  className="nav-link mb-0"
+                  to=""
+                  onClick={handleShowComments}
+                >
+                  <BsChatFill size={18} className="pe-1" />
+                  Comments ({commentCounter})
+                </Link>
+              </li>
 
-            <Dropdown className="nav-item">
-              <DropdownToggle
-                as="a"
-                className="nav-link mb-0 content-none cursor-pointer"
-                id="cardShareAction6"
-                aria-expanded="false"
-              >
-                <BsReplyFill className="flip-horizontal ps-1" size={18} />
-                Share (3)
-              </DropdownToggle>
+              <Dropdown className="nav-item">
+                <DropdownToggle
+                  as="a"
+                  className="nav-link mb-0 content-none cursor-pointer"
+                  id="cardShareAction6"
+                  aria-expanded="false"
+                >
+                  <BsReplyFill className="flip-horizontal ps-1" size={18} />
+                  Share (3)
+                </DropdownToggle>
 
-              <DropdownMenu
-                className="dropdown-menu-end"
-                aria-labelledby="cardShareAction6"
-              >
-                <li>
-                  <DropdownItem>
-                    <BsEnvelope size={22} className="fa-fw pe-2" />
-                    Send via Direct Message
-                  </DropdownItem>
-                </li>
-                <li>
-                  <DropdownItem>
-                    <BsBookmarkCheck size={22} className="fa-fw pe-2" />
-                    Bookmark
-                  </DropdownItem>
-                </li>
-                <li>
-                  <DropdownItem>
-                    <BsLink size={22} className="fa-fw pe-2" />
-                    Copy link to post
-                  </DropdownItem>
-                </li>
-                <li>
-                  <DropdownItem>
-                    <BsShare size={22} className="fa-fw pe-2" />
-                    Share post via …
-                  </DropdownItem>
-                </li>
-                <li>
-                  <DropdownDivider />
-                </li>
-                <li>
-                  <DropdownItem>
-                    <BsPencilSquare size={22} className="fa-fw pe-2" />
-                    Share to News Feed
-                  </DropdownItem>
-                </li>
-              </DropdownMenu>
-            </Dropdown>
+                <DropdownMenu
+                  className="dropdown-menu-end"
+                  aria-labelledby="cardShareAction6"
+                >
+                  <li>
+                    <DropdownItem>
+                      <BsEnvelope size={22} className="fa-fw pe-2" />
+                      Send via Direct Message
+                    </DropdownItem>
+                  </li>
+                  <li>
+                    <DropdownItem>
+                      <BsBookmarkCheck size={22} className="fa-fw pe-2" />
+                      Bookmark
+                    </DropdownItem>
+                  </li>
+                  <li>
+                    <DropdownItem>
+                      <BsLink size={22} className="fa-fw pe-2" />
+                      Copy link to post
+                    </DropdownItem>
+                  </li>
+                  <li>
+                    <DropdownItem>
+                      <BsShare size={22} className="fa-fw pe-2" />
+                      Share post via …
+                    </DropdownItem>
+                  </li>
+                  <li>
+                    <DropdownDivider />
+                  </li>
+                  <li>
+                    <DropdownItem>
+                      <BsPencilSquare size={22} className="fa-fw pe-2" />
+                      Share to News Feed
+                    </DropdownItem>
+                  </li>
+                </DropdownMenu>
+              </Dropdown>
 
-            <li className="nav-item">
-              <Link className="nav-link mb-0" to="">
-                <BsSendFill size={18} className="pe-1" />
-                Send
-              </Link>
-            </li>
-          </ul>
-        </CardFooter>
-      </Card>
-      <div className="px-4">
-        <div className="d-flex">
-          <div className="avatar avatar-xs me-2">
-            <span role="button">
-              <img
-                className="avatar-img rounded-circle"
-                src={`https://res.cloudinary.com//${cloudName}/${profile.avatar_image}`}
-                alt="avatar12"
-              />
-            </span>
-          </div>
+              <li className="nav-item">
+                <Link className="nav-link mb-0" to="">
+                  <BsSendFill size={18} className="pe-1" />
+                  Send
+                </Link>
+              </li>
+            </ul>
+          </CardFooter>
+        </Card>
+        <div className="px-4">
+          <div className="d-flex">
+            <div className="avatar avatar-xs me-2">
+              <span role="button">
+                <img
+                  className="avatar-img rounded-circle"
+                  src={`https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`}
+                  alt="avatar12"
+                />
+              </span>
+            </div>
 
-          <form
-            className="nav nav-item w-100 position-relative"
-            onSubmit={(e) => handleComment(e, userComment)}
-          >
-            <textarea
-              data-autoresize
-              className="form-control pe-5 bg-light"
-              rows={1}
-              placeholder="Add a comment..."
-              defaultValue={""}
-              onChange={(e) => setUserComment(e.target.value)}
-            />
-            <button
-              className="nav-link bg-transparent px-3 position-absolute top-50 end-0 translate-middle-y border-0"
-              type="submit"
+            <form
+              className="nav nav-item w-100 position-relative"
+              onSubmit={(e) => handleComment(e, userComment)}
             >
-              <BsSendFill />
-            </button>
-          </form>
-        </div>
-      </div>
-      {commentsState && showComments && (
-        <>
-          <ul className="comment-wrap list-unstyled">
-            {commentsState.map((comment) => (
-              <CommentItem
-                {...comment}
-                key={commentsState.comment + commentsState.commentId}
+              <textarea
+                data-autoresize
+                className="form-control pe-5 bg-light"
+                rows={1}
+                placeholder="Add a comment..."
+                defaultValue={""}
+                onChange={(e) => setUserComment(e.target.value)}
+                id={postId}
               />
-            ))}
-          </ul>
-        </>
-      )}
-      <Modal show={showModal} onHide={handleCloseModal} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>Post Image</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <img src={modalImage} alt="modal-img" style={{ width: "100%" }} />
-        </Modal.Body>
-      </Modal>
-    </>
-  );
-});
+              <button
+                className="nav-link bg-transparent px-3 position-absolute top-50 end-0 translate-middle-y border-0"
+                type="submit"
+              >
+                <BsSendFill />
+              </button>
+            </form>
+          </div>
+        </div>
+        {commentsState && showComments && (
+          <>
+            <ul className="comment-wrap list-unstyled">
+              {commentsState.map((comment,idx) => (
+                <CommentItem
+                  {...comment}
+                  key={idx}
+                />
+              ))}
+            </ul>
+          </>
+        )}
+        <Modal show={showModal} onHide={handleCloseModal} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>Post Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <img src={modalImage} alt="modal-img" style={{ width: "100%" }} />
+          </Modal.Body>
+        </Modal>
+      </>
+    );
+  }
+);
 
 export default Post3;

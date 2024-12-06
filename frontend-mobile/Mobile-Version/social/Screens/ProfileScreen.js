@@ -15,7 +15,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import {  updateUserProfile } from "../../api/UserProfile";
+import {  updateUserProfile,getUserProfile } from "../../api/UserProfile";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useAuthContext } from "../../Context/useAuthContext";
 import { useProfileContext } from "../../Context/ProfileContext";
@@ -118,6 +118,9 @@ const ProfileScreen = () => {
       setLoading(false); // Stop loader
     }
   };
+
+  
+
   
   
   
@@ -268,28 +271,28 @@ export default ProfileScreen;
 
 
 // useEffect(() => {
-  //   const fetchProfile = async () => {
-  //     try {
-  //       const storedUser = await AsyncStorage.getItem("_SS_AUTH_KEY_");
-  //       if (!storedUser) throw new Error("User not found");
+//     const fetchProfile = async () => {
+//       try {
+//         const storedUser = await AsyncStorage.getItem("_SS_AUTH_KEY_");
+//         if (!storedUser) throw new Error("User not found");
     
-  //       const parsedUser = JSON.parse(storedUser);
-  //       const profileDetails = await getUserProfile(parsedUser.profile_id);
-  //            // Process image URLs before setting state
-  //     setProfileData({
-  //       ...profileDetails,
-  //       avatar_image: processImageUrl(profileDetails.avatar_image),
-  //       banner_image: processImageUrl(profileDetails.banner_image),
-  //     });
-  //       setUserId(parsedUser.profile_id); // Store id
-  //       setUserRole(parsedUser.role);     // Store role
-  //     } catch (error) {
-  //       console.error("Error fetching profile:", error);
-  //       Alert.alert("Error", "Failed to fetch profile data.");
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+//         const parsedUser = JSON.parse(storedUser);
+//         const profileDetails = await getUserProfile(parsedUser.profile_id);
+//              // Process image URLs before setting state
+//       setProfileData({
+//         ...profileDetails,
+//         avatar_image: processImageUrl(profileDetails.avatar_image),
+//         banner_image: processImageUrl(profileDetails.banner_image),
+//       });
+//         setUserId(parsedUser.profile_id); // Store id
+//         setUserRole(parsedUser.role);     // Store role
+//       } catch (error) {
+//         console.error("Error fetching profile:", error);
+//         Alert.alert("Error", "Failed to fetch profile data.");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
 
-  //   fetchProfile();
-  // }, []);
+//     fetchProfile();
+//   }, []);
