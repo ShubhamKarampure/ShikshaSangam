@@ -1,6 +1,7 @@
 import React, { memo } from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image, Pressable} from "react-native";
 import hoursMinutes from "../../../Utility/hoursMinutes";
+import { processImageUrl, defaultAvatar} from "../../../Utility/urlUtils";
 
 const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
   // const chat = {
@@ -13,21 +14,43 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
   // };
 
   return (
-    <View style={{maxWidth:'100%', backgroundColor:'', minWidth:'50%'}}>
+    <View style={{ maxWidth: "100%", backgroundColor: "", minWidth: "50%" }}>
       <Pressable
         style={[styles.container, isDarkMode && styles.darkModeBackground]}
         android_ripple={{ color: "#261d01" }}
       >
-        <Image source={{ uri: chat.avatar }} style={styles.avatar} />
+        <Image
+          source={{
+            uri:
+              chat.avatar !== null
+                ? processImageUrl(chat.avatar)
+                : defaultAvatar(chat.sender),
+          }}
+          style={styles.avatar}
+        />
         <View
           style={[styles.bubbleContainer, isDarkMode && styles.darkModeBubble]}
         >
-          <Text style={[styles.username]}>
-            {chat.sender}
-          </Text>
-          <Text style={[styles.messageText, isDarkMode && styles.darkModeText]}>
-            {chat.content}
-          </Text>
+          <Text style={[styles.username]}>{chat.sender}</Text>
+          {chat.content !== null ? (
+            <Text
+              style={[styles.messageText, isDarkMode && styles.darkModeText]}
+            >
+              {chat.content}
+            </Text>
+          ) : (
+            <></>
+          )}
+          {chat.media !== null ? (
+            <Image
+              source={{
+                uri: processImageUrl(chat.media),
+              }}
+              style={styles.postImage}
+            />
+          ) : (
+            <></>
+          )}
           <Text
             style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
           >
@@ -54,6 +77,12 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
+  postImage: {
+    width: 250,
+    height: 250,
+    marginVertical: 10,
+    borderRadius: 10,
+  },
   bubbleContainer: {
     maxWidth: "75%", // Restrict bubble width
     backgroundColor: "#ffffff", // Light background for receiver
@@ -61,7 +90,7 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderTopLeftRadius: 0, // WhatsApp style bubble (flat left edge)
     //borderBottomLeftRadius:30,
-    borderBottomRightRadius:30,
+    borderBottomRightRadius: 30,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -83,7 +112,7 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "right",
     marginTop: 5,
-    marginRight:10,
+    marginRight: 10,
   },
   darkModeBackground: {
     backgroundColor: "#121212",

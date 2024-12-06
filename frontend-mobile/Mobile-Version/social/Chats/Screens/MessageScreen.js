@@ -13,7 +13,7 @@ const MessageScreen = ({ navigation }) => {
   const getAllChats = async () => {
     try {
       const fetchedChats = await fetchChats(); // Fetch chats from the backend
-      console.log(fetchedChats);
+      console.log("fetched chats = ",fetchedChats);
       setChats(fetchedChats); // Update state with the fetched chats
       fetchedChats.forEach((chat) => {
         console.log(

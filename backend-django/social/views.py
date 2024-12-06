@@ -569,7 +569,7 @@ class FollowViewSet(viewsets.ModelViewSet):
 
         return Response(response_data)
     
-    @action(detail=False, methods=['get'])  # GET /follows/summary/ # returns no of followers, following, and connections
+    @action(detail=False, methods=['get'])  # GET /followers/summary/ # returns no of followers, following, and connections
     def summary(self, request):
         """
         Get counts of followers, following, and connections for the current user.
@@ -589,6 +589,7 @@ class FollowViewSet(viewsets.ModelViewSet):
 
         # Prepare response
         response_data = {
+            'post': Post.objects.filter(userprofile=userprofile).count(),
             'followers_count': followers_count,
             'following_count': following_count,
             'connections_count': connections_count,

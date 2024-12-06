@@ -287,7 +287,7 @@ export default function ChatScreen({ navigation, route }) {
     React.useCallback(() => {
       const intervalId = setInterval(() => {
         fetchMessagesHandler();
-      }, 10000);
+      }, 1000);
 
       // Cleanup the interval when focus is lost
       return () => clearInterval(intervalId);
@@ -295,13 +295,10 @@ export default function ChatScreen({ navigation, route }) {
   );
 
   function renderChatBubble({ item }) {
-    if (item.content !== null) {
-      // some pictures, only media exists with no content
-      if (item.sender === sender_username) {
-        return <SenderChatBubble chat={item} />;
-      } else {
-        return <ReceiverChatBubble chat={item} />;
-      }
+    if (item.sender === sender_username) {
+      return <SenderChatBubble chat={item} />;
+    } else {
+      return <ReceiverChatBubble chat={item} />;
     }
   }
   const sendHandler = async (chat) => {
@@ -337,7 +334,7 @@ export default function ChatScreen({ navigation, route }) {
           ref={flatListRef}
           data={chatList}
           keyExtractor={(item) =>
-            item.id.toString() + new Date().toDateString()
+            item.id.toString()+ item.timestamp
           }
           renderItem={renderChatBubble}
           contentContainerStyle={styles.listContent}
