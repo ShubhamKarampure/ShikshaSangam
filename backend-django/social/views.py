@@ -4,10 +4,10 @@ from rest_framework.response import Response
 from django.core.exceptions import ValidationError
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
-from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply
+from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply,Notification
 from .serializers import (
     PostSerializer, CommentSerializer, LikeSerializer, FollowSerializer,ReplySerializer,
-    ShareSerializer, PollSerializer, PollOptionSerializer, PollVoteSerializer
+    ShareSerializer, PollSerializer, PollOptionSerializer, PollVoteSerializer,NotificationSerializer
 )
 from users.models import UserProfile
 from django.db.models import Q
@@ -16,6 +16,7 @@ from django.utils.timesince import timesince
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.viewsets import ModelViewSet
 
 
 #GET /social/posts/list_posts/?limit=5&offset=10 example for limit offset
@@ -809,3 +810,34 @@ class PollVoteViewSet(viewsets.ModelViewSet):
 #         for content_type in content_types:
 #             print(f"Model: {content_type.model}, ContentType ID: {content_type.id}")
 
+class NotificationViewSet(ModelViewSet):
+    """
+    A simple ViewSet for listing, retrieving, and deleting notifications for a specific user.
+    """
+    queryset = Notification.objects.all()
+    serializer_class = NotificationSerializer
+    permission_classes = [IsAuthenticated]  # Ensures the user must be authenticated
+
+    def get_queryset(self):
+        """
+        Optionally filter notifications for the authenticated user.
+        """
+        user = self.request.user
+        return Notification.objects.filter(userprofile__user=user).order_by('-created_at')
+
+    @action(detail=False, methods=['delete'], url_path='delete_all')  # Custom delete all action
+    def delete_all_notifications(self, request):
+        """
+        Delete all notifications for the authenticated user.
+        """
+        user = request.user
+
+        # Delete all notifications for the authenticated user
+        notifications_deleted, _ = Notification.objects.filter(userprofile__user=user).delete()
+
+        if notifications_deleted == 0:
+            return Response({'error': 'No notifications found to delete.'}, status=status.HTTP_404_NOT_FOUND)
+
+        return Response({'message': 'All notifications deleted successfully.'}, status=status.HTTP_200_OK)
+
+    

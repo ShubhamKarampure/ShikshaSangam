@@ -1,5 +1,3 @@
-import { Feed } from "@mui/icons-material";
-
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 
 export const API_ROUTES = {
@@ -55,4 +53,6 @@ export const API_ROUTES = {
   LIKES: `${API_BASE_URL}/social/likes/`, // Likes
   UNLIKE: `${API_BASE_URL}/social/likes/unlike/`, // Unlike
   FOLLOWERS_SUMMARY: `${API_BASE_URL}/social/followers/summary/`, // Followers summary
+
+  NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`
 }

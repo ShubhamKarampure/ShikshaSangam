@@ -12,4 +12,4 @@ admin.site.register(Follow)
 admin.site.register(Poll)
 admin.site.register(PollOption)
 admin.site.register(PollVote)
-
+admin.site.register(Notification)
