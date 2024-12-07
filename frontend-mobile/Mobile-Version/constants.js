@@ -1,5 +1,5 @@
 
-yourIp = "172.16.61.163" // Give your IP for identifying where backend is running to mobile
+yourIp = "172.16.60.212" // Give your IP for identifying where backend is running to mobile
  // Give your IP for identifying where backend is running to mobile
 const BACKEND_URL = "http://" + yourIp + ":8000";
 
