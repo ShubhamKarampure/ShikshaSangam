@@ -6,7 +6,8 @@ import LogoBox from '@/components/LogoBox';
 const Topbar = () => {
   return <StyledHeader>
       <div className="container">
-        <LogoBox />
+      <LogoBox />
+      
 
         <MobileMenuToggle />
 

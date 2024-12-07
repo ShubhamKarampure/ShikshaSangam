@@ -163,7 +163,6 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                 isCurrentUser
                   ? "bg-primary text-white"
                   : "bg-light text-secondary"
-                
               )}
               style={{
                 maxWidth: "50%", // Adjust max width as needed
@@ -171,7 +170,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                 whiteSpace: "normal", // Allow wrapping
               }}
             >
-              {message.content}
+              <div className="text-start">{message.content}</div>
               {message.media && (
                 <div className="mt-2">
                   {message.media.match(/\.(jpeg|jpg|gif|png)$/) ? (
@@ -237,6 +236,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
     </div>
   );
 };
+
 
 const ChatArea = ({ activeChat }) => {
   const [chat, setChat] = useState();
