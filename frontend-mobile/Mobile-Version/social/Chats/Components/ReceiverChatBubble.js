@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   postImage: {
-    width: 250,
-    height: 250,
+    width: 220,
+    height: 220,
     marginVertical: 10,
     borderRadius: 10,
   },

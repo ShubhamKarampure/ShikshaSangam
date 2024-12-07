@@ -197,7 +197,7 @@ import SenderChatBubble from "../Components/SenderChatBubble";
 import ReceiverChatBubble from "../Components/ReceiverChatBubble";
 import TypingSection from "../Components/TypingSection";
 import { chatsData } from "../../data/chatsData";
-import { fetchMessages, sendMessage, sendMedia } from "../../../api/multimedia";
+import { fetchMessages, sendMessage, sendMedia, sendFile } from "../../../api/multimedia";
 import { useProfileContext } from "../../../Context/ProfileContext";
 import { useFocusEffect } from "@react-navigation/native";
 import { CHATSCREEN_POOLING } from "../../../constants";
@@ -316,11 +316,14 @@ export default function ChatScreen({ navigation, route }) {
 
     try {
       let newChatItem;
-      if(chat.media===null){
+      if(chat.media===null && chat.file===null){
         newChatItem = await sendMessage(chatInfo.id, chat.content); 
       }
+      else if(chat.file===null){
+        newChatItem = await sendMedia(chatInfo.id, chat.content, chat.media); // image only
+      }
       else{
-        newChatItem = await sendMedia(chatInfo.id, chat.content, chat.media);
+        newChatItem = await sendFile(chatInfo.id, chat.content, chat.file.uri);  
       }
       
       console.log("newChatItem = ", newChatItem);

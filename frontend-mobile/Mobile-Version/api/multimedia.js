@@ -85,47 +85,40 @@ export const sendMessage = async (chatId, messageContent) => {
   return await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), "POST", body);
 };
 
-// Send a Image to a specific chat  // aryan was trying
-export const sendMedia = async (chatId, content, file) => {
+// Send a Image to a specific chat  
+export const sendMedia = async (chatId, content, image) => {
   const formData = new FormData();
   formData.append("chat", chatId);
-  if(content!==""){
+  if(content!==null && content!==""){
     formData.append("content", content);
   }
-  if (file) {  // if file is image
+  if (image) {  
     try {
-      const response = await fetch(file);
+      const response = await fetch(image);
       //console.log("response = ",response);
       const blob = await response.blob();
       //console.log("blob = ",blob);
 
-      const imageName = file.split("/").pop(); // Extract file name
+      const imageName = image.split("/").pop(); // Extract file name
       const fileType = blob.type || "image/jpeg"; // Get MIME type, default to 'image/jpeg'
 
       formData.append("media", {
-        uri: file,
+        uri: image,
         type: fileType,
         name: imageName || "image.jpg",
       });
-      console.log("sendMedia file = ", file);
-      console.log("form = ",formData);
+      //console.log("sendMedia file = ", image);
+      //console.log("form = ",formData);
     } catch (error) {
       console.error("Error fetching file:", error);
       alert("Failed to send the image. Please try again.");
       return;
     }
   }
-
-  
-
   const token = await getAccessToken();
   if (!token) {
     throw new Error("Authentication token is missing.");
   }
-
-  // const headers = {
-  //   Authorization: `Bearer ${token}`,
-  // };
   console.log("formData = ",formData);
 
   // const response = await handleFetch(API_ROUTES.MESSAGE_CREATE(chatId), {
@@ -147,6 +140,45 @@ export const sendMedia = async (chatId, content, file) => {
 
   return await response.json();
 };
+
+
+// Send a file to a specific chat  
+export const sendFile = async (chatId, content, file) => {
+  const formData = new FormData();
+  formData.append("chat", chatId);
+  if(content!==null && content!==""){
+    formData.append("content", content);
+  }
+  if (file) {  // if file exists
+    formData.append("media",file); // gauranteed to be 1 file
+  }
+  else{
+    console.log("ERROR: NO FILE FOUND");
+    return;
+  }
+
+  const token = await getAccessToken();
+  if (!token) {
+    throw new Error("Authentication token is missing.");
+  }
+
+  console.log("formData = ",formData);
+
+  const response = await fetch(API_ROUTES.MESSAGE_CREATE(chatId), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData, 
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+
+  return await response.json();
+};
+
 
 
 // Clear all messages in a chat
