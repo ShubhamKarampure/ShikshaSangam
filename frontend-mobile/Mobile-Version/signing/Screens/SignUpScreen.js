@@ -13,7 +13,8 @@ import {
 import { StatusBar } from "expo-status-bar";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import NavigationSocial from "../../social/NavigationSocial";
-import { signup } from "../../api"; // Import the signup API function
+import { signup } from "../../api/auth";
+import { WelcomeScreen } from "./WelcomeScreen";
 
 export default function SignUpScreen({ navigation, onBack}) {
   const [username, setUsername] = useState("");
@@ -22,46 +23,42 @@ export default function SignUpScreen({ navigation, onBack}) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false); // To track the loading state
-
-  // const handleSignup = async () => {
-  //   if (!username || !email || !password || !confirmPassword) {
-  //     Alert.alert("Error", "Please fill in all fields");
-  //     return;
-  //   }
+  const [isLoading, setIsLoading] = useState(false); // To track the loading state
   
-  //   if (password !== confirmPassword) {
-  //     Alert.alert("Error", "Passwords do not match");
-  //     return;
-  //   }
-  
-  //   setIsLoading(true); // Start loading
-  
-  //   try {
-  //     const formData = {
-  //       username: username, // Extract username
-  //       email: email,       // Extract email
-  //       password: password, // Extract password (not password1)
-  //     }
-  
-  //     console.log("Form Data:", formData); // Log the form data for debugging
-  
-  //     const response = await signup(formData);
-  
-  //     Alert.alert("Success", "Account created successfully");
-  //   } catch (error) {
-  //     console.error("Error during signup", error);
-  //     Alert.alert("Error", error.message || "Failed to create account");
-  //   } finally {
-  //     setIsLoading(false); // Stop loading
-  //   }
-  // };
   const [here, setHere] = useState(true);
+  const handleSignup = async () => {
+    if (!username || !email || !password || !confirmPassword) {
+      Alert.alert("Error", "Please fill in all fields");
+      return;
+    }
 
-  function onPressHandler(){
-    setHere(false);
-  }
-  let comp = (
+    if (password !== confirmPassword) {
+      Alert.alert("Error", "Passwords do not match");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const formData = { username, email, password };
+
+      console.log("Form Data:", formData);
+
+      const response = await signup(formData);
+
+      Alert.alert("Success", "Account created successfully", [
+        { text: "OK", onPress: () => setHere(false) }, // Redirect to home screen
+      ]);
+    } catch (error) {
+      console.error("Error during signup", error);
+      Alert.alert("Error", error?.response?.data?.message || "Failed to create account");
+    } finally {
+      setIsLoading(false);
+    }
+    onBack();
+  };
+
+  return (
     <>
       <StatusBar style="light" />
       <KeyboardAvoidingView
@@ -72,7 +69,7 @@ export default function SignUpScreen({ navigation, onBack}) {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <View style={styles.signUpContainer}>
             <Text style={styles.header}>Sign Up</Text>
-            <TouchableOpacity >
+            <TouchableOpacity>
               <Text style={styles.subHeader}>
                 Already have an account?{" "}
                 <Text style={styles.linkText}>Sign in here</Text>
@@ -88,7 +85,7 @@ export default function SignUpScreen({ navigation, onBack}) {
                 value={username}
                 onChangeText={setUsername}
               />
-               <TextInput
+              <TextInput
                 style={styles.input}
                 placeholder="Enter your email"
                 placeholderTextColor="#888"
@@ -137,10 +134,10 @@ export default function SignUpScreen({ navigation, onBack}) {
               </View>
             </View>
 
-            {/* Loading Indicator
+            {/* Loading Indicator */}
             {isLoading && (
               <ActivityIndicator size="large" color="#007bff" style={styles.loading} />
-            )} */}
+            )}
 
             {/* Buttons */}
             <View style={styles.buttonContainer}>
@@ -150,7 +147,7 @@ export default function SignUpScreen({ navigation, onBack}) {
               >
                 <Text style={styles.buttonText}>Back</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={onPressHandler}>
+              <TouchableOpacity style={styles.button} onPress={handleSignup}>
                 <Text style={styles.buttonText}>Next</Text>
               </TouchableOpacity>
             </View>
@@ -159,8 +156,6 @@ export default function SignUpScreen({ navigation, onBack}) {
       </KeyboardAvoidingView>
     </>
   );
-  if(!here) comp =<NavigationSocial/>; 
-  return comp;
 }
 
 const styles = StyleSheet.create({
