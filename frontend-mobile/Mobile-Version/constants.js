@@ -1,6 +1,10 @@
 
-yourIp = "192.168.1.5"; // Give your IP for identifying where backend is running to mobile
+yourIp = "192.168.1.5" // Give your IP for identifying where backend is running to mobile
+ // Give your IP for identifying where backend is running to mobile
 const BACKEND_URL = "http://" + yourIp + ":8000";
+
+export const CHATSCREEN_POOLING = 6000;
+export const MESSAGESCREEN_POOLING = 10000;
 
 export default BACKEND_URL;
 
@@ -44,7 +48,7 @@ export const API_ROUTES = {
     CHAT_LIST: `${BACKEND_URL}/multimedia/chats/`, // List all chats for the user
     CHAT_CREATE: `${BACKEND_URL}/multimedia/chats/create/`, // Create a new chat
     MESSAGE_LIST: (chatId) => `${BACKEND_URL}/multimedia/chats/${chatId}/messages/`, // List messages for a specific chat
-    MESSAGE_CREATE: (chatId) => `${BACKEND_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message in a chat
+    MESSAGE_CREATE: (chatId) => `${BACKEND_URL}/multimedia/chats/${chatId}/messages/create/`, // Send a message or media in a chat
     CHAT_CLEAR: (chatId) => `${BACKEND_URL}/multimedia/chats/${chatId}/clear/`, // Clear all messages in a chat
 
     UPLOAD_CSV: `${BACKEND_URL}/users/upload-user-data/`, // Upload CSV file

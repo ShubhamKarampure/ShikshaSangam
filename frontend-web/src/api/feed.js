@@ -30,7 +30,7 @@ export const getComment = async (postId) => {
         "https://images.unsplash.com/photo-1623582854588-d60de57fa33f?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       name: c.user.username,
     },
-    likesCount: c.likes_count,
+    likesCount: c.likes_count || 0,
     commentId: c.comment.id,
     children: [],
     is_liked: c.is_liked,
@@ -131,7 +131,7 @@ export const getReply = async (commentId) => {
       avatar: r.user.avatar, // User's avatar URL
       name: r.user.username, // Username
     },
-    likesCount: r.likes_count, // Likes count
+    likesCount: r.likes_count || 0, // Likes count
     is_liked: r.is_liked, // Whether the user has liked the reply
     fulName: r.user.full_name,
   }));
@@ -186,9 +186,9 @@ export const getAllFeed = async (limit = 3, offset = 0) => {
       return {
         postId: p.post.id,
         createdAt: p.post_stats.time_since_post,
-        likesCount: p.post_stats.likes,
+        likesCount: p.post_stats.likes || 0,
         caption: p.post.content,
-        commentsCount: p.comments_count,
+        commentsCount: p.comments_count || 0,
         comments: comments,
         image: imageUrl,
         socialUser: {

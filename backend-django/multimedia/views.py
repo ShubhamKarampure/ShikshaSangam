@@ -37,12 +37,12 @@ class ChatCreateView(APIView):
         # Check if chat already exists
         chat = Chat.objects.filter(participants=user_profile).filter(participants=other_user).first()
         if chat:
-            return Response({'chat_id': chat.id}, status=status.HTTP_200_OK)
+            return Response({'chat_id': chat.id,'user_profile':user_profile}, status=status.HTTP_200_OK)
 
         # Create a new chat
         chat = Chat.objects.create()
         chat.participants.add(user_profile, other_user)
-        return Response({'chat_id': chat.id}, status=status.HTTP_201_CREATED)
+        return Response({'chat_id': chat.id,'user_profile':user_profile}, status=status.HTTP_201_CREATED)
 
 
 class MessageListView(ListAPIView):

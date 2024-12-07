@@ -7,6 +7,7 @@ import { useAuthContext } from '@/context/useAuthContext';
 import { useNotificationContext } from '@/context/useNotificationContext';
 import { signin } from '@/api/auth';
 import axios from 'axios';
+import { getCookie, setCookie } from "cookies-next";
 
 const useSignIn = (emailOptions) => {
   const [loading, setLoading] = useState(false);
@@ -33,6 +34,11 @@ const useSignIn = (emailOptions) => {
   // Redirect logic
   const redirectUser = (loggedInUser) => {
     const redirectLink = searchParams.get('redirectTo');
+    if(loggedInUser.profile_id===null){
+      setCookie("_PROFILE_SETUP_", false);
+      navigate('/profile-setup');
+      return;
+    }
     if (redirectLink) {
       navigate(redirectLink);
       return;
@@ -61,6 +67,8 @@ const useSignIn = (emailOptions) => {
 
       redirectUser(loggedInUser);
     } catch (e) {
+      console.log(e);
+      
       const message = e.response?.data?.detail || 'Login failed. Please try again.';
       showNotification({ message, variant: 'danger' });
     } finally {

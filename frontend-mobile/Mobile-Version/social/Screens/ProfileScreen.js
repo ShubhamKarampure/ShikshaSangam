@@ -62,7 +62,7 @@ const ProfileScreen = () => {
       const formData = new FormData();
   
       // Add images if they need to be uploaded
-      if (profile.avatar_image && profile.avatar_image.startsWith("file://")) {
+      if (profile.avatar_image?.startsWith("file://")) {
         const avatarResponse = await fetch(profile.avatar_image);
         const avatarBlob = await avatarResponse.blob();
         formData.append("avatar_image", {
@@ -72,7 +72,7 @@ const ProfileScreen = () => {
         });
       }
   
-      if (profile.banner_image && profile.banner_image.startsWith("file://")) {
+      if (profile.banner_image?.startsWith("file://")) {
         const bannerResponse = await fetch(profile.banner_image);
         const bannerBlob = await bannerResponse.blob();
         formData.append("banner_image", {

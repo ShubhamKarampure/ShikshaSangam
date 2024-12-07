@@ -1,50 +1,78 @@
-import React, { memo } from "react";
-import { View, Text, StyleSheet, Pressable, Image } from "react-native";
+import React, { memo, useState } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Pressable,
+  Image,
+  Modal,
+  TouchableOpacity,
+} from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import hoursMinutes from "../../../Utility/hoursMinutes";
 import { processImageUrl } from "../../../Utility/urlUtils";
 
-
 const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
-  // const chat = {
-  //   profile_id: 1,
-  //   avatar: "https://via.placeholder.com/150/FF5733/FFFFFF",
-  //   username: "John Doe",
-  //   content:
-  //     "React Native is an exciting framework for building mobile apps using JavaScript. It allows developers to use the same codebase for both Android and iOS.",
-  //   timestamp: "03:53",
-  // };
+  const [isModalVisible, setModalVisible] = useState(false);
 
   return (
-    <Pressable
-      style={[styles.container, isDarkMode && styles.darkModeBackground]}
-      android_ripple={{ color: "#261d01" }}
-    >
-      <View style={[styles.bubble, isDarkMode && styles.darkModeBubble]}>
-        {chat.content !== null ? (
-          <Text style={[styles.messageText, isDarkMode && styles.darkModeText]}>
-            {chat.content}
+    <>
+      <Pressable
+        style={[styles.container, isDarkMode && styles.darkModeBackground]}
+        android_ripple={{ color: "#261d01" }}
+      >
+        <View style={[styles.bubble, isDarkMode && styles.darkModeBubble]}>
+          {chat.content !== null ? (
+            <Text
+              style={[styles.messageText, isDarkMode && styles.darkModeText]}
+            >
+              {chat.content}
+            </Text>
+          ) : null}
+
+          {chat.media !== null ? (
+            <Pressable onPress={() => setModalVisible(true)}>
+              <Image
+                source={{
+                  uri: processImageUrl(chat.media),
+                }}
+                style={styles.postImage}
+              />
+            </Pressable>
+          ) : null}
+
+          <Text
+            style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
+          >
+            {hoursMinutes(chat.timestamp)}
           </Text>
-        ) : (
-          <></>
-        )}
-        {chat.media !== null ? (
+        </View>
+      </Pressable>
+
+      {/* Full-Screen Image Modal */}
+      <Modal
+        visible={isModalVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+          >
+            <MaterialCommunityIcons name="close" size={30} color="#fff" />
+          </TouchableOpacity>
           <Image
             source={{
               uri: processImageUrl(chat.media),
             }}
-            style={styles.postImage}
+            style={styles.fullScreenImage}
+            resizeMode="contain"
           />
-        ) : (
-          <></>
-        )}
-
-        <Text
-          style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
-        >
-          {hoursMinutes(chat.timestamp)}
-        </Text>
-      </View>
-    </Pressable>
+        </View>
+      </Modal>
+    </>
   );
 });
 
@@ -61,7 +89,6 @@ const styles = StyleSheet.create({
     maxWidth: "75%", // Restrict bubble width
     backgroundColor: "#DCF8C6", // WhatsApp-like green for sender
     padding: 10,
-    //paddingRight:20,
     borderRadius: 15,
     borderTopRightRadius: 0, // WhatsApp style bubble
     borderBottomLeftRadius: 30,
@@ -72,8 +99,8 @@ const styles = StyleSheet.create({
     elevation: 3, // Adds a subtle shadow for Android
   },
   postImage: {
-    width: 250,
-    height: 250,
+    width: 220,
+    height: 220,
     marginVertical: 10,
     borderRadius: 10,
   },
@@ -87,7 +114,6 @@ const styles = StyleSheet.create({
     color: "#666",
     textAlign: "right",
     marginTop: 5,
-    //backgroundColor:'yellow',
   },
   darkModeBackground: {
     backgroundColor: "#121212",
@@ -100,5 +126,22 @@ const styles = StyleSheet.create({
   },
   darkModeTimestamp: {
     color: "#888",
+  },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenImage: {
+    width: "100%",
+    height: "80%",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 1,
   },
 });
