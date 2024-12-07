@@ -19,7 +19,7 @@ import { useAuthContext} from "../../Context/useAuthContext";
 export default function LoginScreen(props) {
   const [showPassword, setShowPassword] = useState(false);
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [usernameOrEmail, setUsernameOrEmail] = useState("email@aj.com");
+  const [usernameOrEmail, setUsernameOrEmail] = useState("alumni@demo.com");
   const [password, setPassword] = useState("password");
   const {saveSession} = useAuthContext();
 

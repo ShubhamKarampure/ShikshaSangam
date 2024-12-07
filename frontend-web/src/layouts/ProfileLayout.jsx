@@ -238,7 +238,7 @@ const ProfileLayout = ({
     profile.bio : 'Here to connect, learn, and grow.'
   
   const full_name = profile && profile.full_name ?
-     profile.full_name : 'No username'
+     profile.full_name : user.username
   
   const specilizatoin = user.role !== 'college_staff' && profile && profile.specilizatoin ?
     profile.specilizatoin : user.role;

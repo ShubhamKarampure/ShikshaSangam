@@ -14,7 +14,6 @@ import {
 import { useAuthContext } from "@/context/useAuthContext";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { fetchUsersToFollow, followUser } from "@/api/social";
-import { createChat } from "@/api/multimedia";
 import FollowSound from "@/assets/audio/follow-sound.mp3";
 import AnimatedFollowButton from "./FollowButton";
 import UploadResume from "./UploadResume";
@@ -83,7 +82,6 @@ const Followers = () => {
     try {
       const followData = { follower: currentUserId, followed: followerId };
       await followUser(followData);
-      await createChat(followerId);
 
       setFollowedUsers((prev) => ({ ...prev, [followerId]: true }));
       setLoadingUsers((prev) => ({ ...prev, [followerId]: false }));
@@ -119,7 +117,13 @@ const Followers = () => {
   return (
     <Card>
       <CardBody>
+       <div
+    className="text-muted p-1">
+    <h4 className="fw-bold">Who to Follow</h4>
+  </div>
         <UploadResume />
+
+
         <Form className="mb-3">
           <FormControl
             type="text"
@@ -199,7 +203,7 @@ const Followers = () => {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {follower.full_name || "No username"}
+                        {follower.full_name || follower.username}
                       </Link>
                       <p
                         className="mb-0 small text-truncate"

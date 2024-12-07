@@ -2,19 +2,14 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { API_ROUTES } from "../constants";
 import { CLOUDINARY_CLOUD_NAME } from '../Utility/urlUtils';
 
-let cachedToken = null;
-
-// Function to get token with caching
+// Function to get token without caching
 export const getToken = async () => {
-  if (cachedToken) {
-    return cachedToken;
-  }
   try {
-    const token = await AsyncStorage.getItem('access_token');
+    const token = await AsyncStorage.getItem('access_token'); // Always fetch from AsyncStorage
     if (!token) {
       console.error("Access token is missing");
+      return null;
     }
-    cachedToken = token; // Cache the token
     return token;
   } catch (error) {
     console.error("Error retrieving token from AsyncStorage:", error);
@@ -22,9 +17,14 @@ export const getToken = async () => {
   }
 };
 
-// Function to clear the cached token (e.g., during logout)
-export const clearCachedToken = () => {
-  cachedToken = null;
+// Function to clear the token (e.g., during logout)
+export const clearToken = async () => {
+  try {
+    await AsyncStorage.removeItem('access_token'); // Clear token from AsyncStorage
+    console.log("Token cleared successfully");
+  } catch (error) {
+    console.error("Error clearing token:", error);
+  }
 };
 
 // Function to get comments for a post
@@ -141,21 +141,23 @@ export const getReply = async (commentId) => {
   }
 
   const res = await response.json();
-  return res.results.map((r) => ({
-    replyId: r.reply.id,
-    comment: r.reply.content,
-    createdAt: r.reply.created_at,
-    socialUser: {
-      avatar: r.user.avatar,
-      name: r.user.username,
-    },
-    likesCount: r.likes_count,
-  }));
+  return res;
+  // return res.results.map((r) => ({
+  //   replyId: r.reply.id,
+  //   comment: r.reply.content,
+  //   createdAt: r.reply.created_at,
+  //   socialUser: {
+  //     avatar: r.user.avatar,
+  //     name: r.user.username,
+  //   },
+  //   likesCount: r.likes_count,
+  // }));
 };
 
 // Function to get all feed posts
 export const getAllFeed = async () => {
   const token = await getToken(); // Call getToken directly
+  console.log("token",token);
   if (!token) {
     throw new Error("Token is missing");
   }
@@ -220,6 +222,46 @@ console.log("Token being sent:", token);
 
 
 
+// export const postunlike = async (post_id) => {
+//   try {
+//     const token = await getToken(); // Retrieve token
+//     if (!token) {
+//       throw new Error("Token is missing");
+//     }
+
+//     // Prepare the request payload
+//     const requestData = {
+//       content_type: "post", // Fixed value for posts
+//       object_id: post_id, // Post ID
+//     };
+
+    
+//     const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
+//       method: "DELETE",
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "application/json",
+
+//       },
+//       // body: JSON.stringify(requestData)
+//     });
+    
+
+//     // Parse and return the response
+//     if (!response.ok) {
+//       const errorData = await response.json();
+//       throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+//     }
+
+//     const responseData = await response.json();
+//     return responseData; // Return the response data
+//   } catch (error) {
+//     console.error("Error in postunlike:", error.message);
+//     throw error; // Re-throw the error for the caller to handle
+//   }
+// };
+
+
 export const postunlike = async (post_id) => {
   try {
     const token = await getToken(); // Retrieve token
@@ -229,31 +271,29 @@ export const postunlike = async (post_id) => {
 
     // Prepare the request payload
     const requestData = {
-      content_type: 20, // Fixed value for posts
-      object_id: post_id, // Post ID
+      content_type: "post", // Fixed value for posts
+      object_id: post_id,   // Post ID
     };
 
-    // Make the API call
-    // const response = await fetch(`${API_ROUTES.UNLIKES}`, {
-    //   method: "DELETE",
-    //   headers: {
-    //     Authorization: `Bearer ${token}`,
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(requestData),
-    // });
-    const response = await fetch(`${API_ROUTES.UNLIKES}?object_id=${post_id}`, {
+    // Send DELETE request with body
+    const response = await fetch(`${API_ROUTES.UNLIKES}`, {
       method: "DELETE",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: JSON.stringify(requestData), // Include object_id and content_type in body
     });
-    
 
     // Parse and return the response
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(`Error: ${response.status} - ${errorData.message || "Unknown error"}`);
+    }
+
+    // Handle 204 No Content case
+    if (response.status === 204) {
+      return; // No content to return, successful operation
     }
 
     const responseData = await response.json();
@@ -263,4 +303,5 @@ export const postunlike = async (post_id) => {
     throw error; // Re-throw the error for the caller to handle
   }
 };
+
 

@@ -8,6 +8,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useChatContext } from "@/context/useChatContext";
 import { calcLength } from "framer-motion";
 
+
 const Messaging = () => {
   const { activeChatId, changeActiveChat } = useChatContext();
   const [chat, setUserChats] = useState([]);
@@ -56,6 +57,7 @@ const Messaging = () => {
           width: "100%",
           height: "100vh",
           padding: "calc(1.5rem + 32px) 0 0",
+          position:"fixed"
         }}
       >
         <div style={{ width: "100%", height: "100%" }}>

@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .views import (
     PostViewSet, CommentViewSet, LikeViewSet, FollowViewSet, ShareViewSet,
-    PollViewSet, PollOptionViewSet, PollVoteViewSet, ReplyViewSet
+    PollViewSet, PollOptionViewSet, PollVoteViewSet, ReplyViewSet, NotificationViewSet
 )
 
 router = DefaultRouter()
@@ -15,10 +15,8 @@ router.register(r'polls', PollViewSet)
 router.register(r'poll-options', PollOptionViewSet)
 router.register(r'poll-votes', PollVoteViewSet)
 router.register(r'replies', ReplyViewSet)
-
-# for path in router.urls:
-#     print(path)
+router.register(r'notifications', NotificationViewSet)  # Register notifications endpoint
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('', include(router.urls)),  # Include all the router URLs
 ]

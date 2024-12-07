@@ -90,56 +90,89 @@ export const AuthProvider = ({ children }) => {
   const getSession = async () => {
     try {
       const sessionData = await AsyncStorage.getItem(authSessionKey);
-      if (sessionData) {
-        console.log('Session data retrieved:', JSON.parse(sessionData));// Log session data
-        console.log(sessionData.access);
-        
-        return JSON.parse(sessionData);
-      } else {
-        console.log('No session found');
-        return null;
-      }
+      console.log("Retrieved session data:", sessionData); // Log session
+      return sessionData ? JSON.parse(sessionData) : null;
     } catch (error) {
       console.error("Error retrieving session:", error);
       return null;
     }
   };
+  
 
+  // useEffect(() => {
+  //   const initializeSession = async () => {
+  //     const session = await getSession();
+  //     setUser(session);
+  //   };
+  //   initializeSession();
+  // }, []);
   useEffect(() => {
     const initializeSession = async () => {
       const session = await getSession();
-      setUser(session);
+      setUser(session?.user || null); // Set null if no session is found
     };
     initializeSession();
   }, []);
+  
 
   const saveSession = async (sessionData) => {
     try {
-      console.log("Logging user details:", sessionData.user); // Log user details (username, email, etc.)
-      console.log("Access Token:", sessionData.access);
-      // console.log("Refresh Token:", sessionData.refresh);
-      await AsyncStorage.setItem("access_token", sessionData.access);
-      await AsyncStorage.setItem("refresh_token", sessionData.refresh);
-      await AsyncStorage.setItem(authSessionKey, JSON.stringify(sessionData.user));
-      setUser(sessionData.user);
-      console.log("session created succesfully");
+      console.log("Saving session for user:", sessionData.user); // Log the user data
+  
+      // Clear any existing session before saving
+      await AsyncStorage.multiRemove(['access_token', 'refresh_token', authSessionKey]);
+  
+      // Save new session data
+      await AsyncStorage.setItem('access_token', sessionData.access);
+      await AsyncStorage.setItem('refresh_token', sessionData.refresh);
+      await AsyncStorage.setItem(authSessionKey, JSON.stringify(sessionData));
       
+      setUser(sessionData.user);
+      // console.log("Session saved successfully.");
+       // Log the saved tokens
+    const savedAccessToken = await AsyncStorage.getItem('access_token');
+    const savedRefreshToken = await AsyncStorage.getItem('refresh_token');
+    console.log("After Login - Access Token:", savedAccessToken);
+    console.log("After Login - Refresh Token:", savedRefreshToken);
+    console.log("Session saved successfully.");
     } catch (error) {
       console.error("Error saving session:", error);
     }
   };
-
+  
   const removeSession = async () => {
     try {
-      await AsyncStorage.clear();
-      setUser(null);
+      console.log('Removing session...');
+      await AsyncStorage.removeItem(authSessionKey);
+      await AsyncStorage.removeItem('access_token');
+      await AsyncStorage.removeItem('refresh_token');
+      setUser(null); // Clear user state
+      console.log('Session removed successfully.');
     } catch (error) {
-      console.error("Error removing session:", error);
+      console.error('Error removing session:', error);
+    }
+  };
+
+  // const logTokensBeforeLogin = async () => {
+  //   const accessToken = await AsyncStorage.getItem('access_token');
+  //   const refreshToken = await AsyncStorage.getItem('refresh_token');
+  //   const session = await AsyncStorage.getItem('_SS_AUTH_KEY_');
+  
+  //   console.log("Before Login - Access Token:", accessToken);
+  //   console.log("Before Login - Refresh Token:", refreshToken);
+  //   console.log("Before Login - Session:", session);
+  // };
+  const clearTokensOnAppStart = async () => {
+    try {
+      await AsyncStorage.multiRemove(["access_token", "refresh_token", "_SS_AUTH_KEY_"]);
+      console.log("Tokens cleared on app start");
+    } catch (error) {
+      console.error("Error clearing tokens on app start:", error);
     }
   };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, saveSession, removeSession }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, saveSession, removeSession,clearTokensOnAppStart }}>
       {children}
     </AuthContext.Provider>
   );

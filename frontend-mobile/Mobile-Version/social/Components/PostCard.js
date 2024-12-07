@@ -64,7 +64,7 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
 
         {/* Actions: Like, Comment, Share */}
         <View style={styles.actions}>
-          <LikeButton initialLikeCount={item.post_stats.likes} post_id={item.post.id}/>
+          <LikeButton initialLikeCount={item.post_stats.likes} post_id={item.post.id} initialIsLiked={item.is_liked}/>
           <CommentButton
             item={item}
             isDarkMode={isDarkMode}

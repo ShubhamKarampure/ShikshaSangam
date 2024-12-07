@@ -1,6 +1,7 @@
+import "react-native-reanimated";
 import React, { useEffect, useState } from "react";
 import { SafeAreaView, StyleSheet, Text, Button, View } from "react-native";
-import { StatusBar } from 'expo-status-bar';   // helps us adjust the settings for seeing time battery etc
+import { StatusBar } from "expo-status-bar"; // helps us adjust the settings for seeing time battery etc
 import SignUpScreen from "./signing/Screens/SignUpScreen";
 import LoginScreen from "./signing/Screens/LoginScreen";
 import { WelcomeScreen } from "./signing/Screens/WelcomeScreen";
@@ -15,11 +16,9 @@ export default function App() {
   const returnFromLogin = () => setClickedLoggedIn(false);
   const setSignUpFromWelcome = () => setIsSignUp(true);
   const setClickedLoginInFromWelcome = () => setClickedLoggedIn(true);
- 
+
   return (
-    
-    
-      <GlobalProvider>
+    <GlobalProvider>
       <StatusBar style="dark" />
       <SafeAreaView style={styles.container}>
         {clickedLoggedIn ? (
@@ -31,12 +30,13 @@ export default function App() {
           <SignUpScreen onBack={returnFromSignUp} />
         ) : (
           // Render the login screen if neither logged in nor signing up
-          <WelcomeScreen onLogin={setClickedLoginInFromWelcome} onSignUp={setSignUpFromWelcome} />
+          <WelcomeScreen
+            onLogin={setClickedLoginInFromWelcome}
+            onSignUp={setSignUpFromWelcome}
+          />
         )}
       </SafeAreaView>
-      </GlobalProvider>
-      
-      
+    </GlobalProvider>
   );
 }
 
@@ -45,9 +45,3 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 });
-
-
-
-
-
-

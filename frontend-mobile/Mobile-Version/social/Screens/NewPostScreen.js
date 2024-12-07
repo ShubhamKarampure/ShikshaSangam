@@ -49,11 +49,15 @@ const handlePost = async () => {
   formData.append('content', postContent);
   formData.append('userprofile', user.profile_id);
 
+  //console.log("SelectedImage = ",selectedImage);
+
   // Fetch file from URI and append to FormData
   if (selectedImage) {
     try {
       const response = await fetch(selectedImage);
+      //console.log("response = ",response);
       const blob = await response.blob();
+      //console.log("blob = ",blob);
 
       const imageName = selectedImage.split('/').pop(); // Extract file name
       const fileType = blob.type || 'image/jpeg'; // Get MIME type, default to 'image/jpeg'
@@ -63,6 +67,9 @@ const handlePost = async () => {
         type: fileType,
         name: imageName || 'image.jpg',
       });
+
+      //console.log("form = ",formData);
+
     } catch (error) {
       console.error('Error fetching file:', error);
       alert('Failed to load the image. Please try again.');

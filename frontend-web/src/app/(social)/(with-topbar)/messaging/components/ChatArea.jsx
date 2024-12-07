@@ -33,13 +33,24 @@ import EmojiPicker from "@emoji-mart/react";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useLayoutContext } from "@/context/useLayoutContext";
 import SimplebarReactClient from "@/components/wrappers/SimplebarReactClient";
-import { fetchMessages, sendMessage, clearChat,sendMedia } from "@/api/multimedia";
+import {
+  fetchMessages,
+  sendMessage,
+  clearChat,
+  sendMedia,
+} from "@/api/multimedia";
 import { FaUserFriends, FaCommentDots } from "react-icons/fa";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { SiGooglemeet } from "react-icons/si";
 import { createMeeting } from "../../../live/api";
 import { useNavigate } from "react-router-dom";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
+import Groq from "groq-sdk";
+
+const groq = new Groq({
+  apiKey: import.meta.env.VITE_REACT_APP_GROQ_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
 // Constant for call message type
@@ -118,10 +129,10 @@ const MeetInvitationMessage = ({ message, onMeetCall, isCurrentUser }) => {
     </div>
   );
 };
-
 const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
   const isMeetInvitation = message.content?.startsWith(MEET_MESSAGE_PREFIX);
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+
   if (isMeetInvitation) {
     return (
       <MeetInvitationMessage
@@ -153,9 +164,13 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                   ? "bg-primary text-white"
                   : "bg-light text-secondary"
               )}
+              style={{
+                maxWidth: "50%", // Adjust max width as needed
+                wordWrap: "break-word", // Ensure long messages wrap
+                whiteSpace: "normal", // Allow wrapping
+              }}
             >
-              {message.content}
-              {/* Display Media */}
+              <div className="text-start">{message.content}</div>
               {message.media && (
                 <div className="mt-2">
                   {message.media.match(/\.(jpeg|jpg|gif|png)$/) ? (
@@ -163,19 +178,27 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                       src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
                       alt="attachment"
                       className="img-fluid rounded"
-                      style={{ maxWidth: "300px" }}
+                      style={{ maxWidth: "100%", height: "auto" }}
                     />
                   ) : message.media.match(/\.(mp4|mov)$/) ? (
                     <video
                       controls
                       className="img-fluid rounded"
-                      style={{ maxWidth: "200px" }}
+                      style={{ maxWidth: "100%", height: "auto" }}
                     >
                       <source
                         src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
                         type="video/mp4"
                       />
                     </video>
+                  ) : message.media.match(/\.(pdf)$/) ? (
+                    <div>
+                      <iframe
+                        src={`https://res.cloudinary.com/${cloudName}/${message.media}`}
+                        width="100%"
+                        height="500px"
+                      />
+                    </div>
                   ) : (
                     <a
                       href={`https://res.cloudinary.com/${cloudName}/${message.media}`}
@@ -214,6 +237,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
   );
 };
 
+
 const ChatArea = ({ activeChat }) => {
   const [chat, setChat] = useState();
   const { theme } = useLayoutContext();
@@ -228,23 +252,110 @@ const ChatArea = ({ activeChat }) => {
   const navigate = useNavigate();
   const [fileOpen, setFileOpen] = useState(false);
   const [file, setFile] = useState(null);
+  const [inputValue, setInputValue] = useState("");
+  const [isAIProcessing, setIsAIProcessing] = useState(false);
+  const [inputColor, setInputColor] = useState("white"); // Default color
+
+  const groq = new Groq({
+    apiKey: import.meta.env.VITE_REACT_APP_GROQ_API_KEY,
+    dangerouslyAllowBrowser: true,
+  });
+
+  // New function to handle AI bot response
+  const handleAIBotResponse = async (prompt) => {
+    setIsAIProcessing(true);
+
+    // Modify the prompt to ask for a specific format
+    const chatPrompt = `Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case dont put any other wording apart from the answer expected in the start of your answer. Input: "${prompt}"`;
+
+    try {
+      const chatCompletion = await groq.chat.completions.create({
+        messages: [
+          {
+            role: "user",
+            content: chatPrompt,
+          },
+        ],
+        model: "llama3-8b-8192", // Ensure this model is available in your API
+      });
+
+      // Extract the AI response
+      const aiResponse = chatCompletion.choices[0]?.message?.content || "{}";
+
+      // Try parsing the response as JSON
+      let decodedResponse;
+      try {
+        decodedResponse = JSON.parse(aiResponse);
+      } catch (error) {
+        console.error("Failed to parse AI response:", error);
+        decodedResponse = {}; // fallback in case parsing fails
+      }
+
+      // Extract the rewritten message from the decoded JSON
+      const answer = decodedResponse.answer || "No valid response";
+
+      // Update the input value and set the response to the form control
+      setInputValue(answer);
+      setValue("newMessage", answer); // Assuming this is a form control from react-hook-form
+    } catch (error) {
+      console.error("AI response error:", error);
+      showNotification({
+        message: "Failed to get AI response",
+        variant: "danger",
+      });
+    } finally {
+       setInputColor("white");  
+      setIsAIProcessing(false);
+    }
+  };
+
+  // Real-time input change handler
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setInputValue(value);
+
+    // Check for AI trigger in real-time when the input is in the format @writebot "message content"
+    if (value.startsWith("@writebot")){
+      setInputColor("lightgreen");
+    }
+    else {
+        setInputColor("white");  
+    }
+    if (value.startsWith("@writebot ") && hasValidQuotes(value)) {
+      const prompt = extractPrompt(value); // Extract prompt inside quotes
+      if (prompt && !isAIProcessing) {
+        handleAIBotResponse(prompt); // Trigger AI response with the prompt
+      }
+    }
+  };
+
+  // Function to check if the input has valid quotes around the prompt
+  const hasValidQuotes = (input) => {
+    const regex = /^@writebot\s+"(.+)"$/; // Added '(.+)' to ensure non-empty content within quotes
+    return regex.test(input);
+  };
+
+  // Function to extract the prompt from the message inside the quotes
+  const extractPrompt = (input) => {
+    const regex = /^@writebot\s+"([^"]+)"$/;
+    const match = input.match(regex);
+    return match ? match[1].trim() : null; // Extract the content inside quotes
+  };
 
   const handlefileSubmit = async () => {
     console.log(file);
-    const response = await sendMedia(activeChat.id, file);
     setFileOpen(false);
+    const response = await sendMedia(activeChat.id, file);
     setMessages([...messages, response]);
   };
+
   const pollingSpeed = import.meta.env.VITE_POLLING_SPEED;
   const messageSchema = yup.object({
-    newMessage: yup.string().required("Please enter a message"),
+    newMessage: yup.string().required(""),
   });
 
   const { reset, handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(messageSchema),
-    defaultValues: {
-      newMessage: "",
-    },
   });
 
   const fetchMessagesHandler = useCallback(async () => {
@@ -279,7 +390,7 @@ const ChatArea = ({ activeChat }) => {
     // Initial fetch
     if (activeChat && activeChat.id !== chat?.id) {
       setMessages([]);
-      setLastMessageTimestamp([]);
+      setLastMessageTimestamp(null);
     }
     setChat(activeChat);
     fetchMessagesHandler();
@@ -310,7 +421,7 @@ const ChatArea = ({ activeChat }) => {
       setMessages((prevMessages) => [...prevMessages, newMessage]);
 
       // Clear the message input
-      setValue("newMessage", "");
+      setInputValue(""); // Ensure this triggers form re-render
 
       // Trigger immediate fetch to sync with backend
       fetchMessagesHandler();
@@ -518,15 +629,23 @@ const ChatArea = ({ activeChat }) => {
                 <input
                   {...field}
                   type="text"
-                  placeholder="Type a message"
+                  placeholder='Type a message or @writebot "Prompt"'
+                  value={inputValue}
+                  onChange={(e) => {
+                    field.onChange(e); // Existing field onChange
+                    handleInputChange(e); // Custom handler to manage input change and theme-based color
+                  }}
+                  style={{ color: inputColor }} // Set dynamic color based on detected @writebot and theme
                   className={`form-control ${error ? "is-invalid" : ""}`}
                 />
+
                 {error && (
                   <div className="invalid-feedback">{error.message}</div>
                 )}
               </div>
             )}
           />
+
           <Dropdown
             show={isEmojiPickerOpen}
             onToggle={(isOpen) => setIsEmojiPickerOpen(isOpen)}

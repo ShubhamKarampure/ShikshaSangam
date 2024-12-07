@@ -5,6 +5,8 @@ import bgBannerImg from '@/assets/images/bg/01.jpg';
 import { Link } from 'react-router-dom';
 import { useAuthContext } from '@/context/useAuthContext'
 import { useProfileContext } from "@/context/useProfileContext";
+import { fetchFollowersSummary } from "@/api/feed";
+import { useState,useEffect } from 'react';
 
 const ProfilePanel = ({
   links
@@ -12,7 +14,21 @@ const ProfilePanel = ({
   const { user } = useAuthContext();
   const { profile } = useProfileContext();
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const [followData,setFollowData] = useState({});  
+  useEffect(() => {
+    const fetchFollowData = async () => {
+      try {
+        const data = await fetchFollowersSummary();
+        setFollowData(data); // Update state with fetched data
+      } catch (error) {
+        console.error("Error fetching follow data:", error);
+      }
+    };
 
+    fetchFollowData();
+  }, []); // Empty dependency array ensures it runs once on mount
+
+  
  const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
   ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
     : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
@@ -22,7 +38,7 @@ const ProfilePanel = ({
     : bgBannerImg
   
    const full_name = profile && profile.full_name ?
-     profile.full_name : 'No username'
+     profile.full_name : user.username
   
   const bio = user.role !== 'college_staff' && profile && profile.bio ? 
     profile.bio : 'Here to connect, learn, and grow.'
@@ -61,17 +77,17 @@ const ProfilePanel = ({
 
             <div className="hstack gap-2 gap-xl-3 justify-content-center">
               <div>
-                <h6 className="mb-0">256</h6>
+                <h6 className="mb-0">{followData.post}</h6>
                 <small>Post</small>
               </div>
               <div className="vr" />
               <div>
-                <h6 className="mb-0">2.5K</h6>
+                <h6 className="mb-0">{followData.followers_count}</h6>
                 <small>Followers</small>
               </div>
               <div className="vr" />
               <div>
-                <h6 className="mb-0">365</h6>
+                <h6 className="mb-0">{followData.following_count}</h6>
                 <small>Following</small>
               </div>
             </div>

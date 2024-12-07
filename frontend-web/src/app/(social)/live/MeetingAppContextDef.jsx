@@ -14,6 +14,7 @@ export const MeetingAppProvider = ({ children }) => {
   const [sideBarMode, setSideBarMode] = useState(null);
   const [pipMode, setPipMode] = useState(false);
 
+  // Handle Raised Hands logic
   const useRaisedHandParticipants = () => {
     const raisedHandsParticipantsRef = useRef();
 
@@ -64,11 +65,29 @@ export const MeetingAppProvider = ({ children }) => {
     return { participantRaisedHand };
   };
 
+  // Add the `end()` function to end the meeting
+  const end = () => {
+    // Call the function to end the meeting
+    // This would depend on the SDK you're using, such as calling an API to end the meeting
+    // Example: videoSDK.endMeeting();
+
+    // Trigger an event for all participants that the meeting has ended
+    // Assuming `onParticipantLeft` is an event handler for when a participant leaves
+    const participants = [...raisedHandsParticipants]; // Example, you can modify based on actual participants data
+    participants.forEach((participant) => {
+      // Emit `onParticipantLeft` event for each participant
+      // Example: Emit the event with the participant object
+      console.log(`${participant.participantId} left the meeting.`); // Example log
+    });
+
+    // Clear the list of raised hands as the meeting is ending
+    setRaisedHandsParticipants([]);
+  };
+
   return (
     <MeetingAppContext.Provider
       value={{
         // states
-
         raisedHandsParticipants,
         selectedMic,
         selectedWebcam,
@@ -79,7 +98,6 @@ export const MeetingAppProvider = ({ children }) => {
         isMicrophonePermissionAllowed,
 
         // setters
-
         setRaisedHandsParticipants,
         setSelectedMic,
         setSelectedWebcam,
@@ -89,6 +107,9 @@ export const MeetingAppProvider = ({ children }) => {
         useRaisedHandParticipants,
         setIsCameraPermissionAllowed,
         setIsMicrophonePermissionAllowed,
+
+        // methods
+        end, // Provide the end method to context
       }}
     >
       {children}

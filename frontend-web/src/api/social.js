@@ -28,7 +28,7 @@ const handleFetch = async (url, method, body = null) => {
   if (!response.ok) {
     throw new Error(`Error: ${response.status}`);
   }
-
+  
   return await response.json();
 };
 
@@ -116,5 +116,7 @@ export const fetchPollVotes = async () => {
 export const createPollVote = async (pollVoteData) => {
   return await handleFetch(API_ROUTES.POLL_VOTES, "POST", pollVoteData);
 };
+
+
 
 
