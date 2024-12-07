@@ -26,5 +26,7 @@ urlpatterns = [
     path('social/', include('social.urls')),
     path('multimedia/', include('multimedia.urls')),    
     path('events/', include('events.urls')),    
+    path('ai/', include('ai.urls')),    
+
 
 ]

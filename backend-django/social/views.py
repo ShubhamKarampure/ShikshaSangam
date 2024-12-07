@@ -16,6 +16,8 @@ from django.utils.timesince import timesince
 from django.contrib.contenttypes.models import ContentType
 from django.db import transaction
 from rest_framework.pagination import LimitOffsetPagination
+from ai.vectordb import recommend_posts, get_user_embedding, store_post_embedding, generate_post_embedding, get_post_embedding
+from ai.models import UserEmbedding, PostEmbedding
 
 
 #GET /social/posts/list_posts/?limit=5&offset=10 example for limit offset
@@ -81,6 +83,22 @@ class PostViewSet(viewsets.ModelViewSet):
 
         return Response({"detail": "No shared posts available."})
     
+    @action(detail=False, methods=['get'])  # GET /social/posts/recommend_posts/
+    def recommended_posts(self, request):
+        """List posts shared by the current user."""
+        user_profile = request.user.user
+
+        query_embedding = get_user_embedding(user_profile)
+        # print(query_embedding)
+        posts = recommend_posts(query_embedding=query_embedding)
+        page = self.paginate_queryset(posts)
+
+        if page is not None:
+            return self._get_paginated_post_data(page)
+
+        return Response({"detail": "No shared posts available."})
+    
+
 
     def _get_paginated_post_data(self, posts):
         """Helper function to format paginated post data."""
