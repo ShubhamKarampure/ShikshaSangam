@@ -46,6 +46,7 @@ import { createMeeting } from "../../../live/api";
 import { useNavigate } from "react-router-dom";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 import Groq from "groq-sdk";
+import ChatInput from "./ChatInput";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_REACT_APP_GROQ_API_KEY,
@@ -304,7 +305,7 @@ const ChatArea = ({ activeChat }) => {
         variant: "danger",
       });
     } finally {
-       setInputColor("white");  
+      setInputColor("white");
       setIsAIProcessing(false);
     }
   };
@@ -315,11 +316,10 @@ const ChatArea = ({ activeChat }) => {
     setInputValue(value);
 
     // Check for AI trigger in real-time when the input is in the format @writebot "message content"
-    if (value.startsWith("@writebot")){
+    if (value.startsWith("@writebot")) {
       setInputColor("lightgreen");
-    }
-    else {
-        setInputColor("white");  
+    } else {
+      setInputColor("white");
     }
     if (value.startsWith("@writebot ") && hasValidQuotes(value)) {
       const prompt = extractPrompt(value); // Extract prompt inside quotes
@@ -422,7 +422,7 @@ const ChatArea = ({ activeChat }) => {
 
       // Clear the message input
       setInputValue(""); // Ensure this triggers form re-render
-
+      setValue("newMessage", ""); // Reset the form control
       // Trigger immediate fetch to sync with backend
       fetchMessagesHandler();
     } catch (err) {
@@ -626,17 +626,19 @@ const ChatArea = ({ activeChat }) => {
             control={control}
             render={({ field, fieldState: { error } }) => (
               <div className="w-100">
-                <input
+                <ChatInput
                   {...field}
-                  type="text"
-                  placeholder='Type a message or @writebot "Prompt"'
-                  value={inputValue}
-                  onChange={(e) => {
-                    field.onChange(e); // Existing field onChange
-                    handleInputChange(e); // Custom handler to manage input change and theme-based color
+                  inputValue={field.value}
+                  inputColor={inputColor}
+                  handleInputChange={handleInputChange}
+                  error={error}
+                  field={field}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault(); 
+                      handleSubmit(sendChatMessage)();
+                    }
                   }}
-                  style={{ color: inputColor }} // Set dynamic color based on detected @writebot and theme
-                  className={`form-control ${error ? "is-invalid" : ""}`}
                 />
 
                 {error && (

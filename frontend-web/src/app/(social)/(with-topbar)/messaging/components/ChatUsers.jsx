@@ -109,7 +109,7 @@ const ChatUsers = ({ chats }) => {
           </SimplebarReactClient>
         </div>
       </Card>
-      <style jsx>{`
+      <style>{`
         .card-chat-list {
           height: calc(100vh - 125px);
         }
