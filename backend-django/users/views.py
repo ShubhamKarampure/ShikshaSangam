@@ -39,10 +39,12 @@ class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
     def post(self, request, *args, **kwargs):
         # Serialize the incoming data
+        print(f"{request.data}")
         serializer = UserRegistrationSerializer(data=request.data)
         
         # Validate and create the user
         if serializer.is_valid():
+            print('serializer is valid')
             user = serializer.save()
             
             # Generate JWT tokens for the user
@@ -51,9 +53,13 @@ class UserRegistrationView(APIView):
          
             # Return the JWT tokens and user details
             user_profile_id = None
+
+            print(f'accesss = {access_token}')
+        else:
+            print(serializer.errors)
         try:
-            # user_profile = user.user  # Accessing the related UserProfile (But how does it get created for new user?)
-            # user_profile_id = user_profile.id
+            user_profile = user.user  # Accessing the related UserProfile (But how does it get created for new user?)
+            user_profile_id = user_profile.id
             pass
         except ObjectDoesNotExist:
             # Profile does not exist
