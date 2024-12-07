@@ -116,6 +116,7 @@ class UserLoginView(APIView):
 
         profile = None
         role = None
+        user_profile = None
         try:
             profile = UserProfile.objects.filter(id=user_profile_id)
             role = profile[0].role
@@ -123,7 +124,7 @@ class UserLoginView(APIView):
             user_profile.save()  
         except:
             pass
-
+        userStatus=  user_profile.status if user_profile else None
         return Response(
             {
                 "status": "success",
@@ -136,7 +137,7 @@ class UserLoginView(APIView):
                     "username": user.username,
                     "profile_id": user_profile_id,
                     "role": role,
-                    "status":user_profile.status,
+                    "status":userStatus,
                 },
             },
             status=status.HTTP_200_OK,

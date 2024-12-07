@@ -4,6 +4,7 @@ import { useAuthContext } from "@/context/useAuthContext";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import axios from "axios";
+import { setCookie } from "cookies-next";
 
 const GoogleSignIn = () => {
   const [loading, setLoading] = useState(false);
@@ -57,8 +58,9 @@ const GoogleSignIn = () => {
     console.log("Logged-in user:", loggedInUser);
   
     // Redirect to profile-setup if profile_id is missing
-    if (!loggedInUser?.profile_id) {
+    if (!loggedInUser.profile_id) {
       navigate("/profile-setup");
+      setCookie("_PROFILE_SETUP_", false);
       return; // Prevent further redirection
     }
   
@@ -70,7 +72,7 @@ const GoogleSignIn = () => {
     }
   
     // Redirect based on user role
-    if (loggedInUser?.role === "college_admin") {
+    if (loggedInUser.role === "college_admin") {
       navigate("/admin/dashboard");
     } else {
       navigate("/"); // Default redirection

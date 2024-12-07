@@ -57,7 +57,7 @@ const AllEvents = () => {
         // Transform events to match the card format
         const transformedEvents = response.results.map(mapEventToCardFormat);
         console.log("Transformed events:", transformedEvents);
-
+        setFilterEventsState(transformedEvents);
         setEvents(transformedEvents); // Update state with transformed events
       } catch (err) {
         setError(err.message || "Failed to fetch events");
@@ -140,10 +140,10 @@ const AllEvents = () => {
             <TabContent className="mb-0 pb-0">
               {eventCategories.map((category, idx) => (
                 <Fragment key={idx}>
-                  {events.length != 1 ? (
+                  {filterEventsState.length != 1 ? (
                     <TabPane eventKey={category} className="fade" id="tab-1">
                       <Row className="g-4">
-                        {events?.map((event, idx) => (
+                        {filterEventsState?.map((event, idx) => (
                           <Col sm={6} xl={4} key={idx}>
                             <EventCard {...event} />
                           </Col>

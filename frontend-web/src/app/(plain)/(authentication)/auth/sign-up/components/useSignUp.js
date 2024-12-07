@@ -7,6 +7,7 @@ import { useNotificationContext } from '@/context/useNotificationContext';
 import { signup } from '@/api/auth';
 import axios from 'axios';
 import { useAuthContext } from '@/context/useAuthContext';
+import { setCookie } from 'cookies-next';
 
 const useSignUp = () => {
   const [loading, setLoading] = useState(false);
@@ -60,6 +61,7 @@ const useSignUp = () => {
       });
       if(!user.profile_id){
         navigate('/profile-setup');
+        setCookie("_PROFILE_SETUP_", false);
         return;
       }else{
         navigate('/');

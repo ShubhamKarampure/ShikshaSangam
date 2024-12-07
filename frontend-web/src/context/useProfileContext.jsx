@@ -39,11 +39,11 @@ export const ProfileProvider = ({ children }) => {
   // Fetch profile data
   const getProfileData = async () => {
     const profileData = getCookie("_PROFILE_DATA_");
-    if (profileData && JSON.parse(profileData)?.user === user?.id) {
+    if (profileData && JSON.parse(profileData).user === user.id) {
       return JSON.parse(profileData); // Return from cookies if data exists
     }
 
-    if (user?.profile_id) {
+    if (user.profile_id) {
       try {
         const response = await fetch(API_ROUTES.USERPROFILE + user.profile_id, {
           method: "GET",
@@ -61,6 +61,10 @@ export const ProfileProvider = ({ children }) => {
         console.error("Error fetching profile data:", error);
         return null;
       }
+    }else{
+      console.log('useProfile context user.profile_id is null');
+      
+      navigate('/profile-setup');
     }
     return null;
   };

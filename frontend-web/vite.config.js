@@ -10,7 +10,5 @@ export default defineConfig({
       "@": resolve(__dirname, "src")
     }
   },
-  optimizeDeps: {
-    exclude: ['pdf.worker.mjs']
-  }
+  optimizeDeps: { exclude: ['node_modules/.cache'] },
 });
