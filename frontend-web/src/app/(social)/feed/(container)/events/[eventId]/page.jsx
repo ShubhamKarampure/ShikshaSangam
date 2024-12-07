@@ -1,19 +1,22 @@
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button, Card, CardBody, CardHeader, CardTitle, Col, Row } from 'react-bootstrap';
 import { FaStarHalfStroke } from 'react-icons/fa6';
-import { FaRegStar, FaStar, FaThumbsUp } from 'react-icons/fa';
-import { counterData, relatableEvents } from './data';
-import { getEventById } from '@/helpers/data';
+import {  FaRegStar, FaStar, FaThumbsUp } from 'react-icons/fa';
 import { BsGeoAlt, BsHandThumbsUpFill } from 'react-icons/bs';
+import { counterData, relatableEvents } from './data';
+import { useNavigate, useParams } from 'react-router-dom';
+
+import PageMetaData from '@/components/PageMetaData';
+import {getEventDetails} from '@/api/events';
+
 import event6 from '@/assets/images/events/06.jpg';
 import avatar1 from '@/assets/images/avatar/01.jpg';
 import avatar3 from '@/assets/images/avatar/03.jpg';
 import avatar4 from '@/assets/images/avatar/04.jpg';
 import avatar5 from '@/assets/images/avatar/05.jpg';
 import avatar6 from '@/assets/images/avatar/06.jpg';
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import PageMetaData from '@/components/PageMetaData';
+
 const RelatedEvents = () => {
   return <Card>
       <CardHeader className="border-0">
@@ -44,6 +47,7 @@ const RelatedEvents = () => {
       </CardBody>
     </Card>;
 };
+
 const EventDetails = () => {
   const [event, setEvent] = useState();
   const {
@@ -53,14 +57,15 @@ const EventDetails = () => {
   useEffect(() => {
     (async () => {
       if (eventId) {
-        const data = await getEventById(eventId);
+        const data = await getEventDetails(eventId);
         if (data) setEvent(data);else navigate('/not-found');
       }
+      
     })();
   }, []);
   const attendees = [avatar1, avatar3, avatar4, avatar5, avatar6];
   return <>
-    <PageMetaData title={event?.id ?? "Event Details"} />
+    <PageMetaData title={event?.name ?? "The learning conference"} />
     <Col md={8} lg={9} className="vstack gap-4">
       <Card className="card-body card-overlay-bottom border-0" style={{
         backgroundImage: `url(${event6})`,
@@ -78,7 +83,7 @@ const EventDetails = () => {
         </Row>
         <Row className="g-3 justify-content-between align-items-center mt-5 pt-5 position-relative z-index-9">
           <Col lg={9}>
-            <h1 className="h3 mb-1 text-white">The learning conference </h1>
+            <h1 className="h3 mb-1 text-white">{event?.name ?? "The learning conference"}</h1>
             <a className="text-white" href="https://themes.getbootstrap.com/store/webestica" target="_blank">
               https://themes.getbootstrap.com/store/webestica
             </a>
@@ -92,8 +97,7 @@ const EventDetails = () => {
         <Row className="g-4">
           <Col xs={12}>
             <p className="mb-0">
-              He moonlights difficult engrossed it, sportsmen. Interested has all Devonshire difficulty gay assistance joy. Unaffected at ye of
-              compliment alteration to. Place voice no arises along to. Parlors waiting so against me no.
+              {event?.summary ?? "He moonlights difficult engrossed it, sportsmen. Interested has all Devonshire difficulty gay assistance joy. Unaffected at ye of compliment alteration to. Place voice no arises along to. Parlors waiting so against me no."}
             </p>
           </Col>
           <Col sm={6} lg={4}>
@@ -143,7 +147,7 @@ const EventDetails = () => {
             <div className="d-flex">
               <h6>
                 
-                <BsHandThumbsUpFill className="text-success" /> 50
+                <BsHandThumbsUpFill className="text-success" /> {event?.likes_count ?? 50}
               </h6>
               <p className="small">People have shown interest recently</p>
             </div>
@@ -193,7 +197,7 @@ const EventDetails = () => {
               <p className="small">
                 
                 <BsGeoAlt className="pe-1" />
-                750 Sing Sing Rd, Horseheads, NY, 14845
+                {event?.location ?? "750 Sing Sing Rd, Horseheads, NY, 14845"}
               </p>
             </CardHeader>
             <CardBody className="pt-0">
