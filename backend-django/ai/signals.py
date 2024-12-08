@@ -27,12 +27,13 @@ def update_user_embedding(sender, instance, created,  **kwargs):
         else:
             print(f"Skipping embedding update for UserProfile {instance.id}: irrelevant fields updated.")
     else:
+        pass
         # If `update_fields` is not available, assume a full save and check fields manually
-        if instance.resume or instance.preferences or instance.bio:
-            print(f"Updating embedding for UserProfile {instance.id}: full save detected.")
-            store_user_embedding(instance)
-        else:
-            print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
+        # if instance.resume or instance.preferences or instance.bio:
+        #     print(f"Updating embedding for UserProfile {instance.id}: full save detected.")
+        #     store_user_embedding(instance)
+        # else:
+        #     print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
 
 @receiver(post_save, sender=Post)
 def update_post_embedding(sender, instance, **kwargs):
