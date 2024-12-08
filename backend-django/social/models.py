@@ -176,8 +176,8 @@ def create_like_notification(sender, instance, created, **kwargs):
     if created:
         content_type = ContentType.objects.get_for_model(instance.content_object)
         if content_type.model == 'post':
-            title = f"{instance.follower.full_name} liked your post."
-            content = f"{instance.follower.full_name} liked your post."
+            title = f"{instance.userprofile.full_name} liked your post."
+            content = f"{instance.userprofile.full_name} liked your post."
 
             # Get the avatar of the user who liked (from the UserProfile model)
             avatar = instance.userprofile.avatar_image.url if instance.userprofile.avatar_image else None
