@@ -25,7 +25,7 @@ export const API_ROUTES = {
   FOLLOWS: `${API_BASE_URL}/social/followers/`,
   FOLLOWERS: `${API_BASE_URL}/social/follows/followers/`,
   FOLLOWING: `${API_BASE_URL}/social/follows/following/`,
-  USERS_TO_FOLLOW: `${API_BASE_URL}/social/followers/userstofollow/`,
+  USERS_TO_FOLLOW: `${API_BASE_URL}/ai/recommend/`,
   SHARES: `${API_BASE_URL}/social/shares/`,
   POLLS: `${API_BASE_URL}/social/polls/`,
   POLL_OPTIONS: `${API_BASE_URL}/social/polls/options/`,

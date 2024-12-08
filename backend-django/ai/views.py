@@ -13,8 +13,6 @@ class RecommendationView(APIView):
     """
     Provide personalized recommendations for the current user.
     """
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access
-
     def get(self, request):
         # Fetch or dynamically generate the user's embedding
         print(f"current_user = {request.user.user}")
