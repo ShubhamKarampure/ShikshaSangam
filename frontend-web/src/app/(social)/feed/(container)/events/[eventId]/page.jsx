@@ -103,11 +103,7 @@ const EventDetails = () => {
     title: 'Registered',
     count: registerCount,
     icon: BsPersonPlus
-  }, {
-    title: 'Attendance',
-    count: 350,
-    icon: BsPeople
-  }];
+  }, ];
   const attendees = [avatar1, avatar3, avatar4, avatar5, avatar6];
   return (
     <>
