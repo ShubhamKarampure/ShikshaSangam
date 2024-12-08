@@ -70,7 +70,7 @@ const ProfilePanel = ({
 
             <h5 className="mb-0">
               
-              <Link to="">{full_name} </Link>
+              <Link to="/profile/feed">{full_name} </Link>
             </h5>
             <small>{user.role}</small>
             <p className="mt-3">{bio}</p>

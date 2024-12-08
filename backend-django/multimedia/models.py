@@ -24,7 +24,6 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_messages')
     content = models.TextField(blank=True, null=True)
-    replied_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)  # Indexed for better performance
     is_read = models.BooleanField(default=False)
     media = CloudinaryField('media', folder='shikshasangam/chat/media', blank=True, null=True)

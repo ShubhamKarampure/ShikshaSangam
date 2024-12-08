@@ -46,6 +46,7 @@ import { createMeeting } from "../../../live/api";
 import { useNavigate } from "react-router-dom";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 import Groq from "groq-sdk";
+import { Link } from "react-router-dom";
 import ChatInput from "./ChatInput";
 
 const groq = new Groq({
@@ -237,7 +238,6 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
     </div>
   );
 };
-
 
 const ChatArea = ({ activeChat }) => {
   const [chat, setChat] = useState();
@@ -515,7 +515,7 @@ const ChatArea = ({ activeChat }) => {
     navigate(`/meet/${token}/${meetId}/${participantName}`);
   };
 
-  const { full_name, avatar_image, status } = activeChat.participants[0];
+  const { full_name, avatar_image, status, id } = activeChat.participants[0];
 
   return (
     <Card className="card-chat rounded-start-lg-0 border-start-lg-0 h-100">
@@ -539,7 +539,12 @@ const ChatArea = ({ activeChat }) => {
               </div>
 
               <div className="d-block flex-grow-1">
-                <h6 className="mb-0 mt-1">{full_name || ""}</h6>
+                <Link
+                  to={`/profile/feed/${id}`}
+                  className="text-decoration-none"
+                >
+                  <h6 className="mb-0 mt-1">{full_name || ""}</h6>
+                </Link>
                 <div className="small text-secondary">
                   <FaCircle
                     className={`text-${status === "offline" ? "danger" : "success"} me-1`}
@@ -573,8 +578,13 @@ const ChatArea = ({ activeChat }) => {
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-end">
                   <DropdownItem>
-                    <BsPersonCheck className="me-2 fw-icon" />
-                    View profile
+                    <Link
+                      to={`/profile/feed/${id}`}
+                      className="text-decoration-none"
+                    >
+                      <BsPersonCheck className="me-2 fw-icon" />
+                      View profile
+                    </Link>
                   </DropdownItem>
                   <DropdownItem onClick={() => clear(activeChat.id)}>
                     <BsTrash className="me-2 fw-icon" />
@@ -635,7 +645,7 @@ const ChatArea = ({ activeChat }) => {
                   field={field}
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      e.preventDefault(); 
+                      e.preventDefault();
                       handleSubmit(sendChatMessage)();
                     }
                   }}

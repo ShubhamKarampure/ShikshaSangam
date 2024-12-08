@@ -341,6 +341,11 @@ export const profilePagesRoutes = [
     name: "Feed",
     element: <ProfileFeed />,
   },
+   {
+    path: "/profile/feed/:userId",
+    name: "Feed",
+    element: <ProfileFeed />,
+  },
   {
     path: "/profile/about",
     name: "About",
