@@ -1,7 +1,10 @@
 
-yourIp = "192.168.1.5" // Give your IP for identifying where backend is running to mobile
+//yourIp = "172.16.61.169"; // Give your IP for identifying where backend is running to mobile
  // Give your IP for identifying where backend is running to mobile
-const BACKEND_URL = "http://" + yourIp + ":8000";
+
+import { YOUR_IP } from "@env";
+
+const BACKEND_URL = "http://" + YOUR_IP + ":8000";
 
 export const CHATSCREEN_POOLING = 6000;
 export const MESSAGESCREEN_POOLING = 10000;

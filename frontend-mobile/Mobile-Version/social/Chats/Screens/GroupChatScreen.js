@@ -10,8 +10,9 @@ export default function GroupChatScreen(props) {
     mimeType: "application/pdf",
     name: "prob-Discount in a Shop.pdf",
     size: 89756,
-    uri: "file:///data/user/0/host.exp.exponent/cache/DocumentPicker/358e388c-20bc-43f7-a109-1c847eab51be.pdf",
+    uri: "https://res.cloudinary.com/dhp4wuv2x/image/upload/file:///data/user/0/host.exp.exponent/cache/DocumentPicker/3829eac1-032d-48b1-89d3-d2ad5c5b7e43.pdf",
   };
+
   return (
     <View style={styles.container}>
       <View style={styles.chatArea}>

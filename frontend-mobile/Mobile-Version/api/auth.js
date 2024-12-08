@@ -1,7 +1,6 @@
 import BACKEND_URL from "../constants";
 const signin = async (data) => {
   
-
   try {
     // Correct the URL here by removing spaces and using BACKEND_URL
     const response = await fetch(`${BACKEND_URL}/users/auth/login/token`, {
