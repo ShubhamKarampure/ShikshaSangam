@@ -4,12 +4,14 @@ from django.utils.timezone import now
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from cloudinary.models import CloudinaryField 
+from forum.models import Forum
+
 
 class Chat(models.Model):
     participants = models.ManyToManyField(UserProfile, related_name='chats')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)  # Useful for ordering chats by recent activity
-
+    forum = models.ForeignKey(Forum, null=True, blank=True, on_delete= models.SET_NULL)
     class Meta:
         ordering = ['-updated_at']  # Recent chats appear first
 
@@ -22,6 +24,7 @@ class Message(models.Model):
     chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name='messages')
     sender = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='sent_messages')
     content = models.TextField(blank=True, null=True)
+    replied_to = models.ForeignKey('self', null=True, blank=True, on_delete=models.SET_NULL, related_name='replies')
     timestamp = models.DateTimeField(auto_now_add=True, db_index=True)  # Indexed for better performance
     is_read = models.BooleanField(default=False)
     media = CloudinaryField('media', folder='shikshasangam/chat/media', blank=True, null=True)

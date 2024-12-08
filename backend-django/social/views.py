@@ -836,12 +836,38 @@ class NotificationViewSet(ModelViewSet):
     serializer_class = NotificationSerializer
     permission_classes = [IsAuthenticated]  # Ensures the user must be authenticated
 
-    def get_queryset(self):
+
+    @action(detail=False, methods=['get'], url_path='get_own')
+    def get_own_notification(self, request):
         """
         Optionally filter notifications for the authenticated user.
         """
-        user = self.request.user
-        return Notification.objects.filter(userprofile__user=user).order_by('-created_at')
+        user = request.user
+        
+        
+        notifications = Notification.objects.filter(userprofile__user=user).order_by('-created_at')
+        response_data = []
+
+        for notification in notifications:
+            userprofile = notification.userprofile
+            response_data.append(
+                {
+                'id': notification.id,    
+                'userprofile':{
+                    'name': userprofile.full_name if userprofile.full_name else userprofile.user.username,
+                    # 'avatar':userprofile.avatar if userprofile.avatar else None
+                },
+                'is_read':notification.is_read,
+                'title':notification.title,
+                'content':notification.content,
+                'created_at':notification.created_at,
+                'avatar': notification.avatar,
+                'type':notification.notification_type
+
+
+            })
+        return Response(response_data, status=status.HTTP_200_OK)
+
 
     @action(detail=False, methods=['delete'], url_path='delete_all')  # Custom delete all action
     def delete_all_notifications(self, request):
