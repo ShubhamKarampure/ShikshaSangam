@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Forum, Resource, Quiz, Question, Doubt, ForumMod
+from .models import Forum, Resource, Quiz, Question, Doubt, ForumMod, Answer
 from multimedia.models import Message
 from users.models import UserProfile
 from users.serializers import MiniUserProfileSerializer
@@ -43,7 +43,16 @@ class QuestionSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
+class AnswerSerializer(serializers.ModelSerializer):
+    question_text = serializers.CharField(source='question.text', read_only=True)
+    is_correct = serializers.SerializerMethodField()
 
+    class Meta:
+        model = Answer
+        fields = ['id', 'question', 'question_text', 'userprofile', 'selected_options', 'submitted_at', 'is_correct']
+
+    def get_is_correct(self, obj):
+        return obj.is_correct()
 
 class DoubtSerializer(serializers.ModelSerializer):
     forum = serializers.PrimaryKeyRelatedField(queryset=Forum.objects.all())
