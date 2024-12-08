@@ -3,6 +3,8 @@ from users.models import UserProfile
 from cloudinary.models import CloudinaryField
 from multimedia.models import Message,Chat
 from django.utils.timezone import now
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 # Create your models here.
 class Tag(models.Model):
@@ -93,14 +95,22 @@ class Answer(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='answers')
     selected_options = models.JSONField(blank=True, null=True)  # User's answer: {"A": true, "B": false, ...}
     submitted_at = models.DateTimeField(auto_now_add=True)
-
-    def is_correct(self):
+    answer_text = models.TextField(null=True, blank = True)
+    is_correct = models.BooleanField(default=False)
+    
+    def check_ans(self):
         """Validate the user's answer."""
         if self.question.question_type in ['MCQ_SINGLE', 'MCQ_MULTI']:
-            return self.selected_options == self.question.correct_answer
+            self.is_correct = self.selected_options == self.question.correct_answer
+            
         elif self.question.question_type == 'TF':
-            return str(self.selected_options.get("TF", "")).lower() == str(self.question.correct_answer).lower()
-        return False
+            self.is_correct=str(self.selected_options.get("TF", "")).lower() == str(self.question.correct_answer).lower()
+            
+        else:
+            self.is_correct = False
+        
+        self.save()
+        return self.is_correct
 
     def __str__(self):
         return f"Answer by {self.userprofile} for Question {self.question.id}"
@@ -122,3 +132,22 @@ class Doubt(models.Model):
 
     def __str__(self):
         return f"Doubt {self.id}: {self.status}"
+
+
+class Vote(models.Model):
+    VOTE_CHOICES = [
+        (1, 'Upvote'),
+        (-1, 'Downvote'),
+    ]
+
+    user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)  # Generic FK
+    object_id = models.PositiveIntegerField()  # ID of the related object
+    content_object = GenericForeignKey('content_type', 'object_id')
+    vote = models.SmallIntegerField(choices=VOTE_CHOICES)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'content_type', 'object_id')  # One vote per user per object
+        indexes = [models.Index(fields=['content_type', 'object_id'])]
