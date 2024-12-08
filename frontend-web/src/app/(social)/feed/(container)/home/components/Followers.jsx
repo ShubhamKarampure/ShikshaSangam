@@ -38,6 +38,7 @@ const Followers = () => {
     const fetchData = async () => {
       try {
         const data = await fetchUsersToFollow();
+        console.log(data);
         setUsersToFollow(data);
         setFilteredUsers(data);
       } catch (error) {
