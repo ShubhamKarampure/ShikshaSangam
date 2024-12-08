@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import UserProfile
 from cloudinary.models import CloudinaryField
-from multimedia.models import Message, Chat
+from multimedia.models import Message,Chat
 
 # Create your models here.
 class Tag(models.Model):
@@ -16,12 +16,13 @@ class Forum(models.Model):
     banner = CloudinaryField('forum_avatar', blank=True, null=True, folder='shikshasangam/forum_avatar') 
     avatar = CloudinaryField('forum_banner', blank=True, null=True, folder='shikshasangam/forum_banner') 
     participants = models.ManyToManyField(UserProfile, related_name='forums')
+    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True)
     visibility = models.CharField(
         max_length=10, 
         choices=[('public', 'Public'), ('private', 'Private')], 
         default='public'
     )
-    tags = models.ManyToManyField(Tag, related_name='quizzes')
+    tags = models.ManyToManyField(Tag, related_name='forums')
 
 
     def __str__(self):
@@ -36,12 +37,12 @@ class ForumMod(models.Model):
 
 
 class Resource(models.Model):
-    posted_by = models.ForeignKey(UserProfile, null=True, blank=True)
+    posted_by = models.ForeignKey(UserProfile, null=True, blank=True, on_delete=models.SET_NULL)
     forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='study_materials')
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.TextField(blank=True, null=True)
     file = CloudinaryField('resource', blank=True, null=True, folder='shikshasangam/resources') 
-    tags = models.ManyToManyField(Tag, related_name='quizzes')
+    tags = models.ManyToManyField(Tag, related_name='resources')
     
 
     def __str__(self):

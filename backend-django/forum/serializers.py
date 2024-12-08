@@ -48,9 +48,7 @@ class QuestionSerializer(serializers.ModelSerializer):
 class DoubtSerializer(serializers.ModelSerializer):
     forum = serializers.PrimaryKeyRelatedField(queryset=Forum.objects.all())
     asked_by = serializers.PrimaryKeyRelatedField(queryset=UserProfile.objects.all())
-    resolved_by = serializers.PrimaryKeyRelatedField(
-        queryset=UserProfile.objects.all(), required=False, allow_null=True
-    )
+    resolved_by = MiniUserProfileSerializer()
     answer = serializers.PrimaryKeyRelatedField(
         queryset=Message.objects.all(), required=False, allow_null=True
     )
