@@ -21,7 +21,7 @@ const groq = new Groq({
   dangerouslyAllowBrowser: true,
 });
 
-const TypingSection = ({ onSend, isDarkMode = true }) => {
+const TypingSection = ({ onSend, isDarkMode = true, scrollToBottom }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null); // State for selected file
@@ -73,6 +73,7 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
 
   // Real-time input change handler
   const handleInputChange = (value) => {
+    scrollToBottom();
     setInputValue(value);
     // Check for AI trigger in real-time when the input is in the format @writebot "message content"
     if (value.startsWith("@writebot")) {
@@ -101,9 +102,9 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
     return match ? match[1].trim() : null; // Extract the content inside quotes
   };
 
-  const OpenGallery = async ()=>{
+  const OpenGallery = async () => {
     const result = await launchImageLibrary(options);
-  }
+  };
 
   // Function to handle file selection
   const handleFilePicker = async () => {
@@ -122,7 +123,7 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
       // Check for assets array in the result
       if (result.assets && result.assets.length > 0) {
         const selectedFile = result.assets[0]; // Get the first selected file
-        
+
         console.log("result = ", result);
         console.log("File selected:", selectedFile);
 

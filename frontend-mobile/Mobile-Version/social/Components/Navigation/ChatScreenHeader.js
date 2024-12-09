@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   username: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#e0e0e0", // Light gray text
   },

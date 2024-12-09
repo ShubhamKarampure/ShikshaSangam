@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect, useCallback, useId } from "react";
-import { View, FlatList, StyleSheet } from "react-native";
+import { View, FlatList, StyleSheet, Animated, Easing } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import SenderChatBubble from "../Components/SenderChatBubble";
 import ReceiverChatBubble from "../Components/ReceiverChatBubble";
 import TypingSection from "../Components/TypingSection";
-import { chatsData } from "../../data/chatsData";
 import { fetchMessages, sendMessage, sendMedia, sendFile } from "../../../api/multimedia";
 import { useProfileContext } from "../../../Context/ProfileContext";
 import { useFocusEffect } from "@react-navigation/native";
@@ -12,6 +11,7 @@ import { CHATSCREEN_POOLING } from "../../../constants";
 import { defaultAvatar } from "../../../Utility/urlUtils";
 
 export default function ChatScreen({ navigation, route }) {
+  const scrollY = useRef(new Animated.Value(0)).current;
   const { profile } = useProfileContext();
   const chatInfo = route.params.receiver; // info about the reciever side of chat
 
@@ -71,7 +71,6 @@ export default function ChatScreen({ navigation, route }) {
           avatar: avatars[message.sender], // Add avatar field;
         }));
 
-        
         //console.log(avatars);
 
         setChatList((prevMessages) => {
@@ -111,17 +110,14 @@ export default function ChatScreen({ navigation, route }) {
       return <ReceiverChatBubble chat={item} />;
     }
   }
-  const sendHandler = async (chat) => {
-    // const byBackend = {
-    //   chat: 41,
-    //   content: "hello Aryan Kanyawar",
-    //   id: 166,
-    //   is_read: false,
-    //   media: null,
-    //   sender: "Shubham Karampure",
-    //   timestamp: "2024-12-05T01:03:52.245434Z",
-    // };
 
+  const scrollToBottom = () => {
+    if (flatListRef.current) {
+      flatListRef.current.scrollToEnd({ animated: true });
+    }
+  };
+
+  const sendHandler = async (chat) => {
     try {
       let newChatItem;
       if(chat.media===null && chat.file===null){
@@ -131,7 +127,7 @@ export default function ChatScreen({ navigation, route }) {
         newChatItem = await sendMedia(chatInfo.id, chat.content, chat.media); // image only
       }
       else{
-        newChatItem = await sendFile(chatInfo.id, chat.content, chat.file.uri);  
+        newChatItem = await sendFile(chatInfo.id, chat.content, chat.file);  
       }
       
       console.log("newChatItem = ", newChatItem);
@@ -140,13 +136,13 @@ export default function ChatScreen({ navigation, route }) {
       //   ...newChatItem,
       //   avatar: sender_avatar,
       // };
+      fetchMessagesHandler(); // call immediately to fetch
 
-      //setChatList((prevList) => [...prevList, formattedChatItem]);
+      scrollToBottom(); // scroll to bottom
     } catch (err) {
       console.error("Error sending message:", err);
     }
   };
-
 
   return (
     <View style={styles.container}>
@@ -154,16 +150,15 @@ export default function ChatScreen({ navigation, route }) {
         <FlatList
           ref={flatListRef}
           data={chatList}
-          keyExtractor={(item) =>
-            item.id.toString()
-          }
+          keyExtractor={(item) => item.id.toString()}
           renderItem={renderChatBubble}
           contentContainerStyle={styles.listContent}
           //onScroll={handleScroll} // Attach scroll handler
+          //onContentSizeChange={scrollToBottom} // Auto-scroll on content size change
           scrollEventThrottle={16} // Throttle scroll events for performance
         />
       </View>
-      <TypingSection onSend={sendHandler} />
+      <TypingSection onSend={sendHandler} scrollToBottom={scrollToBottom} />
     </View>
   );
 }
@@ -182,3 +177,4 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
   },
 });
+

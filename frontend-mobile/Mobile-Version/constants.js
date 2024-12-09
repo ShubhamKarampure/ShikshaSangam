@@ -2,7 +2,9 @@
 //yourIp = "172.16.61.169"; // Give your IP for identifying where backend is running to mobile
  // Give your IP for identifying where backend is running to mobile
 
-import { YOUR_IP } from "@env";
+//import { YOUR_IP } from "@env";
+
+YOUR_IP = "192.168.1.5";
 
 const BACKEND_URL = "http://" + YOUR_IP + ":8000";
 
