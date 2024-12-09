@@ -514,9 +514,7 @@ const ProfileLayout = ({ children }) => {
                   <Col md={6} lg={12}>
                     <Experience />
                   </Col>
-                  <Col md={6} lg={12}>
-                    <Photos />
-                  </Col>
+                  
                   <Col md={6} lg={12}>
                     <Friends />
                   </Col>
