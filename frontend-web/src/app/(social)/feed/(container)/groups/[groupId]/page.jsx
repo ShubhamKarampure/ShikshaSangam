@@ -14,15 +14,21 @@ const GroupDetails = () => {
     (async () => {
       if (groupId) {
         const data = await getGroupById(groupId);
-        if (data) setGroup(data);else navigate('/not-found');
+        console.log(data);
+        if (data)
+          setGroup(data);
       }
     })();
   }, []);
   return <>
     <PageMetaData title={group?.id ?? "Group Details"} />
-    <Col md={8} lg={8} className="vstack gap-4">
-      <AllGroupDetails />
-    </Col>
+   
+    <div className="mx-5" style={{ marginTop: "70px" }}>
+  <AllGroupDetails />
+</div>
+
+
+    
     </>;
 };
 export default GroupDetails;

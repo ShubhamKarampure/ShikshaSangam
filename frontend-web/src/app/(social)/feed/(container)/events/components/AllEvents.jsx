@@ -46,7 +46,7 @@ const AllEvents = () => {
   const [loading, setLoading] = useState(true); // State to manage loading
   const [events, setEvents] = useState([]);
   const [filterEventsState, setFilterEventsState] = useState([]);
-
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   useEffect(() => {
     const loadEvents = async () => {
       try {

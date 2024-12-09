@@ -164,11 +164,6 @@ const generalRoutes = [
     element: <Groups />,
   },
   {
-    path: "/feed/groups/:groupId",
-    name: "Group Details",
-    element: <GroupDetails />,
-  },
-  {
     path: "/feed/post-videos",
     name: "Post Videos",
     element: <PostVideos />,
@@ -245,7 +240,8 @@ const otherRoutes = [
     path:"/meet/:initialToken/:initialMeetingId/:initialParticipantName",
     name: 'Online Meet',
     element: <Meet />
-    },
+  },
+   
 ];
 export const settingPagesRoutes = [
   {
@@ -332,11 +328,21 @@ export const socialWithTopbarRoutes = [
     name: "Not Found",
     element: <NotFoundPage />,
   },
+  {
+    path: "/feed/groups/details/:groupId",
+    name: "Group Details",
+    element: <GroupDetails />,
+  },
 ];
 
 export const profilePagesRoutes = [
   {
     path: "/profile/feed",
+    name: "Feed",
+    element: <ProfileFeed />,
+  },
+   {
+    path: "/profile/feed/:userId",
     name: "Feed",
     element: <ProfileFeed />,
   },

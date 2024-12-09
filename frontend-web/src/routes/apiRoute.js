@@ -1,5 +1,3 @@
-import { Feed } from "@mui/icons-material";
-
 const API_BASE_URL = `${import.meta.env.VITE_BACKEND_URL}`;
 
 export const API_ROUTES = {
@@ -41,9 +39,9 @@ export const API_ROUTES = {
   
   LIST_EVENTS: `${API_BASE_URL}/events/events/`, // Endpoint for listing all events
   CREATE_EVENT: `${API_BASE_URL}/events/events/`, // Endpoint for creating an event
-  GET_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Event details by ID
-  UPDATE_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Update event by ID
-  DELETE_EVENT: (eventId) => `${API_BASE_URL}/events/${eventId}/details/`, // Delete event by ID
+  GET_EVENT: (eventId) => `${API_BASE_URL}/events/events/${eventId}/details/`, // Event details by ID
+  UPDATE_EVENT: (eventId) => `${API_BASE_URL}/events/events/${eventId}/details/`, // Update event by ID
+  DELETE_EVENT: (eventId) => `${API_BASE_URL}/events/events/${eventId}/details/`, // Delete event by ID
   EVENT_REGISTRATION: `${API_BASE_URL}/registrations/`, // Event registration CRUD
   EVENT_FAQS: `${API_BASE_URL}/faqs/`, // Event FAQ CRUD
   EVENT_LIKES: `${API_BASE_URL}/likes/`, // Event like CRUD
@@ -55,4 +53,6 @@ export const API_ROUTES = {
   LIKES: `${API_BASE_URL}/social/likes/`, // Likes
   UNLIKE: `${API_BASE_URL}/social/likes/unlike/`, // Unlike
   FOLLOWERS_SUMMARY: `${API_BASE_URL}/social/followers/summary/`, // Followers summary
+
+  NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`
 }

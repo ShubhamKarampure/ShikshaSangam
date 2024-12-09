@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply
+from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply,Notification
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
 
@@ -69,3 +69,26 @@ class PollVoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = PollVote
         fields = '__all__'
+
+
+class NotificationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notification
+        fields = [
+            'id', 'userprofile', 'title', 'content', 'notification_type', 
+             'is_read', 'created_at',
+             # 'avatar','follower_full_name', 'follower_userprofile_id'
+        ]
+
+    def update(self, instance, validated_data):
+        """
+        Custom update method to mark a notification as read when updating
+        """
+        if 'is_read' in validated_data:
+            instance.is_read = validated_data['is_read']
+        
+        # Optionally handle other fields like follower_full_name or follower_userprofile_id if needed.
+        # These fields might not be updated via the serializer as they are not likely to change after creation.
+        instance.save()
+        return instance
+

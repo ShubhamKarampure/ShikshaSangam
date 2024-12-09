@@ -46,6 +46,8 @@ import { createMeeting } from "../../../live/api";
 import { useNavigate } from "react-router-dom";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 import Groq from "groq-sdk";
+import { Link } from "react-router-dom";
+import ChatInput from "./ChatInput";
 
 const groq = new Groq({
   apiKey: import.meta.env.VITE_REACT_APP_GROQ_API_KEY,
@@ -163,7 +165,6 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                 isCurrentUser
                   ? "bg-primary text-white"
                   : "bg-light text-secondary"
-                
               )}
               style={{
                 maxWidth: "50%", // Adjust max width as needed
@@ -171,7 +172,7 @@ const UserMessage = ({ message, isCurrentUser, onMeetCall }) => {
                 whiteSpace: "normal", // Allow wrapping
               }}
             >
-              {message.content}
+              <div className="text-start">{message.content}</div>
               {message.media && (
                 <div className="mt-2">
                   {message.media.match(/\.(jpeg|jpg|gif|png)$/) ? (
@@ -304,7 +305,7 @@ const ChatArea = ({ activeChat }) => {
         variant: "danger",
       });
     } finally {
-       setInputColor("white");  
+      setInputColor("white");
       setIsAIProcessing(false);
     }
   };
@@ -315,11 +316,10 @@ const ChatArea = ({ activeChat }) => {
     setInputValue(value);
 
     // Check for AI trigger in real-time when the input is in the format @writebot "message content"
-    if (value.startsWith("@writebot")){
+    if (value.startsWith("@writebot")) {
       setInputColor("lightgreen");
-    }
-    else {
-        setInputColor("white");  
+    } else {
+      setInputColor("white");
     }
     if (value.startsWith("@writebot ") && hasValidQuotes(value)) {
       const prompt = extractPrompt(value); // Extract prompt inside quotes
@@ -423,7 +423,7 @@ const ChatArea = ({ activeChat }) => {
 
       // Clear the message input
       setInputValue(""); // Ensure this triggers form re-render
-
+      setValue("newMessage", ""); // Reset the form control
       // Trigger immediate fetch to sync with backend
       fetchMessagesHandler();
     } catch (err) {
@@ -516,7 +516,7 @@ const ChatArea = ({ activeChat }) => {
     navigate(`/meet/${token}/${meetId}/${participantName}`);
   };
 
-  const { full_name, avatar_image, status } = activeChat.participants[0];
+  const { full_name, avatar_image, status, id } = activeChat.participants[0];
 
   return (
     <Card className="card-chat rounded-start-lg-0 border-start-lg-0 h-100">
@@ -540,7 +540,12 @@ const ChatArea = ({ activeChat }) => {
               </div>
 
               <div className="d-block flex-grow-1">
-                <h6 className="mb-0 mt-1">{full_name || ""}</h6>
+                <Link
+                  to={`/profile/feed/${id}`}
+                  className="text-decoration-none"
+                >
+                  <h6 className="mb-0 mt-1">{full_name || ""}</h6>
+                </Link>
                 <div className="small text-secondary">
                   <FaCircle
                     className={`text-${status === "offline" ? "danger" : "success"} me-1`}
@@ -574,8 +579,13 @@ const ChatArea = ({ activeChat }) => {
                 </DropdownToggle>
                 <DropdownMenu className="dropdown-menu-end">
                   <DropdownItem>
-                    <BsPersonCheck className="me-2 fw-icon" />
-                    View profile
+                    <Link
+                      to={`/profile/feed/${id}`}
+                      className="text-decoration-none"
+                    >
+                      <BsPersonCheck className="me-2 fw-icon" />
+                      View profile
+                    </Link>
                   </DropdownItem>
                   <DropdownItem onClick={() => clear(activeChat.id)}>
                     <BsTrash className="me-2 fw-icon" />
@@ -627,17 +637,19 @@ const ChatArea = ({ activeChat }) => {
             control={control}
             render={({ field, fieldState: { error } }) => (
               <div className="w-100">
-                <input
+                <ChatInput
                   {...field}
-                  type="text"
-                  placeholder='Type a message or @writebot "Prompt"'
-                  value={inputValue}
-                  onChange={(e) => {
-                    field.onChange(e); // Existing field onChange
-                    handleInputChange(e); // Custom handler to manage input change and theme-based color
+                  inputValue={field.value}
+                  inputColor={inputColor}
+                  handleInputChange={handleInputChange}
+                  error={error}
+                  field={field}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleSubmit(sendChatMessage)();
+                    }
                   }}
-                  style={{ color: inputColor }} // Set dynamic color based on detected @writebot and theme
-                  className={`form-control ${error ? "is-invalid" : ""}`}
                 />
 
                 {error && (
