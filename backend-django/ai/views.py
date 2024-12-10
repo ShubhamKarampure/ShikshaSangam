@@ -13,8 +13,6 @@ class RecommendationView(APIView):
     """
     Provide personalized recommendations for the current user.
     """
-    permission_classes = [IsAuthenticated]  # Only authenticated users can access
-
     def get(self, request):
         # Fetch or dynamically generate the user's embedding
         print(f"current_user = {request.user.user}")
@@ -39,6 +37,11 @@ class RecommendationView(APIView):
         followed_userprofiles = Follow.objects.filter(
             follower=request.user.user
         ).values_list('followed', flat=True)
+       
+        
+      #  print(p.id for p in followed_userprofiles)
+        for p in followed_userprofiles:
+            print(p.id)
 
         userstofollow = recommended_users.exclude(
             id__in=followed_userprofiles
@@ -47,8 +50,10 @@ class RecommendationView(APIView):
         ).filter(
             Q(role='student') | Q(role='alumni')  # Only students and alumni
         )
+        
+        print(p for p in userstofollow)
 
-
+         
         # print(f"recommmended_users = {recommended_users}")
     
         # recommended_posts = recommend_posts(query_embedding, top_k=5)

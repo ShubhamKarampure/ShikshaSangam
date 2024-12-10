@@ -76,7 +76,8 @@ class NotificationSerializer(serializers.ModelSerializer):
         model = Notification
         fields = [
             'id', 'userprofile', 'title', 'content', 'notification_type', 
-            'avatar', 'is_read', 'created_at', 'follower_full_name', 'follower_userprofile_id'
+             'is_read', 'created_at',
+             # 'avatar','follower_full_name', 'follower_userprofile_id'
         ]
 
     def update(self, instance, validated_data):

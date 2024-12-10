@@ -11,7 +11,7 @@ class FAISSManager:
 
         # Load existing index if it exists
         if os.path.exists(self.db_path):
-            print("Loading FAISS index from disk...")
+            print(f"Loading FAISS index from disk..{self.db_path}.")
             with open(self.db_path + "_meta.pkl", "rb") as f:
                 self.metadata = pickle.load(f)
             self.index = faiss.read_index(self.db_path)  # Fix: Removed extra argument

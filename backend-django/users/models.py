@@ -41,7 +41,7 @@ class UserProfile(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
-    resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True, validators=[validate_pdf])
+    resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
     preferences = models.JSONField(default=dict, null=True, blank=True)  # {"domains": [], "roles": [], "interests": []}
     connections = models.JSONField(default=dict, null=True, blank=True)  # {"followers_count": 0, "following_count": 0}
     created_at = models.DateTimeField(auto_now_add=True)

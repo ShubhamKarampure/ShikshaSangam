@@ -66,7 +66,7 @@ def get_post_embedding(post):
     except PostEmbedding.DoesNotExist:
         raise ValueError(f"No embedding found for post ID {post.id}")
 
-def recommend_users(query_embedding, top_k=5):
+def recommend_users(query_embedding, top_k=None):
     """
     Recommend users based on a query embedding.
     """

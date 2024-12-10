@@ -38,6 +38,7 @@ const Followers = () => {
     const fetchData = async () => {
       try {
         const data = await fetchUsersToFollow();
+        console.log(data);
         setUsersToFollow(data);
         setFilteredUsers(data);
       } catch (error) {
@@ -195,7 +196,7 @@ const Followers = () => {
                     >
                       <Link
                         className="h6 mb-0 text-truncate"
-                        to=""
+                        to={`/profile/feed/${follower.id}`}
                         style={{
                           display: "block",
                           whiteSpace: "nowrap",
