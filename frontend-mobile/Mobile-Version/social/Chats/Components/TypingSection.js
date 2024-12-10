@@ -17,7 +17,8 @@ import Groq from "groq-sdk";
 import { VITE_REACT_APP_GROQ_API_KEY } from "@env";
 
 const groq = new Groq({
-  apiKey: VITE_REACT_APP_GROQ_API_KEY,
+  apiKey: VITE_REACT_APP_GROQ_API_KEY
+,
   dangerouslyAllowBrowser: true,
 });
 
