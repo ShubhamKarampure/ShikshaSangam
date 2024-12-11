@@ -57,7 +57,7 @@ const BlogDetails = lazy(
   () => import("@/app/(social)/(with-topbar)/blogs/[blogId]/page")
 );
 const Meet = lazy(() => import("@/app/(social)/live/meet"));
-const JobPortal = lazy(() => import("@/app/(plain)/jobPortal/page"));
+const JobPortal = lazy(() => import("@/app/(social)/jobPortal/page"));
 
 //admin pages
 const AlumniUpload = lazy(() => import("@/app/(admin)/uploadAlumni/page"));
@@ -242,12 +242,6 @@ const otherRoutes = [
     name: 'Online Meet',
     element: <Meet />
   },
-  {
-    path: "/job",
-    name: "Job Portal",
-    element: <JobPortal />,
-  }
-   
 ];
 export const settingPagesRoutes = [
   {
@@ -339,6 +333,11 @@ export const socialWithTopbarRoutes = [
     name: "Group Details",
     element: <GroupDetails />,
   },
+  {
+    path: "/job",
+    name: "Job Portal",
+    element: <JobPortal />,
+  }
 ];
 
 export const profilePagesRoutes = [
