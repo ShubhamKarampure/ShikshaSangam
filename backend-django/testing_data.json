@@ -1,5 +1,42 @@
 [
     {
+<<<<<<< HEAD
+        "name": "Gaurav Chaliya",
+        "url": "https://www.linkedin.com/in/gaurav-chaliya-b6350a195/",
+        "headline": "Civil Judge, Rajasthan | NLUJ’22",
+        "pfp": "https://media.licdn.com/dms/image/v2/C4D03AQFaIogzislkEg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1652467333822?e=1739404800&v=beta&t=ppTnl9DxGqpaRAN0zbLmA_F2DCHhAlJKGNgCut91CC8",
+        "banner": "https://media.licdn.com/dms/image/v2/C5616AQEicKE76sTQww/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1591025991913?e=1739404800&v=beta&t=PVYe5O4KihYm-YTqhD2z8hUH4kvnH_2ElN72vcwwMJc",
+        "about": "",
+        "experience": [
+            {
+                "company_name": "Associate",
+                "duration": "IndusLaw · Full-time",
+                "logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHBIY08NSTI6A/company-logo_100_100/company-logo_100_100/0/1688191204920/indus_law_logo?e=1741824000&v=beta&t=zFPc_kITcDa5jN9XRKoQ6h2CaVEqRt6y-Jdvdryibos",
+                "designations": []
+            },
+            {
+                "company_name": "Intern",
+                "duration": "IndusLaw · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHBIY08NSTI6A/company-logo_100_100/company-logo_100_100/0/1688191204920/indus_law_logo?e=1741824000&v=beta&t=zFPc_kITcDa5jN9XRKoQ6h2CaVEqRt6y-Jdvdryibos",
+                "designations": []
+            },
+            {
+                "company_name": "Intern",
+                "duration": "L&L Partners · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/C4D0BAQEek8O4jw0cQw/company-logo_100_100/company-logo_100_100/0/1659081755168/ll_partners_logo?e=1741824000&v=beta&t=a8Jn-RmE7wIpVZwpQ13LYlt6HY9_r_LXvlAYpP6-m6o",
+                "designations": []
+            },
+            {
+                "company_name": "Intern",
+                "duration": "L&L Partners · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/C4D0BAQEek8O4jw0cQw/company-logo_100_100/company-logo_100_100/0/1659081755168/ll_partners_logo?e=1741824000&v=beta&t=a8Jn-RmE7wIpVZwpQ13LYlt6HY9_r_LXvlAYpP6-m6o",
+                "designations": []
+            },
+            {
+                "company_name": "Intern",
+                "duration": "Trilegal · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/D560BAQHaweKygsviiQ/company-logo_100_100/company-logo_100_100/0/1719808183881/trilegal_logo?e=1741824000&v=beta&t=8Qr7ftNUVNjLlWFKmi5V2qkHnUESaCtX54K6MZfID_E",
+=======
         "name": "Yash Gawde",
         "url": "https://www.linkedin.com/in/yashgawde/",
         "headline": "Founder | Automating Content Creation",
@@ -35,11 +72,20 @@
                 "company_name": "NFT Artist",
                 "duration": "Self-employed",
                 "logo": "",
+>>>>>>> 7b3618ba27e4c88dea72edef0c944e5c5b4d29c5
                 "designations": []
             }
         ],
         "projects": [],
         "skills": [
+<<<<<<< HEAD
+            "Legal Research",
+            "Legal Writing",
+            "Bankruptcy Law",
+            "Legal Research",
+            "Legal Writing",
+            "Bankruptcy Law"
+=======
             "Leadership",
             "Content",
             "After Effects",
@@ -93,6 +139,7 @@
             "Creativity Skills",
             "Creative Problem Solving",
             "Observational"
+>>>>>>> 7b3618ba27e4c88dea72edef0c944e5c5b4d29c5
         ]
     }
 ]
