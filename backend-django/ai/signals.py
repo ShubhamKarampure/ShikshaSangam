@@ -41,7 +41,7 @@ def update_user_embedding(sender, instance, created,  **kwargs):
    # Handle updates for specific fields
     updated_fields = kwargs.get('update_fields')
     print(f'updated_fields = {updated_fields}')
-    relevant_fields = {"resume", "preferences", "bio"}
+    relevant_fields = {"resume", "skills",'project','experience' "bio"}
 
     if updated_fields:
         print('updated')
