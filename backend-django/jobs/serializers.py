@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Job
+from .models import Job, Application
 
 class JobSerializer(serializers.ModelSerializer):
     posted_by_name = serializers.SerializerMethodField()
@@ -12,4 +12,10 @@ class JobSerializer(serializers.ModelSerializer):
         if hasattr(obj.posted_by, 'full_name') and obj.posted_by.full_name:
             return obj.posted_by.full_name
         return obj.posted_by.user.username
+
+class ApplicationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Application
+        fields = "__all__"
+
 

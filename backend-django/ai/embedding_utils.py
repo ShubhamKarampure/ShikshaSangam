@@ -3,8 +3,8 @@ import PyPDF2
 import requests
 import os
 
-embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-# embedding_model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
+#embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+embedding_model = SentenceTransformer("paraphrase-MiniLM-L6-v2")
   # Change as needed
 def get_cloudinary_url(key: str) -> str:
     """

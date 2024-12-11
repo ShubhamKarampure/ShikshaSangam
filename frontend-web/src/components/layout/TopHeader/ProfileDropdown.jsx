@@ -41,6 +41,8 @@ const ProfileDropdown = () => {
   const full_name =
     profile && profile.full_name ? profile.full_name : user.username;
 
+  const specialization =   profile && profile.specialization ? profile.specialization : '';
+
   const themeModes = [
     {
       icon: BsSun,
@@ -86,7 +88,7 @@ const ProfileDropdown = () => {
               <Link className="h6 stretched-link" to="">
                 {full_name}
               </Link>
-              <p className="small m-0">Web Developer</p>
+              <p className="small m-0">{specialization}</p>
             </div>
           </div>
           <DropdownItem

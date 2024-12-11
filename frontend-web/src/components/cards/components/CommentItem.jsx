@@ -81,6 +81,8 @@ const CommentItem = ({
     try {
       const newReply = await postReply(profile_id, commentId, userReply);
       setReplies([...replies, newReply]);
+      console.log(replies);
+      
       setUserReply('');
     } catch (error) {
       console.error("Error posting reply:", error);

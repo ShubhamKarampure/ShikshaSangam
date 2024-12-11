@@ -240,20 +240,26 @@ const OnboardingProfileLayout = ({ name, avatar, banner }) => {
 
   // Convert file to base64 when avatar and banner props are passed
   useEffect(() => {
+    const processFile = (file, setUrl) => {
+      if (file instanceof Blob) { // Check if it's a File or Blob
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setUrl(reader.result); // Update state with base64 image data
+        };
+        reader.readAsDataURL(file);
+      } else if (typeof file === "string") {
+        setUrl(file); // If it's already a string (URL), set it directly
+      } else {
+        console.error("Invalid file type:", file);
+      }
+    };
+
     if (avatar) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarUrl(reader.result); // Update state with base64 image data
-      };
-      reader.readAsDataURL(avatar); // Convert the file to base64
+      processFile(avatar, setAvatarUrl);
     }
     if (banner) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setBannerUrl(reader.result); // Update state with base64 image data
-      };
-      reader.readAsDataURL(banner); // Convert the file to base64
-    }
+      processFile(banner, setBannerUrl);
+    } 
   }, [avatar, banner]); // This will run whenever the avatar or banner prop changes
 
   return (
