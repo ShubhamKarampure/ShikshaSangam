@@ -4,12 +4,12 @@
 
 //import { YOUR_IP } from "@env";
 
-YOUR_IP = "192.168.1.5";
+YOUR_IP = "172.26.144.90";
 
 const BACKEND_URL = "http://" + YOUR_IP + ":8000";
 
-export const CHATSCREEN_POOLING = 10000;
-export const MESSAGESCREEN_POOLING = 6000;
+export const CHATSCREEN_POOLING = 6000;
+export const MESSAGESCREEN_POOLING = 10000;
 
 export default BACKEND_URL;
 
