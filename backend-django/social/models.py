@@ -99,7 +99,6 @@ class PollVote(models.Model):
         
         super().save(*args, **kwargs)
 
-
 class Notification(models.Model):
     NOTIFICATION_TYPES = (
         ('follow', 'Follow Request'),
@@ -112,18 +111,24 @@ class Notification(models.Model):
         ('message', 'Message'),
     )
 
-    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='notifications') # Whom is the notification sent to... 
+    userprofile = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name='received_notifications',  # Notifications received by this user
+    )  # Receiver
+    sender_profile = models.ForeignKey(
+        UserProfile,
+        on_delete=models.CASCADE,
+        related_name='sent_notifications',  # Notifications sent by this user
+        null=True, blank=True
+    )  # Sender
+
     title = models.CharField(max_length=255)
     content = models.TextField(null=True, blank=True)
     notification_type = models.CharField(max_length=20, choices=NOTIFICATION_TYPES)
-   
     is_read = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
-    avatar = models.URLField(max_length=255, null=True, blank=True)  # can be used as notification.userprofile.avatar
-
-    #from_user = models.ForeignKey(UserProfile, null=True, blank=True, related_name='notifications_from')
-    # follower_full_name = models.CharField(max_length=255, null=True, blank=True)  # Add full_name field
-    # follower_userprofile_id = models.IntegerField(null=True, blank=True)  # Add userprofile ID field
+    avatar = models.URLField(max_length=255, null=True, blank=True)  # Avatar of the sender
 
     def __str__(self):
         return f"Notification for {self.userprofile} - {self.title}"
@@ -135,87 +140,73 @@ class Notification(models.Model):
 
 @receiver(post_save, sender=Follow)
 def create_chat_for_mutual_follow(sender, instance, created, **kwargs):
-    if created:  # Only act on new Follow instances
+    if created:
         follower = instance.follower
         followed = instance.followed
 
-        # Check if a reciprocal follow exists
         reciprocal_follow = Follow.objects.filter(follower=followed, followed=follower).exists()
-
         if reciprocal_follow:
-            # Check if a chat already exists between these two users
             chat_exists = Chat.objects.filter(participants=follower).filter(participants=followed).exists()
-
             if not chat_exists:
-                # Create a new chat instance
                 chat = Chat.objects.create()
                 chat.participants.add(follower, followed)
                 chat.save()
-                
+
+
 @receiver(post_save, sender=Follow)
 def create_follow_notification(sender, instance, created, **kwargs):
     if created:
-
-        title = f"{instance.follower.full_name if instance.follower.full_name else instance.follower.user.username} sent you a follow request."
-        content = f"{instance.follower.full_name  if instance.follower.full_name else instance.follower.user.username} wants to follow you."
-
-        # Get the avatar of the follower (from the UserProfile model)
-        avatar = instance.follower.avatar_image if instance.follower.avatar_image else None
-        
-        # Create the notification
-        notification = Notification(
-            title=title,
-            content=content,
+        Notification.objects.create(
+            userprofile=instance.followed,
+            sender_profile=instance.follower,
+            title=f"{instance.follower.full_name or instance.follower.user.username} sent you a follow request.",
+            content=f"{instance.follower.full_name or instance.follower.user.username} wants to follow you.",
             notification_type='follow',
-            avatar=avatar,  
-            follower_userprofile_id=instance.follower.id  
-     )
-        notification.save()
+            avatar=(
+                instance.follower.avatar_image.url
+                if hasattr(instance.follower, 'avatar_image') and instance.follower.avatar_image
+                else None
+            ),
+        )
+
+
+@receiver(post_save, sender=Follow)
+def create_mutual_follow_notification(sender, instance, created, **kwargs):
+    if created:
+        reciprocal_follow = Follow.objects.filter(follower=instance.followed, followed=instance.follower).exists()
+        if reciprocal_follow:
+            Notification.objects.create(
+                userprofile=instance.follower,
+                sender_profile=instance.followed,
+                title=f"You and {instance.followed.full_name or instance.followed.user.username} are now following each other.",
+                content=f"You and {instance.followed.full_name or instance.followed.user.username} are now connected.",
+                notification_type='mutual_follow',
+                avatar=(
+                    instance.followed.avatar_image.url
+                    if hasattr(instance.followed, 'avatar_image') and instance.followed.avatar_image
+                    else None
+                ),
+            )
 
 
 @receiver(post_save, sender=Like)
 def create_like_notification(sender, instance, created, **kwargs):
     if created:
-        content_type = ContentType.objects.get_for_model(instance.content_object)
-        if content_type.model == 'post':
-            title = f"{instance.userprofile.full_name  if instance.userprofile.full_name else instance.userprofile.user.username} liked your post."
-            content = f"{instance.userprofile.full_name  if instance.userprofile.full_name else instance.userprofile.user.username} liked your post."
+        Notification.objects.create(
+            userprofile=instance.content_object.userprofile,
+            sender_profile=instance.userprofile,
+            title=f"{instance.userprofile.full_name or instance.userprofile.user.username} liked your post.",
+            content=f"{instance.userprofile.full_name or instance.userprofile.user.username} liked your post.",
+            notification_type='like',
+            avatar=(
+                instance.userprofile.avatar_image.url
+                if hasattr(instance.userprofile, 'avatar_image') and instance.userprofile.avatar_image
+                else None
+            ),
+        )
 
-            # Get the avatar of the user who liked (from the UserProfile model)
-            avatar = instance.userprofile.avatar_image.url if instance.userprofile.avatar_image else None
-            
-            notification = Notification(
-                userprofile=instance.content_object.userprofile,
-                title=title,
-                content=content,
-                notification_type='like',
-                avatar=avatar  # Include avatar URL in the notification
-            )
-            notification.save()
 
 @receiver(post_save, sender=Notification)
 def delete_read_notification(sender, instance, **kwargs):
-    # Check if the notification has been marked as read and delete it
     if instance.is_read:
-        instance.delete()  # Automatically deletes the notification
-        
-@receiver(post_save, sender=Follow)
-def create_mutual_follow_notification(sender, instance, created, **kwargs):
-    if created:
-        reciprocal_follow = Follow.objects.filter(follower=instance.followed, followed=instance.follower).exists()
-        
-        if reciprocal_follow:
-            title = f"You and {instance.follower.full_name  if instance.follower.full_name else instance.follower.user.username} are now following each other."
-            content = f"You and {instance.follower.full_name  if instance.follower.full_name else instance.follower.user.username} are now connected."
-            
-            # Get the avatar of the follower (from the UserProfile model)
-            avatar = instance.follower.avatar_image.url if instance.follower.avatar_image else None
-            
-            notification = Notification(
-                userprofile=instance.follower,
-                title=title,
-                content=content,
-                notification_type='mutual_follow',
-                avatar=avatar  # Include avatar URL in the notification
-            )
-            notification.save()
+        instance.delete()

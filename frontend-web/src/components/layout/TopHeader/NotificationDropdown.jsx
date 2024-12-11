@@ -49,7 +49,7 @@ const NotificationDropdown = () => {
   // Function to handle "Accept" action
   const handleAccept = async (notification) => {
     try {
-      const followedId = notification.userprofile;
+      const followedId = notification.sender_profile;
       console.log(notification)
       if (!followedId) {
         console.error(notification);
@@ -60,14 +60,15 @@ const NotificationDropdown = () => {
         follower: currentUserId,
         followed: followedId,
       };
-
+     
       console.log(followData);
-      response = await followUser(followData); // Follow the user
-      console.log(response)
-      await deleteNotification(notification.id); // Delete the notification
-      setNotifications((prev) => prev.filter((n) => n.id !== notification.id)); // Remove from UI
+      await followUser(followData); // Follow the user
+     
+      await clearAllNotifications(); // Clear all notifications
+      setNotifications([]); // Clear UI
+     
       showNotification({
-        message: `You accepted the follow request from ${notification.follower_name}.`,
+        message: `You accepted the follow request.`,
         variant: "success",
       });
     } catch (error) {
@@ -164,7 +165,7 @@ const NotificationDropdown = () => {
                           {notification.content}
                         </div>
                       )}
-                      {notification.notification_type === "follow" && (
+                      {notification.type === "follow" && (
                         <div className="d-flex">
                           <Button
                             variant="primary"

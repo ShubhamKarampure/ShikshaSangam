@@ -834,8 +834,7 @@ class NotificationViewSet(ModelViewSet):
     """
     queryset = Notification.objects.all()
     serializer_class = NotificationSerializer
-    permission_classes = [IsAuthenticated]  # Ensures the user must be authenticated
-
+  
 
     @action(detail=False, methods=['get'], url_path='get_own')
     def get_own_notification(self, request):
@@ -862,9 +861,8 @@ class NotificationViewSet(ModelViewSet):
                 'content':notification.content,
                 'created_at':notification.created_at,
                 'avatar': notification.avatar,
-                'type':notification.notification_type
-
-
+                'type':notification.notification_type,
+                'sender_profile':notification.sender_profile.id
             })
         return Response(response_data, status=status.HTTP_200_OK)
 
