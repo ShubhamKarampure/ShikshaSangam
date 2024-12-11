@@ -12,9 +12,9 @@ import {
 import { FaStarHalfStroke } from "react-icons/fa6";
 import { FaRegStar, FaStar, FaThumbsUp } from "react-icons/fa";
 import { BsGeoAlt, BsHandThumbsUpFill } from "react-icons/bs";
-import {  relatableEvents } from "./data";
+import { relatableEvents } from "./data";
 import { useNavigate, useParams } from "react-router-dom";
-import { BsGlobe, BsPeople, BsPersonPlus } from 'react-icons/bs';
+import { BsGlobe, BsPeople, BsPersonPlus } from "react-icons/bs";
 import PageMetaData from "@/components/PageMetaData";
 import { getEventDetails } from "@/api/events";
 
@@ -86,7 +86,7 @@ const EventDetails = () => {
         if (data) {
           setEvent(data);
           console.log(data);
-          
+
           setRegisterCount(data.registrations_count);
         } else navigate("/not-found");
       }
@@ -95,15 +95,18 @@ const EventDetails = () => {
   const [registerCount, setRegisterCount] = useState(
     event?.register_count ?? 0
   );
-  const counterData = [{
-    title: 'Visitors',
-    count: 125,
-    icon: BsGlobe
-  }, {
-    title: 'Registered',
-    count: registerCount,
-    icon: BsPersonPlus
-  }, ];
+  const counterData = [
+    {
+      title: "Visitors",
+      count: 125,
+      icon: BsGlobe,
+    },
+    {
+      title: "Registered",
+      count: registerCount,
+      icon: BsPersonPlus,
+    },
+  ];
   const attendees = [avatar1, avatar3, avatar4, avatar5, avatar6];
   return (
     <>
@@ -112,7 +115,9 @@ const EventDetails = () => {
         <Card
           className="card-body card-overlay-bottom border-0"
           style={{
-            backgroundImage: event.poster?`url(https://res.cloudinary.com/${cloudName}/${event.poster})`:`url(${event6})`,
+            backgroundImage: event.poster
+              ? `url(https://res.cloudinary.com/${cloudName}/${event.poster})`
+              : `url(${event6})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
@@ -122,9 +127,16 @@ const EventDetails = () => {
             <Col lg={2}>
               <div className="bg-mode text-center rounded overflow-hidden p-1 d-inline-block">
                 <div className="bg-primary p-2 text-white rounded-top small lh-1">
-                  Wednesday
+                  {new Date(event.date_time).toLocaleString("en-US", {
+                    weekday: "short",
+                  }) || "Wed"}
                 </div>
-                <h5 className="mb-0 py-2 lh-1">Dec 08</h5>
+                <h5 className="mb-0 py-2 lh-1">
+                  {new Date(event.date_time).toLocaleString("en-US", {
+                    month: "short",
+                    day: "2-digit",
+                  }) || "Dec 08"}
+                </h5>
               </div>
             </Col>
           </Row>
@@ -133,16 +145,14 @@ const EventDetails = () => {
               <h1 className="h3 mb-1 text-white">
                 {event?.name ?? "The learning conference"}
               </h1>
-              <a
-                className="text-white"
-                href="https://themes.getbootstrap.com/store/webestica"
-                target="_blank"
-              >
-                https://themes.getbootstrap.com/store/webestica
-              </a>
+              {event?.tags?.map((tag)=>(
+                <span className="badge bg-danger text-danger bg-opacity-10 small m-1">
+                {tag}
+              </span>
+              ))}
             </Col>
             <Col lg={3} className="text-lg-end">
-              <Button variant="primary"> Buy ticket </Button>
+              <Button variant="primary"> Register </Button>
             </Col>
           </Row>
         </Card>
@@ -156,31 +166,42 @@ const EventDetails = () => {
             </Col>
             <Col sm={6} lg={4}>
               <h5>Timings</h5>
-              <p className="small mb-0">09:00 AM - 05:00 PM (Business)</p>
-              <p className="small mb-0"> 09:00 AM - 03:00 PM (Business)</p>
+              <p className="small mb-0">
+                {new Date(event.date_time).toLocaleString("en-US", {
+                  hour: "numeric",
+                  minute: "numeric",
+                  hour12: true,
+                })}
+              </p>
             </Col>
             <Col sm={6} lg={4}>
               <h5>Entry fees</h5>
               <p className="small mb-0">
-                <a href=""> Free Ticket </a>For photography professionals check
-                official website
+                {/* <a href=""> Free Ticket </a>For photography professionals check
+                official website */}
+                <a href="">{event.registration_fee}</a>
               </p>
             </Col>
             <Col sm={6} lg={4}>
               <h5>Category &amp; type</h5>
-              <p className="small mb-0">Trade Show</p>
-              <p className="small mb-0"> Photography &amp; Prewedding</p>
+              <p className="small mb-0">{event.type || "Contest"} </p>
+              {/* <p className="small mb-0"> Photography &amp; Prewedding</p> */}
             </Col>
             <Col sm={6} lg={4}>
-              <h5>Estimated turnout</h5>
-              <p className="small mb-0">140000 Visitors</p>
-              <p className="small mb-0"> 1800 Exhibitors</p>
-              <span className="badge bg-danger text-danger bg-opacity-10 small">
-                Estimated Count
-              </span>
+              <h5>Prices Worth</h5>
+              <p className="small mb-0">First {event.prizes?.first || " Rs"}</p>
+              <p className="small mb-0">
+                {" "}
+                Second {event.prizes?.second || "Rs"}
+              </p>
+              <p className="small mb-0">Third {event.prizes?.third || "Rs"}</p>
+              {/* <p className="small mb-0"> 1800 Exhibitors</p> */}
+              {/* <span className="badge bg-danger text-danger bg-opacity-10 small">
+                Organised By
+              </span> */}
             </Col>
             <Col sm={6} lg={4}>
-              <ul className="d-flex list-unstyled mb-1">
+              {/* <ul className="d-flex list-unstyled mb-1">
                 <li className="me-2">4.5</li>
                 {Array(Math.floor(4.5))
                   .fill(0)
@@ -207,7 +228,9 @@ const EventDetails = () => {
               <p className="mb-0 small">
                 <strong> #2 of 3506</strong> Events in Photography &amp;
                 Prewedding
-              </p>
+              </p> */}
+              <h5>Organised by</h5>
+              <p className="small mb-0">{event.organising_committee}</p>
             </Col>
             <Col sm={6} lg={4}>
               <div className="d-flex">
@@ -225,7 +248,7 @@ const EventDetails = () => {
           <hr className="mt-4" />
           <Row className="align-items-center">
             <Col lg={6}>
-              <h5>Attendees</h5>
+              <h5>Speakers</h5>
               <ul className="avatar-group list-unstyled align-items-center">
                 {attendees.map((avatar, idx) => (
                   <li className="avatar avatar-xs" key={idx}>
