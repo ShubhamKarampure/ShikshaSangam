@@ -160,7 +160,7 @@ def create_follow_notification(sender, instance, created, **kwargs):
         content = f"{instance.follower.full_name  if instance.follower.full_name else instance.follower.user.username} wants to follow you."
 
         # Get the avatar of the follower (from the UserProfile model)
-        avatar = instance.follower.avatar_image.url if instance.follower.avatar_image else None
+        avatar = instance.follower.avatar_image if instance.follower.avatar_image else None
         
         # Create the notification
         notification = Notification(
@@ -195,7 +195,12 @@ def create_like_notification(sender, instance, created, **kwargs):
             )
             notification.save()
 
-
+@receiver(post_save, sender=Notification)
+def delete_read_notification(sender, instance, **kwargs):
+    # Check if the notification has been marked as read and delete it
+    if instance.is_read:
+        instance.delete()  # Automatically deletes the notification
+        
 @receiver(post_save, sender=Follow)
 def create_mutual_follow_notification(sender, instance, created, **kwargs):
     if created:
