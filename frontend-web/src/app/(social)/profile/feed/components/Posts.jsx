@@ -62,25 +62,27 @@ const Posts = () => {
   const [allPosts, setAllPosts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  const limit = 2;
+  const [offset, setOffset] = useState(0);
+  const [toggle,setToggle] = useState(false);
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
-        setIsLoading(true);
-        const data = await getAllFeed();
+        const data = await getAllFeed(limit,offset);
         console.log(data);
 
-        setAllPosts(data);
+        setAllPosts([...allPosts,...data]);
       } catch (err) {
         console.error("Error fetching feeds:", err);
         setError(err);
       } finally {
         setIsLoading(false);
       }
+      setToggle(false)
     };
 
     fetchFeeds();
-  }, []);
+  }, [offset]);
 
   if (error) {
     return <p>Error loading feeds: {error.message}</p>;
@@ -105,7 +107,7 @@ const Posts = () => {
       <p>No posts available.</p>
     )}
 
-    <LoadMoreButton />
+<LoadMoreButton setOffset={setOffset} limit={limit} offset={offset} toggle={toggle} setToggle={setToggle}/>
   </>
   )
 };
