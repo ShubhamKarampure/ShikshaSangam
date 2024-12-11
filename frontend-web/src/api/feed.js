@@ -129,7 +129,7 @@ export const getReply = async (commentId) => {
     createdAt: r.reply.created_at, // Creation date
     socialUser: {
       avatar: r.user.avatar, // User's avatar URL
-      name: r.user.username, // Username
+      name: r.user.full_name || r.user.username, // Username
     },
     likesCount: r.likes_count || 0, // Likes count
     is_liked: r.is_liked, // Whether the user has liked the reply

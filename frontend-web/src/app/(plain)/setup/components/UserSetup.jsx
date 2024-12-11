@@ -100,7 +100,14 @@ function UserSetup({ role: initialRole, onBackClick }) {
     }
 
     if (scrapedData.bannerImage) {
-      setBannerImage(scrapedData.bannerImage); // Assuming bannerImage is either URL or file
+      if (typeof scrapedData.avatar === 'string' && scrapedData.bannerImage.startsWith('http')) {
+        // If it's a URL, download and send as file
+        const response = await fetch(scrapedData.bannerImage);
+        const blob = await response.blob();
+        setBannerImage(blob); // Set avatar as a Blob
+      } else {
+        setBannerImage(scrapedData.blob); // If it's already a file, set it directly
+      }
     }
 
     // Update experience, projects, and skills if available

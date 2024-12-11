@@ -33,7 +33,8 @@ const AdminDashboard = () => {
       console.log(res);
       
       if(res){
-        setUsers(res)
+        const z=res?.filter((user)=>user.role!=='college_admin')
+        setUsers(z)
       }else{
         console.log(res);
         
