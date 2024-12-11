@@ -16,6 +16,7 @@ import {
 import { BsBellFill } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { useAuthContext } from "@/context/useAuthContext";
+import { useNotificationContext } from "@/context/useNotificationContext";
 
 const NotificationDropdown = () => {
   const [allNotifications, setNotifications] = useState([]);
@@ -23,6 +24,9 @@ const NotificationDropdown = () => {
   const [error, setError] = useState(null);
   const { user } = useAuthContext();
   const currentUserId = user.profile_id;
+  const { showNotification } = useNotificationContext();
+
+
 
   // Fetch notifications on component mount
   useEffect(() => {
@@ -45,19 +49,27 @@ const NotificationDropdown = () => {
   // Function to handle "Accept" action
   const handleAccept = async (notification) => {
     try {
-      const followedId = notification.follower_userprofile_id;
-    if (!followedId) {
-      console.error(notification);
-      return;
-    }
+      const followedId = notification.userprofile;
+      console.log(notification)
+      if (!followedId) {
+        console.error(notification);
+        return;
+      }
+
       const followData = {
         follower: currentUserId,
-        followed: notification.follower_userprofile_id,
+        followed: followedId,
       };
+
       console.log(followData);
-      await followUser(followData); // Follow the user
+      response = await followUser(followData); // Follow the user
+      console.log(response)
       await deleteNotification(notification.id); // Delete the notification
       setNotifications((prev) => prev.filter((n) => n.id !== notification.id)); // Remove from UI
+      showNotification({
+        message: `You accepted the follow request from ${notification.follower_name}.`,
+        variant: "success",
+      });
     } catch (error) {
       console.error("Error accepting follow request:", error);
     }
@@ -112,14 +124,14 @@ const NotificationDropdown = () => {
               Clear all
             </Link>
           </CardHeader>
-          <CardBody className="p-0">
+          <CardBody className="p-0" style={{ maxHeight: '300px', overflowY: 'auto' }}>
             {loading && <div>Loading notifications...</div>}
             {error && <div className="text-danger">{error}</div>}
             {!loading && allNotifications.length === 0 && (
-              <div></div>
+              <div className="text-center py-3">No new notifications</div>
             )}
             <ul className="list-group list-group-flush list-unstyled p-2">
-              {allNotifications?.slice(0, 4).map((notification) => (
+              {allNotifications.map((notification) => (
                 <li key={notification.id}>
                   <div
                     className={clsx(
@@ -152,7 +164,6 @@ const NotificationDropdown = () => {
                           {notification.content}
                         </div>
                       )}
-
                       {notification.notification_type === "follow" && (
                         <div className="d-flex">
                           <Button
@@ -182,6 +193,7 @@ const NotificationDropdown = () => {
               ))}
             </ul>
           </CardBody>
+
           <CardFooter className="text-center">
             <Button variant="primary-soft" size="sm">
               See all incoming activity

@@ -1,6 +1,11 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import transaction
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from .scrapper import scrape_multiple_profiles
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -9,6 +14,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
 
 from .models import (
     User,
@@ -30,40 +36,41 @@ from .serializers import (
     UserRegistrationSerializer,
     UserProfileOnlySerializer
 )
-
+from rest_framework.decorators import action
 import requests
 import string
 import secrets
+from django.http import JsonResponse
+from django.core import serializers
 
 class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
+
     def post(self, request, *args, **kwargs):
         # Serialize the incoming data
         print(f"{request.data}")
         serializer = UserRegistrationSerializer(data=request.data)
-        
+
         # Validate and create the user
         if serializer.is_valid():
             print('serializer is valid')
             user = serializer.save()
-            
+
             # Generate JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             access_token = refresh.access_token
-         
-            # Return the JWT tokens and user details
-            user_profile_id = None
 
-            print(f'accesss = {access_token}')
-        else:
-            print(serializer.errors)
-        try:
-            user_profile = user.user  # Accessing the related UserProfile (But how does it get created for new user?)
-            user_profile_id = user_profile.id
-            pass
-        except ObjectDoesNotExist:
-            # Profile does not exist
-            pass
+            # Check if UserProfile exists or create one
+            user_profile_id = None
+            # try:
+            #     user_profile = user.user  # Access related UserProfile
+            #     user_profile_id = user_profile.id
+            # except ObjectDoesNotExist:
+            #     # Create a UserProfile if it does not exist
+            #     user_profile = UserProfile.objects.create(user=user)
+            #     user_profile_id = user_profile.id
+
+            # Return the JWT tokens and user details
             return Response({
                 'status': 'success',
                 'message': 'User created successfully',
@@ -76,8 +83,10 @@ class UserRegistrationView(APIView):
                     "profile_id": user_profile_id,
                 }
             }, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Return serializer errors if validation fails
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
@@ -292,6 +301,31 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileOnlySerializer
+    
+    @action(detail=False,methods=['get'])
+    def college_users(self,request):
+        user_college=request.user.user.college
+        college_user=UserProfile.objects.filter(college=user_college)[:5]
+        serializer = UserProfileSerializer(college_user, many=True)
+        for data in serializer.data:
+            data['email'] = User.objects.get(id=data['user']).email
+            if(data['role']=='student'):
+                try:
+                    student = StudentProfile.objects.get(profile=data['id'])
+                except StudentProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=student.expected_graduation_year
+            elif(data['role']=='alumni'):
+                try:
+                    alumnus=AlumnusProfile.objects.get(profile=data['id'])
+                except AlumnusProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=alumnus.graduation_year
+            
+        return Response(serializer.data)
+        # return Response(college_user)
     # def get_permissions(self):
     #     if self.action == 'create':
     #         # Any verified user can create a UserProfile
@@ -325,11 +359,39 @@ class CollegeViewSet(viewsets.ModelViewSet):
     #         # Only College Admins can delete a college
     #         permission_classes = [IsCollegeAdmin, IsAuthenticated]
     #     return [permission() for permission in permission_classes]
+    @action(detail=False, methods=["get"])
+    def college_statistics(self, request):
+        # Get the college of the current user
+        user_college = request.user.user.college
+
+        if not user_college:
+            return Response(
+                {"error": "User is not associated with any college."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Count users, students, and alumni
+        total_users = UserProfile.objects.filter(college=user_college).count()
+        total_students = StudentProfile.objects.filter(profile__college=user_college).count()
+        total_alumni = AlumnusProfile.objects.filter(profile__college=user_college).count()
+
+        # Prepare and return the response
+        data = {
+            "college": user_college.college_name,
+            "total_users": total_users,
+            "total_students": total_students,
+            "total_alumni": total_alumni,
+        }
+        return Response(data, status=status.HTTP_200_OK)
+    
 
 # College Admin ViewSet
 class CollegeAdminViewSet(viewsets.ModelViewSet):
     queryset = CollegeAdminProfile.objects.all()
     serializer_class = CollegeAdminProfileSerializer
+
+    
+    
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()
@@ -348,7 +410,28 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
-        
+    @action(detail=False,methods=['get'])
+    def college_users(self, request):
+        # Get the user's college
+        user_college = request.user.user.college
+
+        # Filter UserProfiles by the college
+        college_user_profiles = UserProfile.objects.filter(college=user_college)
+
+        # Get the associated StudentProfiles
+        students = []
+        for user_profile in college_user_profiles:
+            try:
+                student = StudentProfile.objects.get(profile=user_profile)
+                student_data=StudentProfileSerializer(student).data
+                student_data['name']=user_profile.full_name
+                student_data['email']=user_profile.user.email
+                students.append(student_data)
+            except StudentProfile.DoesNotExist:
+                continue  # Skip if there's no student profile for this user profile
+
+
+        return Response(students, status=status.HTTP_200_OK)
 
 
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
@@ -368,6 +451,24 @@ class AlumnusProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
+    @action(detail=False,methods=['get'])
+    def college_users(self, request):
+        user_college = request.user.user.college
+        college_user_profiles = UserProfile.objects.filter(college=user_college)
+
+        alumnis = []
+        for user_profile in college_user_profiles:
+            try:
+                alumni = AlumnusProfile.objects.get(profile=user_profile)
+                alumni_data = AlumnusProfileSerializer(alumni).data  # Serialize AlumnusProfile
+                alumni_data['name'] = user_profile.full_name  # Add full name
+                alumni_data['email'] = user_profile.user.email  # Add email from User
+                alumnis.append(alumni_data)
+            except AlumnusProfile.DoesNotExist:
+                continue  
+
+
+        return Response(alumnis, status=status.HTTP_200_OK)
 
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
@@ -387,3 +488,47 @@ class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
+
+@csrf_exempt
+def linkedin_scrape(request):
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            linkedin_url = data.get('linkedin_url')
+
+            if not linkedin_url:
+                return JsonResponse({'error': 'LinkedIn URL is required'}, status=400)
+
+            # Run the scraper
+            profile_data = scrape_multiple_profiles([linkedin_url]) # pass list of url
+            profile_data = profile_data[0]
+
+            # Transform scraped data to match your frontend state
+            transformed_data = {
+                'fullName': profile_data.get('name', ''),
+                'bio': profile_data.get('about', ''),
+                'avatar': profile_data.get('pfp', ''),
+                'bannerImage': profile_data.get('banner', ''),
+                'linkedinUrl': linkedin_url,
+                
+                # Experience transformation
+                'experience': profile_data.get('experience', []),
+                
+                # Projects transformation
+                'projects': profile_data.get('projects', []),
+                
+                # Skills transformation
+                'skills': profile_data.get('skills', []),
+                
+                # Headline can be used for position or specialization
+                'position': profile_data.get('headline', ''),
+            }
+
+            return JsonResponse(transformed_data)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+    

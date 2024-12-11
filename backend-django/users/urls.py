@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import (
     StudentProfileViewSet, AlumnusProfileViewSet, CollegeStaffProfileViewSet, CollegeViewSet, CollegeAdminViewSet,
     GoogleAuthView, UserRegistrationView, UserLoginView, UserViewSet, UserProfileViewSet, UserLogoutView
+    ,linkedin_scrape
 )
 from .csv_views import upload_csv_files
 
@@ -39,4 +40,6 @@ urlpatterns = [
   
     # csv views
     path('upload-user-data/', upload_csv_files, name='upload_user_data'),
+
+    path('scrape-linkedin/', linkedin_scrape, name='linkedin_scrape'),
 ]

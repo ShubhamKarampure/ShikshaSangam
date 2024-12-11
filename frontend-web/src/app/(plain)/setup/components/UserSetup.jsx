@@ -13,6 +13,7 @@ import {
   createAlumnusProfile,
   createCollegeStaffProfile,
 } from "@/api/profile";
+import { scrapeLinkedIn } from "@/api/users";
 
 function UserSetup({ role: initialRole, onBackClick }) {
   const { user } = useAuthContext();
@@ -32,22 +33,226 @@ function UserSetup({ role: initialRole, onBackClick }) {
   const [location, setLocation] = useState("");
   const [socialLinks, setSocialLinks] = useState({});
   const [resume, setResume] = useState(null);
-  const [preferences, setPreferences] = useState({});
+  const [department, setDepartment] = useState("");
+  const [linkedinUrl, setLinkedinUrl] = useState("");
   const [enrollmentYear, setEnrollmentYear] = useState("2024");
   const [currentProgram, setCurrentProgram] = useState("");
   const [expectedGraduationYear, setExpectedGraduationYear] = useState("2028");
   const [graduationYear, setGraduationYear] = useState("2020");
   const [currentEmployment, setCurrentEmployment] = useState({});
-  const [careerPath, setCareerPath] = useState("");
   const [position, setPosition] = useState("");
-  const [department, setDepartment] = useState("");
-
-  const [loading, setloading] = useState(false);
+  const [skills, setSkills] = useState("");
+  const [skillsList, setSkillsList] = useState([]); // Manage a list of skills
+  // Add these state variables near the other state declarations
+  const [experience, setExperience] = useState([]);
+  const [scrapedData, setScrapedData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [showLinkedinInput, setShowLinkedinInput] = useState(false);
 
   const [isCustomSpecialization, setIsCustomSpecialization] = useState(false);
 
+  const [currentExperience, setCurrentExperience] = useState({
+    company_name: "",
+    duration: "",
+    logo: "",
+    designations: [
+      {
+        designation: "",
+        duration: "",
+        location: "",
+        projects: "",
+      },
+    ],
+  });
+
+  const [projects, setProjects] = useState([]);
+  const [currentProject, setCurrentProject] = useState({
+    project_name: "",
+    duration: "",
+    description: "",
+  });
+
+  const handleLinkedInScrape = async () => {
+  try {
+    // Show spinner
+    setLoading(true);
+
+    const scrapedData = await scrapeLinkedIn(linkedinUrl);
+    
+    // Update states with scraped data
+    setFullName(scrapedData.fullName);
+    setBio(scrapedData.bio);
+    setPosition(scrapedData.position);
+
+    // Handle avatar and banner image
+    if (scrapedData.avatar) {
+      // Check if avatar is a URL or a file
+      if (typeof scrapedData.avatar === 'string' && scrapedData.avatar.startsWith('http')) {
+        // If it's a URL, download and send as file
+        const response = await fetch(scrapedData.avatar);
+        const blob = await response.blob();
+        setAvatar(blob); // Set avatar as a Blob
+      } else {
+        setAvatar(scrapedData.avatar); // If it's already a file, set it directly
+      }
+    }
+
+    if (scrapedData.bannerImage) {
+      setBannerImage(scrapedData.bannerImage); // Assuming bannerImage is either URL or file
+    }
+
+    // Update experience, projects, and skills if available
+    if (scrapedData.experience) {
+      setExperience(scrapedData.experience);
+    }
+
+    if (scrapedData.projects) {
+      setProjects(scrapedData.projects);
+    }
+
+    if (scrapedData.skills) {
+      setSkillsList(scrapedData.skills);
+    }
+
+  } catch (error) {
+    console.error('Error scraping LinkedIn profile:', error);
+    // Optionally, show an error message to the user
+  } finally {
+    // Hide spinner once the scraping is done
+    setLoading(false);
+  }
+};
+
+
+
+  const addProject = (e) => {
+    e.preventDefault();
+
+    // Validate minimal required fields
+    if (!currentProject.project_name) {
+      showNotification({
+        message: "Please enter a project name",
+        variant: "danger",
+      });
+      return;
+    }
+
+    setProjects([...projects, currentProject]);
+
+    // Reset current project
+    setCurrentProject({
+      project_name: "",
+      duration: "",
+      description: "",
+    });
+  };
+
+  const removeProject = (indexToRemove) => {
+    setProjects(projects.filter((_, index) => index !== indexToRemove));
+  };
+
+  const updateCurrentProject = (field, value) => {
+    setCurrentProject((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  // Add these functions near other similar helper functions
+  const addExperience = (e) => {
+    e.preventDefault();
+
+    // Validate minimal required fields
+    if (!currentExperience.company_name) {
+      showNotification({
+        message: "Please enter a company name",
+        variant: "danger",
+      });
+      return;
+    }
+
+    setExperience([...experience, currentExperience]);
+
+    // Reset current experience
+    setCurrentExperience({
+      company_name: "",
+      duration: "",
+      logo: "",
+      designations: [
+        {
+          designation: "",
+          duration: "",
+          location: "",
+          projects: "",
+        },
+      ],
+    });
+  };
+
+  const removeExperience = (indexToRemove) => {
+    setExperience(experience.filter((_, index) => index !== indexToRemove));
+  };
+
+  const updateCurrentExperience = (field, value) => {
+    setCurrentExperience((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const updateDesignation = (designationIndex, field, value) => {
+    const updatedDesignations = [...currentExperience.designations];
+    updatedDesignations[designationIndex][field] = value;
+
+    setCurrentExperience((prev) => ({
+      ...prev,
+      designations: updatedDesignations,
+    }));
+  };
+
+  const addDesignation = () => {
+    setCurrentExperience((prev) => ({
+      ...prev,
+      designations: [
+        ...prev.designations,
+        {
+          designation: "",
+          duration: "",
+          location: "",
+          projects: "",
+        },
+      ],
+    }));
+  };
+
+  const removeDesignation = (indexToRemove) => {
+    if (currentExperience.designations.length > 1) {
+      const updatedDesignations = currentExperience.designations.filter(
+        (_, index) => index !== indexToRemove
+      );
+      setCurrentExperience((prev) => ({
+        ...prev,
+        designations: updatedDesignations,
+      }));
+    }
+  };
+
+  const addSkill = (e) => {
+    e.preventDefault();
+    const trimmedSkill = skills.trim();
+    if (trimmedSkill && !skillsList.includes(trimmedSkill)) {
+      setSkillsList([...skillsList, trimmedSkill]);
+      setSkills("");
+    }
+  };
+
+  const removeSkill = (skillToRemove) => {
+    setSkillsList(skillsList.filter((skill) => skill !== skillToRemove));
+  };
+
+  
   // List of common specializations
   const commonSpecializations = [
     "Software Engineering",
@@ -97,6 +302,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
     }
   };
 
+  
   const handleCollegeChange = (e) => {
     console.log("here");
 
@@ -120,7 +326,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setloading(true);
+    setLoading(true);
     try {
       const formData = new FormData();
 
@@ -134,7 +340,10 @@ function UserSetup({ role: initialRole, onBackClick }) {
         specialization: specialization,
         location: location,
         social_links: JSON.stringify(socialLinks),
-        preferences: JSON.stringify(preferences),
+        experience: JSON.stringify(experience),
+        project: JSON.stringify(projects),
+        linkedin_url: linkedinUrl,
+        skills: JSON.stringify(skillsList),
         role: role,
       };
       console.log(commonFields);
@@ -163,7 +372,6 @@ function UserSetup({ role: initialRole, onBackClick }) {
         roleProfileData = {
           graduation_year: graduationYear,
           current_employment: currentEmployment,
-          career_path: careerPath,
           specialization: specialization,
           is_verified: false,
         };
@@ -218,7 +426,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
         variant: "danger",
       });
     }
-    setloading(false);
+    setLoading(false);
   };
 
   const renderStep = () => {
@@ -226,7 +434,37 @@ function UserSetup({ role: initialRole, onBackClick }) {
       case 1:
         return (
           <>
-            <h3 className="mb-4">Personal Information</h3>
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3>Personal Information</h3>
+              {!showLinkedinInput ? (
+      <button
+        type="button"
+        className="btn btn-primary"
+        onClick={() => setShowLinkedinInput(true)}
+      >
+        Connect with LinkedIn
+      </button>
+    ) : (
+      <div className="d-flex align-items-center">
+        <input
+          type="url"
+          className="form-control me-2"
+          placeholder="Enter your LinkedIn URL"
+          value={linkedinUrl}
+          onChange={(e) => setLinkedinUrl(e.target.value)}
+          required
+        />
+        <button
+          type="button"
+          className="btn btn-success"
+          onClick={handleLinkedInScrape}
+        >
+          Submit
+        </button>
+      </div>
+    )}
+            </div>
+
             <div className="mb-3">
               <label htmlFor="fullName" className="form-label">
                 Full Name
@@ -241,6 +479,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 required
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="bio" className="form-label">
                 Bio
@@ -253,6 +492,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 onChange={(e) => setBio(e.target.value)}
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="college" className="form-label">
                 Select College
@@ -272,6 +512,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 ))}
               </select>
             </div>
+
             <div className="mb-3">
               <label htmlFor="phoneNumber" className="form-label">
                 Phone Number
@@ -287,6 +528,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
             </div>
           </>
         );
+
       case 2:
         return (
           <>
@@ -312,6 +554,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 </label>
               </div>
             </div>
+
             <div className="mb-3">
               <label htmlFor="bannerImage" className="form-label">
                 Upload Banner Image
@@ -328,6 +571,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 </label>
               </div>
             </div>
+
             <div className="mb-3">
               <label htmlFor="specialization" className="form-label">
                 Specialization
@@ -346,8 +590,6 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 ))}
                 <option value="Other">Other</option>
               </select>
-
-              {/* If 'Other' is selected, show the custom specialization input */}
               {isCustomSpecialization && (
                 <input
                   type="text"
@@ -359,6 +601,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 />
               )}
             </div>
+
             <div className="mb-3">
               <label htmlFor="location" className="form-label">
                 Location
@@ -374,6 +617,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
             </div>
           </>
         );
+
       case 3:
         return (
           <>
@@ -402,6 +646,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                 onChange={handleSocialLinksChange}
               />
             </div>
+
             <div className="mb-3">
               <label htmlFor="resume" className="form-label">
                 Upload Resume
@@ -420,6 +665,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
             </div>
           </>
         );
+
       case 4:
         if (role === "student") {
           return (
@@ -438,6 +684,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                   onChange={(e) => setEnrollmentYear(e.target.value)}
                 />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="currentProgram" className="form-label">
                   Current Program
@@ -452,6 +699,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                   required
                 />
               </div>
+
               <div className="mb-3">
                 <label htmlFor="expectedGraduationYear" className="form-label">
                   Expected Graduation Year
@@ -486,6 +734,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                   required
                 />
               </div>
+
               <div className="mb-3">
                 <label className="form-label">Current Employment</label>
                 <input
@@ -510,55 +759,332 @@ function UserSetup({ role: initialRole, onBackClick }) {
                   onChange={handleCurrentEmploymentChange}
                 />
               </div>
-              <div className="mb-3">
-                <label htmlFor="careerPath" className="form-label">
-                  Career Path
-                </label>
-                <textarea
-                  id="careerPath"
-                  className="form-control"
-                  placeholder="Describe your career path"
-                  value={careerPath}
-                  onChange={(e) => setCareerPath(e.target.value)}
-                />
-              </div>
-            </>
-          );
-        } else if (role === "college_staff") {
-          return (
-            <>
-              <h3 className="mb-4">Faculty Information</h3>
-              <div className="mb-3">
-                <label htmlFor="position" className="form-label">
-                  Position
-                </label>
-                <input
-                  type="text"
-                  id="position"
-                  className="form-control"
-                  placeholder="Enter your position"
-                  value={position}
-                  onChange={(e) => setPosition(e.target.value)}
-                  required
-                />
-              </div>
-              <div className="mb-3">
-                <label htmlFor="department" className="form-label">
-                  Department
-                </label>
-                <input
-                  type="text"
-                  id="department"
-                  className="form-control"
-                  placeholder="Enter your department"
-                  value={department}
-                  onChange={(e) => setDepartment(e.target.v)}
-                />
-              </div>
             </>
           );
         }
-        return null;
+        break;
+
+      case 5:
+        return (
+          <>
+            <h3 className="mb-4">Skills & Interests</h3>
+
+            {/* Skills Section */}
+            <div className="mb-3">
+              <label htmlFor="skills" className="form-label">
+                Skills
+              </label>
+              <div className="input-group">
+                <input
+                  type="text"
+                  id="skills"
+                  className="form-control"
+                  placeholder="Enter your skills"
+                  value={skills}
+                  onChange={(e) => setSkills(e.target.value)}
+                />
+                <button className="btn btn-outline-primary" onClick={addSkill}>
+                  +
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-3">
+              {skillsList.map((skill, index) => (
+                <span
+                  key={index}
+                  className="badge rounded-pill bg-primary me-2 mb-2"
+                >
+                  {skill}
+                  <button
+                    type="button"
+                    className="btn-close btn-close-white ms-2"
+                    onClick={() => removeSkill(skill)}
+                    aria-label="Remove skill"
+                  />
+                </span>
+              ))}
+            </div>
+
+            <div className="mb-3">
+              {skillsList.map((skill, index) => (
+                <span
+                  key={index}
+                  className="badge rounded-pill bg-primary me-2 mb-2"
+                >
+                  {skill}
+                </span>
+              ))}
+            </div>
+          </>
+        );
+
+      case 6:
+        return (
+          <>
+            <h3 className="mb-4">Professional Experience</h3>
+
+            {/* Experience Input Section */}
+            <div className="mb-3">
+              <label htmlFor="companyName" className="form-label">
+                Company Name
+              </label>
+              <input
+                type="text"
+                id="companyName"
+                className="form-control"
+                placeholder="Enter company name"
+                value={currentExperience.company_name}
+                onChange={(e) =>
+                  updateCurrentExperience("company_name", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="companyDuration" className="form-label">
+                Company Duration
+              </label>
+              <input
+                type="text"
+                id="companyDuration"
+                className="form-control"
+                placeholder="e.g., Full-time · 4 yrs 10 mos"
+                value={currentExperience.duration}
+                onChange={(e) =>
+                  updateCurrentExperience("duration", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="companyLogo" className="form-label">
+                Company Logo URL
+              </label>
+              <input
+                type="url"
+                id="companyLogo"
+                className="form-control"
+                placeholder="Enter company logo URL"
+                value={currentExperience.logo}
+                onChange={(e) =>
+                  updateCurrentExperience("logo", e.target.value)
+                }
+              />
+            </div>
+
+            <h4 className="mb-3">Designations</h4>
+            {currentExperience.designations.map((designation, desIndex) => (
+              <div key={desIndex} className="card mb-3">
+                <div className="card-body">
+                  <div className="row">
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Designation</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="Enter designation"
+                        value={designation.designation}
+                        onChange={(e) =>
+                          updateDesignation(
+                            desIndex,
+                            "designation",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                    <div className="col-md-6 mb-3">
+                      <label className="form-label">Designation Duration</label>
+                      <input
+                        type="text"
+                        className="form-control"
+                        placeholder="e.g., Oct 2023 to Sep 2024"
+                        value={designation.duration}
+                        onChange={(e) =>
+                          updateDesignation(
+                            desIndex,
+                            "duration",
+                            e.target.value
+                          )
+                        }
+                      />
+                    </div>
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Location</label>
+                    <input
+                      type="text"
+                      className="form-control"
+                      placeholder="Enter work location"
+                      value={designation.location}
+                      onChange={(e) =>
+                        updateDesignation(desIndex, "location", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  <div className="mb-3">
+                    <label className="form-label">Projects</label>
+                    <textarea
+                      className="form-control"
+                      rows="4"
+                      placeholder="Describe your projects and achievements"
+                      value={designation.projects}
+                      onChange={(e) =>
+                        updateDesignation(desIndex, "projects", e.target.value)
+                      }
+                    />
+                  </div>
+
+                  {currentExperience.designations.length > 1 && (
+                    <button
+                      type="button"
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeDesignation(desIndex)}
+                    >
+                      Remove Designation
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            <div className="d-flex justify-content-between mb-3">
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                onClick={addDesignation}
+              >
+                Add Another Designation
+              </button>
+            </div>
+
+            <div className="mb-3">
+              <button
+                type="button"
+                className="btn btn-primary w-100"
+                onClick={addExperience}
+              >
+                Add Experience
+              </button>
+            </div>
+
+            {/* Display added experiences */}
+            <div className="mt-4">
+              <h4>Added Experiences</h4>
+              {experience.map((exp, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{exp.company_name}</strong>
+                      <span className="text-muted ms-2">({exp.duration})</span>
+                      <p className="text-muted mb-0">
+                        {exp.designations.map((d) => d.designation).join(", ")}
+                      </p>
+                    </div>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeExperience(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        );
+
+      case 7:
+        return (
+          <>
+            <h3 className="mb-4">Project Details</h3>
+
+            {/* Project Input Section */}
+            <div className="mb-3">
+              <label htmlFor="projectName" className="form-label">
+                Project Name
+              </label>
+              <input
+                type="text"
+                id="projectName"
+                className="form-control"
+                placeholder="Enter project name"
+                value={currentProject.project_name}
+                onChange={(e) =>
+                  updateCurrentProject("project_name", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="projectDuration" className="form-label">
+                Project Duration
+              </label>
+              <input
+                type="text"
+                id="projectDuration"
+                className="form-control"
+                placeholder="e.g., May 2015 - Present"
+                value={currentProject.duration}
+                onChange={(e) =>
+                  updateCurrentProject("duration", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <label htmlFor="projectDescription" className="form-label">
+                Project Description
+              </label>
+              <textarea
+                id="projectDescription"
+                className="form-control"
+                rows="4"
+                placeholder="Provide a detailed description of your project"
+                value={currentProject.description}
+                onChange={(e) =>
+                  updateCurrentProject("description", e.target.value)
+                }
+              />
+            </div>
+
+            <div className="mb-3">
+              <button
+                type="button"
+                className="btn btn-primary w-100"
+                onClick={addProject}
+              >
+                Add Project
+              </button>
+            </div>
+
+            {/* Display added projects */}
+            <div className="mt-4">
+              <h4>Added Projects</h4>
+              {projects.map((proj, index) => (
+                <div key={index} className="card mb-2">
+                  <div className="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                      <strong>{proj.project_name}</strong>
+                      <span className="text-muted ms-2">({proj.duration})</span>
+                      <p className="text-muted mb-0">{proj.description}</p>
+                    </div>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => removeProject(index)}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        );
+
       default:
         return null;
     }
@@ -599,7 +1125,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
                       Previous
                     </button>
                   )}
-                  {step < 4 ? (
+                  {step < 7 ? (
                     <button
                       type="button"
                       className="btn btn-primary"

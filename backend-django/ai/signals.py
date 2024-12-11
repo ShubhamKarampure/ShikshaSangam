@@ -1,42 +1,42 @@
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from social.models import UserProfile, Post
-from ai.embedding_utils import generate_user_embedding, generate_post_embedding
-from ai.vectordb import store_user_embedding, store_post_embedding
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
+# from social.models import UserProfile, Post
+# from ai.embedding_utils import generate_user_embedding, generate_post_embedding
+# from ai.vectordb import store_user_embedding, store_post_embedding
 
-@receiver(post_save,sender=UserProfile)
-def update_user_embedding(sender, instance, created,  **kwargs):
+# @receiver(post_save,sender=UserProfile)
+# def update_user_embedding(sender, instance, created,  **kwargs):
     
-    """
-    Signal triggered after saving a UserProfile instance.
-    Updates embedding only on creation or when specific fields are modified.
-    """
-    print(f'signal triggered for profile {instance.id}')
-    if created:  
-        print('created')# Trigger embedding generation for new profiles
-        print(f"Creating embedding for new UserProfile {instance.id}")
-        store_user_embedding(instance)
-        return
+#     """
+#     Signal triggered after saving a UserProfile instance.
+#     Updates embedding only on creation or when specific fields are modified.
+#     """
+#     print(f'signal triggered for profile {instance.id}')
+#     if created:  
+#         print('created')# Trigger embedding generation for new profiles
+#         print(f"Creating embedding for new UserProfile {instance.id}")
+#         store_user_embedding(instance)
+#         return
     
-      # Detect updated fields by comparing current and previous values
-    relevant_fields = {"resume", "experience", 'skills', 'project', "bio"}
-    changed_fields = set()
+#       # Detect updated fields by comparing current and previous values
+#     relevant_fields = {"resume", "experience", 'skills', 'project', "bio"}
+#     changed_fields = set()
 
-    # Use `instance.__class__.objects` to fetch the current state from the database
-    original_instance = instance.__class__.objects.get(pk=instance.pk)
+#     # Use `instance.__class__.objects` to fetch the current state from the database
+#     original_instance = instance.__class__.objects.get(pk=instance.pk)
 
-    for field in relevant_fields:
-        current_value = getattr(instance, field)
-        original_value = getattr(original_instance, field)
-        if current_value != original_value:
-            changed_fields.add(field)
+#     for field in relevant_fields:
+#         current_value = getattr(instance, field)
+#         original_value = getattr(original_instance, field)
+#         if current_value != original_value:
+#             changed_fields.add(field)
 
-    # Check if any relevant fields were updated
-    if changed_fields:
-        print(f"Updating embedding for UserProfile {instance.id}: fields changed = {changed_fields}")
-        store_user_embedding(instance)
-    else:
-        print(f"Skipping embedding update for UserProfile {instance.id}: no relevant fields updated.")
+#     # Check if any relevant fields were updated
+#     if changed_fields:
+#         print(f"Updating embedding for UserProfile {instance.id}: fields changed = {changed_fields}")
+#         store_user_embedding(instance)
+#     else:
+#         print(f"Skipping embedding update for UserProfile {instance.id}: no relevant fields updated.")
 
     # Handle updates for specific fields
     # updated_fields = kwargs.get('update_fields')
@@ -63,48 +63,13 @@ def update_user_embedding(sender, instance, created,  **kwargs):
     #         print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
 
 # @receiver(post_save, sender=Post)
-# # def update_post_embedding(sender, instance, **kwargs):
-# #     """
-# #     Signal triggered after saving a Post instance.
-# #     - Generates and stores the post's embedding in the vector database.
-# #     """
-# #     if instance.content:  # Ensure there is content to embed
-# #         print(f"Updating embedding for Post {instance.id}")
-# #         store_post_embedding(instance)  # Generate and store the embedding
-# #     else:
-# #         print(f"Skipping embedding update for Post {instance.id}: no content available.")
-
-@receiver(post_save, sender=Post)
-def update_post_embedding(sender, instance, created, **kwargs):
-    """
-    Signal triggered after saving a Post instance.
-    - Generates and stores the post's embedding in the vector database.
-    - Handles both new Post creation and updates to relevant fields.
-    """
-    print(f"Signal triggered for Post {instance.id}")
-
-    if created:
-        # Handle new Post creation
-        print(f"Creating embedding for new Post {instance.id}")
-        store_post_embedding(instance)  # Generate and store embedding for new post
-        return
-
-    # Detect relevant field changes on update
-    relevant_fields = {"content"}
-    changed_fields = set()
-
-    # Fetch original instance from the database
-    original_instance = sender.objects.get(pk=instance.pk)
-
-    for field in relevant_fields:
-        current_value = getattr(instance, field)
-        original_value = getattr(original_instance, field)
-        if current_value != original_value:
-            changed_fields.add(field)
-
-    # Trigger embedding update if relevant fields have changed
-    if changed_fields:
-        print(f"Updating embedding for Post {instance.id}: fields changed = {changed_fields}")
-        store_post_embedding(instance)  # Update embedding in the vector database
-    else:
-        print(f"Skipping embedding update for Post {instance.id}: no relevant fields updated.")
+# def update_post_embedding(sender, instance, **kwargs):
+#     """
+#     Signal triggered after saving a Post instance.
+#     - Generates and stores the post's embedding in the vector database.
+#     """
+#     if instance.content:  # Ensure there is content to embed
+#         print(f"Updating embedding for Post {instance.id}")
+#         store_post_embedding(instance)  # Generate and store the embedding
+#     else:
+#         print(f"Skipping embedding update for Post {instance.id}: no content available.")

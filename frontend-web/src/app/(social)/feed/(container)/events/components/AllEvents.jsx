@@ -2,7 +2,18 @@ import useToggle from "@/hooks/useToggle";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { Fragment, useState, useEffect } from "react";
 import {
-  Button,Card,CardBody,CardHeader,Col,Nav,NavItem,NavLink,Row,TabContainer,TabContent,TabPane,
+  Button,
+  Card,
+  CardBody,
+  CardHeader,
+  Col,
+  Nav,
+  NavItem,
+  NavLink,
+  Row,
+  TabContainer,
+  TabContent,
+  TabPane,
 } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { BsCalendar2Event } from "react-icons/bs";
@@ -92,12 +103,29 @@ const AllEvents = () => {
   const eventFormSchema = yup.object({
     title: yup.string().required("Please enter event title"),
     description: yup.string().required("Please enter event description"),
+    mode: yup
+      .string()
+      .oneOf(["online", "offline"], "Mode must be either 'online' or 'offline'")
+      .required("Please select the event mode"),
     duration: yup.string().required("Please enter event duration"),
-    location: yup.string().required("Please enter event location"),
+    location: yup
+    .string()
+    .when("mode", {
+      is: "offline",
+      then: yup.string().required("Please enter event location for offline mode"),
+      otherwise: yup.string(),
+    }),
     guest: yup
       .string()
       .email("Please enter valid email")
       .required("Please enter event guest email"),
+    online_meet_id: yup
+      .string()
+      .when("mode", {
+        is: "online",
+        then: yup.string().required("Please enter event location for online mode"),
+        otherwise: yup.string(),
+      }),
   });
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(eventFormSchema),

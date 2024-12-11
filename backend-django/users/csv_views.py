@@ -1,4 +1,5 @@
 import pandas as pd
+from django.core.mail import send_mail
 from django.contrib.auth.models import User
 from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
@@ -35,10 +36,20 @@ def process_user_data(file_url, college):
 
 
             if created:
+
+               
                 # Create UserProfile
                 user.set_password(password)
                 user.save()
                 user_profile = UserProfile.objects.create(user=user, college=college, role=role)
+         
+                send_mail(
+                    subject='Your ShikshaSangam Account Details',
+                    message=f'Hello {username},\n\nYour account has been created successfully!\n\nUsername: {username}\nPassword: {password}\n\nPlease log in and change your password as soon as possible.',
+                    from_email='arooshjoshi28@gmail.com',  # Replace with your default from email
+                    recipient_list=[email],  # User's email address
+                    fail_silently=False,
+                )
 
                 # Create role-specific profiles
                 if role == 'student':

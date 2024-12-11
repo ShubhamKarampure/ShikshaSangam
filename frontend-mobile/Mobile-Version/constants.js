@@ -5,7 +5,7 @@
 
 //import { YOUR_IP } from "@env";
 
-YOUR_IP = "172.26.144.90";
+YOUR_IP = "172.26.144.86";
 
 const BACKEND_URL = "http://" + YOUR_IP + ":8000";
 
