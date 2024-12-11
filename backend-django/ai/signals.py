@@ -63,14 +63,14 @@ def update_user_embedding(sender, instance, created,  **kwargs):
         # else:
         #     print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
 
-@receiver(post_save, sender=Post)
-def update_post_embedding(sender, instance, **kwargs):
-    """
-    Signal triggered after saving a Post instance.
-    - Generates and stores the post's embedding in the vector database.
-    """
-    if instance.content:  # Ensure there is content to embed
-        print(f"Updating embedding for Post {instance.id}")
-        store_post_embedding(instance)  # Generate and store the embedding
-    else:
-        print(f"Skipping embedding update for Post {instance.id}: no content available.")
+# @receiver(post_save, sender=Post)
+# def update_post_embedding(sender, instance, **kwargs):
+#     """
+#     Signal triggered after saving a Post instance.
+#     - Generates and stores the post's embedding in the vector database.
+#     """
+#     if instance.content:  # Ensure there is content to embed
+#         print(f"Updating embedding for Post {instance.id}")
+#         store_post_embedding(instance)  # Generate and store the embedding
+#     else:
+#         print(f"Skipping embedding update for Post {instance.id}: no content available.")
