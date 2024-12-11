@@ -16,7 +16,7 @@ import {
 import { scrapeLinkedIn } from "@/api/users";
 
 function UserSetup({ role: initialRole, onBackClick }) {
-  const { user } = useAuthContext();
+  const { user ,setUser} = useAuthContext();
   const { saveProfileData, saveProfileStatus } = useProfileContext();
   const { showNotification } = useNotificationContext();
 
@@ -417,7 +417,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
       }
       saveProfileStatus("true");
       saveProfileData(userprofile);
-
+      setUser((prev)=> {return {...prev,"profile_id":userprofile.id,"role":userprofile.role}})
       redirectUser();
     } catch (error) {
       console.error("Error creating profile:", error);

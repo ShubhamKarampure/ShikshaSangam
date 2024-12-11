@@ -10,7 +10,7 @@ export default function AdminSetup({ onBackClick }) {
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const { showNotification } = useNotificationContext();
-  const { user } = useAuthContext();
+  const { user ,setUser} = useAuthContext();
   const { saveProfileData, saveProfileStatus } = useProfileContext();
   const [fullName, setFullName] = useState("");
   const [contactPhone, setContactPhone] = useState("");
@@ -40,7 +40,7 @@ export default function AdminSetup({ onBackClick }) {
         message: "Admin profile created successfully.",
         variant: "success",
       });
-
+      setUser((prev)=> {return {...prev,"profile_id":response.profile.id,"role":response.role}})
       saveProfileStatus("true");
       saveProfileData(response);
 
