@@ -30,6 +30,6 @@ urlpatterns = [
     path('forum/', include('forum.urls')), 
     path('jobs/', include('jobs.urls')), 
 
-
+    path("api/chatbot/", include("chatbot.urls")),
 
 ]
