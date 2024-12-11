@@ -10,8 +10,10 @@ import {
   FormGroup,
   FormControl,
 } from "react-bootstrap";
+import { useProfileContext } from "../../../../context/useProfileContext";
 
 const JobPage = () => {
+  const { profile } = useProfileContext();
   const [jobs, setJobs] = useState([
     {
       title: "Frontend Developer",
@@ -46,7 +48,7 @@ const JobPage = () => {
     location: "",
     description: "",
     skills_required: "",
-    postedBy: "John Doe",
+    postedBy: profile?.username || "",
   });
 
   const toggleModal = () => setModalOpen(!modalOpen);
@@ -57,16 +59,23 @@ const JobPage = () => {
   };
 
   const handlePostJob = () => {
-    const newJob = { ...jobForm };
+    if (!profile) {
+      console.error("Profile not available.");
+      return;
+    }
+
+    const newJob = { ...jobForm, postedBy: profile.full_name };
     setJobs([...jobs, newJob]);
+
     setJobForm({
       title: "",
       company: "",
       location: "",
       description: "",
       skills_required: "",
-      postedBy: "John Doe",
+      postedBy: profile.full_name,
     });
+
     toggleModal();
   };
 
@@ -107,7 +116,7 @@ const JobPage = () => {
       </div>
 
       {/* Post Job Button */}
-      <Button variant="success" onClick={toggleModal} className="mt-4">
+      <Button variant="success" onClick={toggleModal} disabled={!profile}>
         Post a Job
       </Button>
 
