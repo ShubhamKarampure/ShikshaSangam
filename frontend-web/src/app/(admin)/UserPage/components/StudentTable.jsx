@@ -17,21 +17,17 @@ import {
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const ApprovalCard = ({ users, handleApprove }) => {
-  const navigate = useNavigate();
+function StudentTable({ students }) {
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Filter users based on search query
-  const filteredUsers = users.filter((user) =>
-    `${user.name} ${user.email} ${user.role}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
+  const filteredUsers = students.filter((user) =>
+      `${user.name} ${user.email} ${user.role}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
       <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
-        <h2 className="mb-0">Users</h2>
+        <h2 className="mb-0">Students</h2>
         <div className="d-flex gap-3 align-items-center">
           <TextField
             variant="outlined"
@@ -46,23 +42,14 @@ const ApprovalCard = ({ users, handleApprove }) => {
               },
             }}
           />
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/admin/upload")}
-          >
+          <Button variant="outlined" onClick={() => navigate("/admin/upload")}>
             Add Bulk
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/admin/view")}
-          >
-            View More
           </Button>
         </div>
       </div>
       <CardContent>
         {filteredUsers && filteredUsers.length > 0 ? (
-          <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+          <TableContainer component={Paper} >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -76,28 +63,30 @@ const ApprovalCard = ({ users, handleApprove }) => {
                     Role
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Year
+                    Enrollment Year
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Status
+                    Current Program
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Actions
+                  Specialization
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">{user.full_name || "User"}</TableCell>
+                    <TableCell align="left">
+                      {user.name || "User"}
+                    </TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>
-                    <TableCell align="left">{user.role}</TableCell>
-                    <TableCell align="left">{user.year || "2024"}</TableCell>
-                    <TableCell align="left">{user.status}</TableCell>
+                    <TableCell align="left">Student</TableCell>
+                    <TableCell align="left">{user.enrollment_year || "2022"}</TableCell>
+                    <TableCell align="left">{user.current_program || "CSE"}</TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      {/* <IconButton
                         color="success"
                         onClick={() => handleApprove(user.id)}
                       >
@@ -110,7 +99,8 @@ const ApprovalCard = ({ users, handleApprove }) => {
                         }
                       >
                         <FaTimes size={15} />
-                      </IconButton>
+                      </IconButton> */}
+                      {user.specialization || "Data Science"}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -130,6 +120,6 @@ const ApprovalCard = ({ users, handleApprove }) => {
       </CardContent>
     </Card>
   );
-};
+}
 
-export default ApprovalCard;
+export default StudentTable;

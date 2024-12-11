@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
 
 from .models import (
     User,
@@ -30,10 +31,12 @@ from .serializers import (
     UserRegistrationSerializer,
     UserProfileOnlySerializer
 )
-
+from rest_framework.decorators import action
 import requests
 import string
 import secrets
+from django.http import JsonResponse
+from django.core import serializers
 
 class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -292,6 +295,31 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileOnlySerializer
+    
+    @action(detail=False,methods=['get'])
+    def college_users(self,request):
+        user_college=request.user.user.college
+        college_user=UserProfile.objects.filter(college=user_college)[:5]
+        serializer = UserProfileSerializer(college_user, many=True)
+        for data in serializer.data:
+            data['email'] = User.objects.get(id=data['user']).email
+            if(data['role']=='student'):
+                try:
+                    student = StudentProfile.objects.get(profile=data['id'])
+                except StudentProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=student.expected_graduation_year
+            elif(data['role']=='alumni'):
+                try:
+                    alumnus=AlumnusProfile.objects.get(profile=data['id'])
+                except AlumnusProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=alumnus.graduation_year
+            
+        return Response(serializer.data)
+        # return Response(college_user)
     # def get_permissions(self):
     #     if self.action == 'create':
     #         # Any verified user can create a UserProfile
@@ -325,6 +353,7 @@ class CollegeViewSet(viewsets.ModelViewSet):
     #         # Only College Admins can delete a college
     #         permission_classes = [IsCollegeAdmin, IsAuthenticated]
     #     return [permission() for permission in permission_classes]
+    
 
 # College Admin ViewSet
 class CollegeAdminViewSet(viewsets.ModelViewSet):
@@ -348,7 +377,28 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
-        
+    @action(detail=False,methods=['get'])
+    def college_users(self, request):
+        # Get the user's college
+        user_college = request.user.user.college
+
+        # Filter UserProfiles by the college
+        college_user_profiles = UserProfile.objects.filter(college=user_college)
+
+        # Get the associated StudentProfiles
+        students = []
+        for user_profile in college_user_profiles:
+            try:
+                student = StudentProfile.objects.get(profile=user_profile)
+                student_data=StudentProfileSerializer(student).data
+                student_data['name']=user_profile.full_name
+                student_data['email']=user_profile.user.email
+                students.append(student_data)
+            except StudentProfile.DoesNotExist:
+                continue  # Skip if there's no student profile for this user profile
+
+
+        return Response(students, status=status.HTTP_200_OK)
 
 
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
@@ -368,6 +418,24 @@ class AlumnusProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
+    @action(detail=False,methods=['get'])
+    def college_users(self, request):
+        user_college = request.user.user.college
+        college_user_profiles = UserProfile.objects.filter(college=user_college)
+
+        alumnis = []
+        for user_profile in college_user_profiles:
+            try:
+                alumni = AlumnusProfile.objects.get(profile=user_profile)
+                alumni_data = AlumnusProfileSerializer(alumni).data  # Serialize AlumnusProfile
+                alumni_data['name'] = user_profile.full_name  # Add full name
+                alumni_data['email'] = user_profile.user.email  # Add email from User
+                alumnis.append(alumni_data)
+            except AlumnusProfile.DoesNotExist:
+                continue  
+
+
+        return Response(alumnis, status=status.HTTP_200_OK)
 
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()
