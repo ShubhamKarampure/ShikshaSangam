@@ -390,14 +390,15 @@ class StudentProfileViewSet(viewsets.ModelViewSet):
         for user_profile in college_user_profiles:
             try:
                 student = StudentProfile.objects.get(profile=user_profile)
-                students.append(student)
+                student_data=StudentProfileSerializer(student).data
+                student_data['name']=user_profile.full_name
+                student_data['email']=user_profile.user.email
+                students.append(student_data)
             except StudentProfile.DoesNotExist:
                 continue  # Skip if there's no student profile for this user profile
 
-        # Serialize the StudentProfiles
-        serializer = StudentProfileSerializer(students, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(students, status=status.HTTP_200_OK)
 
 
 class AlumnusProfileViewSet(viewsets.ModelViewSet):
@@ -426,13 +427,15 @@ class AlumnusProfileViewSet(viewsets.ModelViewSet):
         for user_profile in college_user_profiles:
             try:
                 alumni = AlumnusProfile.objects.get(profile=user_profile)
-                alumnis.append(alumni)
+                alumni_data = AlumnusProfileSerializer(alumni).data  # Serialize AlumnusProfile
+                alumni_data['name'] = user_profile.full_name  # Add full name
+                alumni_data['email'] = user_profile.user.email  # Add email from User
+                alumnis.append(alumni_data)
             except AlumnusProfile.DoesNotExist:
                 continue  
 
-        serializer = AlumnusProfileSerializer(alumnis, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(alumnis, status=status.HTTP_200_OK)
 
 class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
     queryset = CollegeStaffProfile.objects.all()

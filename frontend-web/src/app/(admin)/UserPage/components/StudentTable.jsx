@@ -18,12 +18,12 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function StudentTable({ students }) {
-    const filteredUsers = students.filter((user) =>
-        `${user.name} ${user.email} ${user.role}`
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      );
-    const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredUsers = students.filter((user) =>
+      `${user.name} ${user.email} ${user.role}`
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase())
+    );
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
       <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
@@ -49,7 +49,7 @@ function StudentTable({ students }) {
       </div>
       <CardContent>
         {filteredUsers && filteredUsers.length > 0 ? (
-          <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+          <TableContainer component={Paper} >
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -63,13 +63,13 @@ function StudentTable({ students }) {
                     Role
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Year
+                    Enrollment Year
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Status
+                    Current Program
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Actions
+                  Specialization
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -77,16 +77,16 @@ function StudentTable({ students }) {
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
                     <TableCell align="left">
-                      {user.full_name || "User"}
+                      {user.name || "User"}
                     </TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>
-                    <TableCell align="left">{user.role}</TableCell>
-                    <TableCell align="left">{user.year || "2024"}</TableCell>
-                    <TableCell align="left">{user.status}</TableCell>
+                    <TableCell align="left">Student</TableCell>
+                    <TableCell align="left">{user.enrollment_year || "2022"}</TableCell>
+                    <TableCell align="left">{user.current_program || "CSE"}</TableCell>
                     <TableCell align="center">
-                      <IconButton
+                      {/* <IconButton
                         color="success"
                         onClick={() => handleApprove(user.id)}
                       >
@@ -99,7 +99,8 @@ function StudentTable({ students }) {
                         }
                       >
                         <FaTimes size={15} />
-                      </IconButton>
+                      </IconButton> */}
+                      {user.specialization || "Data Science"}
                     </TableCell>
                   </TableRow>
                 ))}

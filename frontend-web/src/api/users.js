@@ -134,3 +134,46 @@ export const getUserByCollege=async()=>{
   }
   return await response.json();
 }
+
+export const getStudentByCollege=async()=>{
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  const response = await fetch(`${API_ROUTES.STUDENTPROFILE}college_users/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+}
+
+export const getAlumniByCollege=async()=>{
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  const response = await fetch(`${API_ROUTES.ALUMNIPROFILE}college_users`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+}
+

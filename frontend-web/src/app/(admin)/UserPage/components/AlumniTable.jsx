@@ -18,12 +18,12 @@ import { FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 function AlumniTable({ alumni }) {
-    const filteredUsers = alumni.filter((user) =>
-        `${user.name} ${user.email} ${user.role}`
-          .toLowerCase()
-          .includes(searchQuery.toLowerCase())
-      );
-    const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
+  const filteredUsers = alumni.filter((user) =>
+    `${user.name} ${user.email} ${user.role}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
       <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
@@ -49,7 +49,7 @@ function AlumniTable({ alumni }) {
       </div>
       <CardContent>
         {filteredUsers && filteredUsers.length > 0 ? (
-          <TableContainer component={Paper} sx={{ maxHeight: 400 }}>
+          <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -63,43 +63,33 @@ function AlumniTable({ alumni }) {
                     Role
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Year
+                    Graduation Year
                   </TableCell>
                   <TableCell align="left" sx={{ fontWeight: "bold" }}>
-                    Status
+                    Current Company
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                    Actions
+                    Specialization
                   </TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">
-                      {user.full_name || "User"}
-                    </TableCell>
+                    <TableCell align="left">{user.name || "User"}</TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>
-                    <TableCell align="left">{user.role}</TableCell>
-                    <TableCell align="left">{user.year || "2024"}</TableCell>
-                    <TableCell align="left">{user.status}</TableCell>
+                    <TableCell align="left">Alumni</TableCell>
+                    <TableCell align="left">
+                      {user.graduation_year || "2024"}
+                    </TableCell>
+                    <TableCell align="left">
+                      {user.current_employment?.company || "Google"} -{" "}
+                      {user.current_employment?.position || "SDE"}
+                    </TableCell>
                     <TableCell align="center">
-                      <IconButton
-                        color="success"
-                        onClick={() => handleApprove(user.id)}
-                      >
-                        <FaCheck size={15} />
-                      </IconButton>
-                      <IconButton
-                        color="error"
-                        onClick={() =>
-                          console.log(`Deleted user with ID: ${user.id}`)
-                        }
-                      >
-                        <FaTimes size={15} />
-                      </IconButton>
+                      {user.specialization || "ML"}
                     </TableCell>
                   </TableRow>
                 ))}
