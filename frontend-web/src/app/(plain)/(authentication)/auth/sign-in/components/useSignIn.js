@@ -9,6 +9,7 @@ import { signin } from '@/api/auth';
 import axios from 'axios';
 import { getCookie, setCookie } from "cookies-next";
 import { useProfileContext } from '@/context/useProfileContext';
+import { API_ROUTES } from '@/routes/apiRoute';
 
 const useSignIn = (emailOptions) => {
   const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ const useSignIn = (emailOptions) => {
   const { saveSession } = useAuthContext();
   const [searchParams] = useSearchParams();
   const { showNotification } = useNotificationContext();
-  const {profile}=useProfileContext()
+  const {profile,saveProfileData,saveProfileStatus}=useProfileContext()
   // Validation schema
   const loginFormSchema = yup.object({
     email: yup.string().email('Please enter a valid email').required('Please enter your email'),
@@ -33,7 +34,7 @@ const useSignIn = (emailOptions) => {
   });
 
   // Redirect logic
-  const redirectUser = async (loggedInUser) => {
+  const redirectUser = async (loggedInUser,res) => {
     const redirectLink = searchParams.get('redirectTo');
     if(loggedInUser.profile_id===null){
       setCookie("_PROFILE_SETUP_", false);
@@ -41,7 +42,7 @@ const useSignIn = (emailOptions) => {
       return;
     }else if(!profile){
       try {
-        const response = await fetch(API_ROUTES.USERPROFILE + user.profile_id, {
+        const response = await fetch(API_ROUTES.USERPROFILE + loggedInUser.profile_id, {
           method: "GET",
         });
 
@@ -75,7 +76,7 @@ const useSignIn = (emailOptions) => {
     try {
       const response = await signin(data);
       const { access, refresh, user: loggedInUser } = response;
-      await saveSession({ access, refresh, user: loggedInUser });
+      const res=await saveSession({ access, refresh, user: loggedInUser });
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
@@ -83,7 +84,7 @@ const useSignIn = (emailOptions) => {
         variant: 'success'
       });
 
-      redirectUser(loggedInUser);
+      await redirectUser(loggedInUser,res);
     } catch (e) {
       console.log(e);
       
