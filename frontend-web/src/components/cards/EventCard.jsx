@@ -30,7 +30,6 @@ const EventCard = ({
   id,
 }) => {
   const dateObj = new Date(date);
-  console.log(image);
 
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   return (
