@@ -57,3 +57,7 @@ export const updateEvent = async (eventId, eventData) => {
 export const deleteEvent = async (eventId) => {
   return await handleFetch(API_ROUTES.DELETE_EVENT(eventId), "DELETE");
 };
+
+export const getCollegeEvent = async ()=>{
+  return await handleFetch(`${API_ROUTES.LIST_EVENTS}college_events/`,"GET")
+}
