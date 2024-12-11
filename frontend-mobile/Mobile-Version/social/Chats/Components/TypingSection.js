@@ -11,15 +11,18 @@ import {
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker"; // Import DocumentPicker
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+
 import Groq from "groq-sdk";
 import { VITE_REACT_APP_GROQ_API_KEY } from "@env";
 
 const groq = new Groq({
-  apiKey: VITE_REACT_APP_GROQ_API_KEY,
+  apiKey: VITE_REACT_APP_GROQ_API_KEY
+,
   dangerouslyAllowBrowser: true,
 });
 
-const TypingSection = ({ onSend, isDarkMode = true }) => {
+const TypingSection = ({ onSend, isDarkMode = true, scrollToBottom }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null); // State for selected file
@@ -31,7 +34,7 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
     setIsAIProcessing(true);
 
     // Modify the prompt to ask for a specific format
-    const chatPrompt = `Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case dont put any other wording apart from the answer expected in the start of your answer. Input: "${prompt}"`;
+    const chatPrompt = `Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case dont put any other wording apart from the answer expected in the start of your answer, also don't keep the answers too short and always try to elaborate on it. Input: "${prompt}"`;
 
     try {
       const chatCompletion = await groq.chat.completions.create({
@@ -71,6 +74,7 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
 
   // Real-time input change handler
   const handleInputChange = (value) => {
+    scrollToBottom();
     setInputValue(value);
     // Check for AI trigger in real-time when the input is in the format @writebot "message content"
     if (value.startsWith("@writebot")) {
@@ -99,6 +103,10 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
     return match ? match[1].trim() : null; // Extract the content inside quotes
   };
 
+  const OpenGallery = async () => {
+    const result = await launchImageLibrary(options);
+  };
+
   // Function to handle file selection
   const handleFilePicker = async () => {
     try {
@@ -116,6 +124,8 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
       // Check for assets array in the result
       if (result.assets && result.assets.length > 0) {
         const selectedFile = result.assets[0]; // Get the first selected file
+
+        console.log("result = ", result);
         console.log("File selected:", selectedFile);
 
         setSelectedFile(selectedFile); // Save the selected file (if needed)
@@ -150,7 +160,7 @@ const TypingSection = ({ onSend, isDarkMode = true }) => {
 
   const handleSend = () => {
     if (inputValue.trim() || selectedImage || selectedFile) {
-      //console.log("selectedFile = ", selectedFile);
+      console.log("selectedFile = ", selectedFile);
       const chat = {
         content: inputValue,
         media: selectedImage, // Attach the image URI (if selected)

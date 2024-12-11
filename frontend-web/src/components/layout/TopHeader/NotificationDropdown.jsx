@@ -45,6 +45,11 @@ const NotificationDropdown = () => {
   // Function to handle "Accept" action
   const handleAccept = async (notification) => {
     try {
+      const followedId = notification.follower_userprofile_id;
+    if (!followedId) {
+      console.error(notification);
+      return;
+    }
       const followData = {
         follower: currentUserId,
         followed: notification.follower_userprofile_id,
@@ -61,7 +66,7 @@ const NotificationDropdown = () => {
   // Function to handle "Decline" action
   const handleDecline = async (notification) => {
     try {
-      console.log(notification.id);
+      console.log(notification);
       await deleteNotification(notification.id); // Delete the notification
       setNotifications((prev) => prev.filter((n) => n.id !== notification.id)); // Remove from UI
     } catch (error) {

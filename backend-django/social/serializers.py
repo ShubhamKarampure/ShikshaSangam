@@ -75,7 +75,7 @@ class NotificationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notification
         fields = [
-            'id', 'userprofile', 'title', 'content', 'notification_type', 
+            'id', 'userprofile', 'title', 'content', 'notification_type', 'avatar', 
              'is_read', 'created_at',
              # 'avatar','follower_full_name', 'follower_userprofile_id'
         ]
