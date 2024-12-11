@@ -8,8 +8,8 @@ import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useToggle from '@/hooks/useToggle';
 
-const Feeds = () => {
-  const [allPosts, setAllPosts] = useState([]);
+const Feeds = ({allPosts,setAllPosts}) => {
+  
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const limit = 2;
