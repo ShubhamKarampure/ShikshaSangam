@@ -164,14 +164,12 @@ def create_follow_notification(sender, instance, created, **kwargs):
         
         # Create the notification
         notification = Notification(
-            userprofile=instance.followed,
             title=title,
             content=content,
             notification_type='follow',
-            avatar=avatar,  # Include avatar URL in the notification
-            # follower_full_name=instance.follower.full_name,  # Store the full_name of the follower
-            # follower_userprofile_id=instance.follower.id  # Store the userprofile ID of the follower
-        )
+            avatar=avatar,  
+            follower_userprofile_id=instance.follower.id  
+     )
         notification.save()
 
 

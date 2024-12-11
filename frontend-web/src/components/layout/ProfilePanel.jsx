@@ -40,9 +40,11 @@ const ProfilePanel = ({
    const full_name = profile && profile.full_name ?
      profile.full_name : user.username
   
-  const bio = user.role !== 'college_staff' && profile && profile.bio ? 
-    profile.bio : 'Here to connect, learn, and grow.'
-  
+  const maxBioLength = 150; // Set a maximum length for the bio
+const bio = user.role !== 'college_staff' && profile?.bio ? 
+           (profile.bio.length > maxBioLength ? profile.bio.substring(0, maxBioLength) : profile.bio) : 
+           'Here to connect, learn, and grow.';
+
     return <>
       <Card className="overflow-hidden h-100">
         <div className="h-50px" style={{
