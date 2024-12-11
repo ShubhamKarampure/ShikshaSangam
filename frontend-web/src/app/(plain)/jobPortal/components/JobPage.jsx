@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -10,35 +10,13 @@ import {
   FormGroup,
   FormControl,
 } from "react-bootstrap";
+import { useProfileContext } from "../../../../context/useProfileContext";
+import { createJob,fetchJobs } from "../../../../api/job";
 
 const JobPage = () => {
-  const [jobs, setJobs] = useState([
-    {
-      title: "Frontend Developer",
-      company: "Tech Innovators Inc.",
-      location: "San Francisco, CA",
-      description: "Develop and maintain the front end of our web applications.",
-      skills_required: "JavaScript, React, CSS",
-      postedBy: "Alice Johnson",
-    },
-    {
-      title: "Data Scientist",
-      company: "Data Wizards LLC",
-      location: "New York, NY",
-      description: "Analyze large datasets to derive meaningful insights.",
-      skills_required: "Python, Machine Learning, SQL",
-      postedBy: "Bob Smith",
-    },
-    {
-      title: "Backend Developer",
-      company: "CodeCraft Solutions",
-      location: "Austin, TX",
-      description: "Build and maintain server-side applications and databases.",
-      skills_required: "Node.js, Express, MongoDB",
-      postedBy: "Charlie Davis",
-    },
-  ]);
+  const { profile } = useProfileContext();
 
+  const [jobs, setJobs] = useState([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [jobForm, setJobForm] = useState({
     title: "",
@@ -46,8 +24,27 @@ const JobPage = () => {
     location: "",
     description: "",
     skills_required: "",
-    postedBy: "John Doe",
+    posted_by: profile?.id || "",
   });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch jobs from the API
+  useEffect(() => {
+    const loadJobs = async () => {
+      try {
+        const fetchedJobs = await fetchJobs();
+        setJobs(fetchedJobs);
+      } catch (err) {
+        console.error("Error fetching jobs:", err);
+        setError("Failed to load jobs.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadJobs();
+  }, []);
 
   const toggleModal = () => setModalOpen(!modalOpen);
 
@@ -56,19 +53,41 @@ const JobPage = () => {
     setJobForm({ ...jobForm, [name]: value });
   };
 
-  const handlePostJob = () => {
-    const newJob = { ...jobForm };
-    setJobs([...jobs, newJob]);
-    setJobForm({
-      title: "",
-      company: "",
-      location: "",
-      description: "",
-      skills_required: "",
-      postedBy: "John Doe",
-    });
-    toggleModal();
+  const handlePostJob = async () => {
+    if (!profile) {
+      console.error("Profile not available.");
+      return;
+    }
+
+    const newJob = { ...jobForm, posted_by: profile.id };
+
+    try {
+      const createdJob = await createJob(newJob);
+      setJobs([...jobs, createdJob]);
+
+      setJobForm({
+        title: "",
+        company: "",
+        location: "",
+        description: "",
+        skills_required: "",
+        posted_by: profile.id,
+      });
+
+      toggleModal();
+    } catch (err) {
+      console.error("Error creating job:", err);
+      setError("Failed to post job.");
+    }
   };
+
+  if (loading) {
+    return <div>Loading jobs...</div>;
+  }
+
+  if (error) {
+    return <div className="text-danger">{error}</div>;
+  }
 
   return (
     <div className="container mt-4">
@@ -91,7 +110,7 @@ const JobPage = () => {
                 <strong>Skills Required:</strong> {job.skills_required}
               </p>
               <p>
-                <strong>Posted By:</strong> {job.postedBy}
+                <strong>Posted By:</strong> {job.posted_by}
               </p>
             </CardBody>
             <CardFooter>
@@ -107,7 +126,7 @@ const JobPage = () => {
       </div>
 
       {/* Post Job Button */}
-      <Button variant="success" onClick={toggleModal} className="mt-4">
+      <Button variant="success" onClick={toggleModal} disabled={!profile}>
         Post a Job
       </Button>
 

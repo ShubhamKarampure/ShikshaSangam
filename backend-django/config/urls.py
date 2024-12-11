@@ -28,7 +28,7 @@ urlpatterns = [
     path('events/', include('events.urls')),    
     path('ai/', include('ai.urls')), 
     path('forum/', include('forum.urls')), 
-    # path('jobs/', include('jobs.urls')), 
+    path('jobs/', include('jobs.urls')), 
 
 
 

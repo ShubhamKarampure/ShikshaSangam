@@ -40,6 +40,7 @@ class UserProfile(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
+    
     resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
     experience = models.JSONField(default=dict, null=True, blank=True) 
     project = models.JSONField(default=dict, null=True, blank=True) 
