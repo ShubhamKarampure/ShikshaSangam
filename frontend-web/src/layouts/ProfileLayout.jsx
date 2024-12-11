@@ -168,71 +168,7 @@ const Photos = () => {
   );
 };
 
-const Friends = () => {
-  const allFriends = useFetchData(getAllUsers);
-  return (
-    <Card>
-      <CardHeader className="d-sm-flex justify-content-between align-items-center border-0">
-        <CardTitle>
-          Friends{" "}
-          <span className="badge bg-danger bg-opacity-10 text-danger">230</span>
-        </CardTitle>
-        <Button variant="primary-soft" size="sm">
-          See all friends
-        </Button>
-      </CardHeader>
-      <CardBody className="position-relative pt-0">
-        <Row className="g-3">
-          {allFriends?.slice(0, 4).map((friend, idx) => (
-            <Col xs={6} key={idx}>
-              <Card className="shadow-none text-center h-100">
-                <CardBody className="p-2 pb-0">
-                  <div
-                    className={clsx("avatar avatar-xl", {
-                      "avatar-story": friend.isStory,
-                    })}
-                  >
-                    <span role="button">
-                      <img
-                        className="avatar-img rounded-circle"
-                        src={friend.avatar}
-                        alt=""
-                      />
-                    </span>
-                  </div>
-                  <h6 className="card-title mb-1 mt-3">
-                    <Link to=""> {friend.name} </Link>
-                  </h6>
-                  <p className="mb-0 small lh-sm">
-                    {friend.mutualCount} mutual connections
-                  </p>
-                </CardBody>
-                <div className="card-footer p-2 border-0">
-                  <button
-                    className="btn btn-sm btn-primary me-1"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Send message"
-                  >
-                    <BsChatLeftText />
-                  </button>
-                  <button
-                    className="btn btn-sm btn-danger"
-                    data-bs-toggle="tooltip"
-                    data-bs-placement="top"
-                    title="Remove friend"
-                  >
-                    <BsPersonX />
-                  </button>
-                </div>
-              </Card>
-            </Col>
-          ))}
-        </Row>
-      </CardBody>
-    </Card>
-  );
-};
+
 
 const OnboardingProfileLayout = ({ name, avatar, banner }) => {
   const [avatarUrl, setAvatarUrl] = useState(null);
@@ -534,9 +470,7 @@ const bio = user.role !== 'college_staff' && profile?.bio ?
                     <Experience experienceData={userProfile?.experience || []} />
                   </Col>
                   
-                  <Col md={6} lg={12}>
-                    <Friends />
-                  </Col>
+                 
                 </Row>
               </Col>
             </Row>
