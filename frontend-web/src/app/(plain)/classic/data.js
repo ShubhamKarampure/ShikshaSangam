@@ -31,7 +31,7 @@ export const leftSidebarData = [{
   url: '/profile/connections'
 }, {
   icon: BsNewspaper,
-  label: 'Latest News',
+  label: 'Job',
   url: '/jobs'
 }, {
   icon: BsCalendarEventFill,
