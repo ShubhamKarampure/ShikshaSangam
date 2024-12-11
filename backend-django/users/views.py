@@ -9,6 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.parsers import MultiPartParser, FormParser
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.shortcuts import get_object_or_404
 
 from .models import (
     User,
@@ -30,10 +31,12 @@ from .serializers import (
     UserRegistrationSerializer,
     UserProfileOnlySerializer
 )
-
+from rest_framework.decorators import action
 import requests
 import string
 import secrets
+from django.http import JsonResponse
+from django.core import serializers
 
 class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -292,6 +295,31 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     parser_classes = (MultiPartParser, FormParser)
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileOnlySerializer
+    
+    @action(detail=False,methods=['get'])
+    def college_users(self,request):
+        user_college=request.user.user.college
+        college_user=UserProfile.objects.filter(college=user_college)[:5]
+        serializer = UserProfileSerializer(college_user, many=True)
+        for data in serializer.data:
+            data['email'] = User.objects.get(id=data['user']).email
+            if(data['role']=='student'):
+                try:
+                    student = StudentProfile.objects.get(profile=data['id'])
+                except StudentProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=student.expected_graduation_year
+            elif(data['role']=='alumni'):
+                try:
+                    alumnus=AlumnusProfile.objects.get(profile=data['id'])
+                except AlumnusProfile.DoesNotExist:
+                    data['year']="2026"
+                    continue
+                data['year']=alumnus.graduation_year
+            
+        return Response(serializer.data)
+        # return Response(college_user)
     # def get_permissions(self):
     #     if self.action == 'create':
     #         # Any verified user can create a UserProfile

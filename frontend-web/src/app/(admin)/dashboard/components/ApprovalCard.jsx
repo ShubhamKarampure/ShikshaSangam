@@ -83,7 +83,7 @@ const ApprovalCard = ({ users, handleApprove }) => {
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">{user.name}</TableCell>
+                    <TableCell align="left">{user.full_name || "User"}</TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>

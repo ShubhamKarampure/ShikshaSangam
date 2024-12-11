@@ -112,3 +112,25 @@ export const deleteUser = async (userId) => {
   }
   return await response.json();
 };
+
+
+export const getUserByCollege=async()=>{
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  const response = await fetch(`${API_ROUTES.USERPROFILECOLLEGE}`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+}

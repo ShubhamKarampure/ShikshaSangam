@@ -13,6 +13,7 @@ export const API_ROUTES = {
   
   // Profile-related routes
   USERPROFILE: `${API_BASE_URL}/users/user-profile/`, // Alumnus Profile CRUD
+  USERPROFILECOLLEGE: `${API_BASE_URL}/users/user-profile/college_users/`, 
   ALUMNIPROFILE: `${API_BASE_URL}/users/alumnus-profiles/`, // Alumnus Profile CRUD
   STUDENTPROFILE: `${API_BASE_URL}/users/student-profiles/`, // Student Profile CRUD
   COLLEGEADMINPROFILE: `${API_BASE_URL}/users/college-admin/`, // College Admin Profile CRUD
