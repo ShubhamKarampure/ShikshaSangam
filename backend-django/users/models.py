@@ -29,7 +29,6 @@ class UserProfile(models.Model):
         ('online', 'Online'),
         ('offline', 'Offline')
     )
-    
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='offline')  # Added status field
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
@@ -43,31 +42,11 @@ class UserProfile(models.Model):
     social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
     
     resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
-    preferences = models.JSONField(default=dict, null=True, blank=True)  # {"domains": [], "roles": [], "interests": []}
-    connections = models.JSONField(default=dict, null=True, blank=True)  # {"followers_count": 0, "following_count": 0}
+    experience = models.JSONField(default=dict, null=True, blank=True) 
+    project = models.JSONField(default=dict, null=True, blank=True) 
+    skills = models.JSONField(default=dict, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    resume_url = models.URLField(null=True, blank = True)
-    
-
-    # def save(self, *args, **kwargs):
-    #     try:
-    #         # Custom upload logic for PDFs
-    #         if self.resume and hasattr(self.resume, 'file'):
-    #             # Upload to Cloudinary as raw
-    #             response = uploader.upload(
-    #                 self.resume.file,  # Pass the file object
-    #                 resource_type="image",  # Ensure it's uploaded as raw ** now trying image itself
-    #                 folder="shikshasangam/resume",
-    #                 format ="pdf"
-    #             )
-    #             self.resume_url = response['secure_url']  # Save the URL
-    #             self.resume = response['public_id']  # Save the public ID
-    #     except Exception as e:
-    #         print(f"Cloudinary upload error: {e}")
-    #     super().save(*args, **kwargs)
-
-    
 
     def __str__(self):
 
