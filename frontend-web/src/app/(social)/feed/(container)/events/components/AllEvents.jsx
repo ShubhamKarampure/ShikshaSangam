@@ -119,6 +119,13 @@ const AllEvents = () => {
       .string()
       .email("Please enter valid email")
       .required("Please enter event guest email"),
+    online_meet_id: yup
+      .string()
+      .when("mode", {
+        is: "online",
+        then: yup.string().required("Please enter event location for online mode"),
+        otherwise: yup.string(),
+      }),
   });
   const { control, handleSubmit } = useForm({
     resolver: yupResolver(eventFormSchema),

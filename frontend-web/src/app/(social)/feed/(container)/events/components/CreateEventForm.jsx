@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import TextFormInput from "@/components/form/TextFormInput";
 import TextAreaFormInput from "@/components/form/TextAreaFormInput";
 import DateFormInput from "@/components/form/DateFormInput";
@@ -8,16 +8,24 @@ import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "re
 import { Controller, useWatch } from "react-hook-form";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import {createMeeting} from "@/api/meet"
+import { useForm } from "react-hook-form";
 
 function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
   // Watch the value of 'mode' to conditionally render the location field
   const mode = useWatch({ control, name: "mode", defaultValue: "online" });
   const { showNotification } = useNotificationContext();
   const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
+  const { setValue } = useForm();
+  const [disable,setDisable]=useState(false);
   const handleMeetCreation=async()=>{
-    const response=await createMeeting(VIDEOSDK_TOKEN)
-    if(response){
-      console.log(response)
+    const response=await createMeeting({token:VIDEOSDK_TOKEN})
+    if(response.meetingId){
+      setValue("online_meet_id",response.meetingId)
+      console.log(response.meetingId);      
+      setDisable(true)
+    }else{
+      console.log(response.err);
+      
     }
   }
   return (
@@ -112,7 +120,7 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
               />
             )}
             {mode ==='online' &&(
-              <Button onClick={handleMeetCreation}>
+              <Button onClick={handleMeetCreation} disabled={disable}>
                 Create Meet link
               </Button>  
             )}
