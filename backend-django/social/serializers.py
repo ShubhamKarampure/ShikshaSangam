@@ -31,7 +31,7 @@ class PostSerializer(serializers.ModelSerializer):
         # If the content is not safe, raise a validation error
         if not is_safe:
             raise serializers.ValidationError(
-                {"content": "The content of this post is not safe and violates our guidelines."}
+                {"content": "errorcpv : The content of this post is not safe and violates our guidelines."}
             )
 
         # Proceed with the default creation if the content is safe
