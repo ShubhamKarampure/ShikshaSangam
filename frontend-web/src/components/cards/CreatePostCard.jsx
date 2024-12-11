@@ -95,6 +95,14 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
     
     const res=await createPost(formData)
     if(res){
+      if(res.content?.startsWith("errorcpv")){
+        showNotification({
+          message: "Harmful content detected",
+          variant: "danger",
+        });
+        togglePhotoModel()
+        return
+      }
       console.log('Post Uploaded Succesfully',res);
       const newPost={
         postId: res.id,
@@ -120,6 +128,14 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
       togglePhotoModel()
     }else{
       console.log(res);
+      if(res?.content?.startsWith("errorcpv")){
+        showNotification({
+          message: "Harmful content detected",
+          variant: "danger",
+        });
+        togglePhotoModel()
+        return
+      }
       
     }
 
