@@ -23,7 +23,7 @@ class FAISSManager:
         if id in self.metadata:
             print(f"ID {id} already exists. Updating by removing earlier.")
             self.remove(id=id)
-            #return
+            
         vector = np.array([vector]).astype("float32")
         self.index.add(vector)  # Add to FAISS index
         print(f"added vector {id} total = {self.size()}")
@@ -45,11 +45,13 @@ class FAISSManager:
         results = []
         for idx, distance in zip(indices[0], distances[0]):
             if idx != -1:  # Check if the index is valid
-                id = list(self.metadata.keys())[idx]
+                id = list(self.metadata.keys())[idx] # if idx < len(self.metadata) else None
                 results.append({"id": id, "metadata": self.metadata[id], "distance": distance})
         
         print("query result = ",results)
         return results
+    
+  
 
     def save(self):
         faiss.write_index(self.index, self.db_path)
