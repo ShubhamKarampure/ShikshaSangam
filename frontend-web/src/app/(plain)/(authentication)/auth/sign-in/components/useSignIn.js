@@ -17,7 +17,7 @@ const useSignIn = (emailOptions) => {
   const { saveSession } = useAuthContext();
   const [searchParams] = useSearchParams();
   const { showNotification } = useNotificationContext();
-  const {profile}=useProfileContext()
+  const {profile,saveProfileData,saveProfileStatus}=useProfileContext()
   // Validation schema
   const loginFormSchema = yup.object({
     email: yup.string().email('Please enter a valid email').required('Please enter your email'),
@@ -42,7 +42,7 @@ const useSignIn = (emailOptions) => {
       return;
     }else if(!profile){
       try {
-        const response = await fetch(API_ROUTES.USERPROFILE + user.profile_id, {
+        const response = await fetch(API_ROUTES.USERPROFILE + loggedInUser.profile_id, {
           method: "GET",
         });
 
@@ -84,7 +84,7 @@ const useSignIn = (emailOptions) => {
         variant: 'success'
       });
 
-      redirectUser(loggedInUser,res);
+      await redirectUser(loggedInUser,res);
     } catch (e) {
       console.log(e);
       
