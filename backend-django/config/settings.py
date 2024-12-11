@@ -221,3 +221,12 @@ if all([
 
 GOOGLE_OAUTH_CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'  # Gmail's SMTP server
+EMAIL_PORT = 587  # Port for TLS
+EMAIL_USE_TLS = True  # Secure the connection with TLS
+EMAIL_HOST_USER = 'arooshjoshi28@gmail.com'  # Your Gmail address
+EMAIL_HOST_PASSWORD = 'jvtf usml crbc hjis'  # Use an app password for Gmail
+DEFAULT_FROM_EMAIL = 'ShikshaSangam <arooshjoshi28@gmail.com>'  # Name and email to show as sender
+
+
