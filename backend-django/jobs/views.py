@@ -8,6 +8,8 @@ class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
 
+    
+
     # Custom action to filter by title
     @action(detail=False, methods=['get'])
     def filter_by_title(self, request):
