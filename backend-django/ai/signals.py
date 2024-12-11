@@ -59,9 +59,9 @@ def update_user_embedding(sender, instance, created,  **kwargs):
         #     # store_user_embedding(instance)
         #     print(f"Skipping embedding update for UserProfile {instance.id}.")
 
-        #     pass
-        # else:
-        #     print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
+#         #     pass
+#         # else:
+#         #     print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
 
 # @receiver(post_save, sender=Post)
 # def update_post_embedding(sender, instance, **kwargs):
