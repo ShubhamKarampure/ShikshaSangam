@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   CardBody,
@@ -10,34 +10,43 @@ import {
   FormGroup,
   FormControl,
 } from "react-bootstrap";
+import { useProfileContext } from "../../../../context/useProfileContext";
 
 const JobPage = () => {
-  const [jobs, setJobs] = useState([
-    {
-      title: "Frontend Developer",
-      company: "Tech Innovators Inc.",
-      location: "San Francisco, CA",
-      description: "Develop and maintain the front end of our web applications.",
-      skills_required: "JavaScript, React, CSS",
-      postedBy: "Alice Johnson",
-    },
-    {
-      title: "Data Scientist",
-      company: "Data Wizards LLC",
-      location: "New York, NY",
-      description: "Analyze large datasets to derive meaningful insights.",
-      skills_required: "Python, Machine Learning, SQL",
-      postedBy: "Bob Smith",
-    },
-    {
-      title: "Backend Developer",
-      company: "CodeCraft Solutions",
-      location: "Austin, TX",
-      description: "Build and maintain server-side applications and databases.",
-      skills_required: "Node.js, Express, MongoDB",
-      postedBy: "Charlie Davis",
-    },
-  ]);
+  const { profile } = useProfileContext();
+
+  const [jobs, setJobs] = useState(() => {
+    // Retrieve jobs from localStorage or initialize with default jobs
+    const savedJobs = localStorage.getItem("jobPostings");
+    return savedJobs
+      ? JSON.parse(savedJobs)
+      : [
+          {
+            title: "Frontend Developer",
+            company: "Tech Innovators Inc.",
+            location: "San Francisco, CA",
+            description: "Develop and maintain the front end of our web applications.",
+            skills_required: "JavaScript, React, CSS",
+            postedBy: "Alice Johnson",
+          },
+          {
+            title: "Data Scientist",
+            company: "Data Wizards LLC",
+            location: "New York, NY",
+            description: "Analyze large datasets to derive meaningful insights.",
+            skills_required: "Python, Machine Learning, SQL",
+            postedBy: "Bob Smith",
+          },
+          {
+            title: "Backend Developer",
+            company: "CodeCraft Solutions",
+            location: "Austin, TX",
+            description: "Build and maintain server-side applications and databases.",
+            skills_required: "Node.js, Express, MongoDB",
+            postedBy: "Charlie Davis",
+          },
+        ];
+  });
 
   const [modalOpen, setModalOpen] = useState(false);
   const [jobForm, setJobForm] = useState({
@@ -46,8 +55,13 @@ const JobPage = () => {
     location: "",
     description: "",
     skills_required: "",
-    postedBy: "John Doe",
+    postedBy: profile?.full_name || "",
   });
+
+  useEffect(() => {
+    // Save jobs to localStorage whenever jobs state changes
+    localStorage.setItem("jobPostings", JSON.stringify(jobs));
+  }, [jobs]);
 
   const toggleModal = () => setModalOpen(!modalOpen);
 
@@ -57,16 +71,23 @@ const JobPage = () => {
   };
 
   const handlePostJob = () => {
-    const newJob = { ...jobForm };
+    if (!profile) {
+      console.error("Profile not available.");
+      return;
+    }
+
+    const newJob = { ...jobForm, postedBy: profile.full_name };
     setJobs([...jobs, newJob]);
+
     setJobForm({
       title: "",
       company: "",
       location: "",
       description: "",
       skills_required: "",
-      postedBy: "John Doe",
+      postedBy: profile.full_name,
     });
+
     toggleModal();
   };
 
@@ -107,7 +128,7 @@ const JobPage = () => {
       </div>
 
       {/* Post Job Button */}
-      <Button variant="success" onClick={toggleModal} className="mt-4">
+      <Button variant="success" onClick={toggleModal} disabled={!profile}>
         Post a Job
       </Button>
 
