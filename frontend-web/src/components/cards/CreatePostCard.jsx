@@ -88,7 +88,8 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
   const handlePostSubmit=async()=>{
     const formData=new FormData()
     formData.append("content",content)
-    formData.append("media",files)
+    if(files)
+      formData.append("media",files)
     formData.append("userprofile",profile.id)
     console.log(formData);
     console.log(profile.id);
@@ -111,7 +112,7 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
         caption: res.content,
         commentsCount: res.comments_count || 0,
         comments:[],
-        image: `https://res.cloudinary.com/${cloudName}/${res.media}`,
+        image: res.media?`https://res.cloudinary.com/${cloudName}/${res.media}`:null,
         socialUser: {
           avatar: avatarUrl,
           name: profile.full_name,

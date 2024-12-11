@@ -1,13 +1,16 @@
-import React from 'react'
-import JobPage from './components/JobPage'
-import PageMetaData from '@/components/PageMetaData';
+import React from "react";
+import JobPage from "./components/JobPage";
+import PageMetaData from "@/components/PageMetaData";
 
 function page() {
   return (
-      <div style={{height:'100%', marginTop: '20px'}}>
-        <JobPage/>  
-      </div>
-  )
+    <>
+      <PageMetaData title="Events 2" />
+      <main>
+        <JobPage />
+      </main>
+    </>
+  );
 }
 
-export default page
+export default page;
