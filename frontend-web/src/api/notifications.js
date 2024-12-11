@@ -9,7 +9,7 @@ export const createNotification = async (notificationData) => {
     throw new Error('Token is missing');
   }
 
-  const response = await fetch(API_ROUTES.NOTIFICATIONS, {
+  const response = await fetch(`${API_ROUTES.NOTIFICATIONS}get_own/`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -55,7 +55,7 @@ export const deleteNotification = async (notificationId) => {
     throw new Error('Token is missing');
   }
 
-  const response = await fetch(`${API_ROUTES.NOTIFICATIONS}${notificationId}/`, {
+  const response = await fetch(`${API_ROUTES.NOTIFICATIONS}get_own/`, {
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',
@@ -98,7 +98,7 @@ export const clearAllNotifications = async () => {
     throw new Error('Token is missing');
   }
 
-  const response = await fetch(`${API_ROUTES.NOTIFICATIONS}clear_all/`, {  // Assuming you have this endpoint in your API
+  const response = await fetch(`${API_ROUTES.NOTIFICATIONS}delete_all/`, {  // Assuming you have this endpoint in your API
     method: 'DELETE',
     headers: {
       'Content-Type': 'application/json',

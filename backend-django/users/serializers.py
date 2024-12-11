@@ -88,7 +88,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = ['id','user', 'role', 'status', 'college_id', 'full_name', 'bio', 'avatar_image', 'banner_image', 'contact_number', 'location', 'social_links', 
-                  'enrollment_year', 'current_program', 'expected_graduation_year', 'specialization']
+                  'experience','project','skills','enrollment_year', 'current_program', 'expected_graduation_year', 'specialization']
 
     def validate(self, data):
         role = data.get('role')
@@ -128,6 +128,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
             contact_number=validated_data.get('contact_number'),
             location=validated_data.get('location'),
             social_links=validated_data.get('social_links', {}),
+            project=validated_data.get('social_links', {}),
+            skills =validated_data.get('social_links', {}),
         )
 
         # Create specific profile based on role and additional role-specific fields

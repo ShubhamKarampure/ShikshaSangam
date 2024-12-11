@@ -11,4 +11,5 @@ router.register(r'doubts', DoubtViewSet)
 
 urlpatterns = [
     path('', include(router.urls))
+
 ]

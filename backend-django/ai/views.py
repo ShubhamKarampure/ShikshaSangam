@@ -7,12 +7,14 @@ from ai.embedding_utils import generate_user_embedding, generate_post_embedding
 from social.views import PostViewSet, PostOffsetPagination
 from social.models import Follow
 from django.db.models import Q
+from users.models import UserProfile
 
 
 class RecommendationView(APIView):
     """
     Provide personalized recommendations for the current user.
     """
+    
     def get(self, request):
         # Fetch or dynamically generate the user's embedding
         print(f"current_user = {request.user.user}")
@@ -32,6 +34,12 @@ class RecommendationView(APIView):
 
         # print(f"query_embedding = {query_embedding}")
         # Get user and post recommendations
+        all_profiles = UserProfile.objects.all()
+
+        print("all: ")
+        for p in all_profiles:
+            print(p.id)
+
         recommended_users = recommend_users(query_embedding, top_k=None)
         
         followed_userprofiles = Follow.objects.filter(
@@ -40,8 +48,13 @@ class RecommendationView(APIView):
        
         
       #  print(p.id for p in followed_userprofiles)
+        print("followed: ")
         for p in followed_userprofiles:
-            print(p.id)
+            print(p)
+        
+        print("recommended: ")
+        for p in recommended_users:
+            print(f"{p.id} , {p.role}")
 
         userstofollow = recommended_users.exclude(
             id__in=followed_userprofiles
@@ -50,7 +63,8 @@ class RecommendationView(APIView):
         ).filter(
             Q(role='student') | Q(role='alumni')  # Only students and alumni
         )
-        
+
+        print("to_follow")  
         print(p for p in userstofollow)
 
          

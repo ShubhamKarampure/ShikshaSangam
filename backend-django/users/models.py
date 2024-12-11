@@ -29,7 +29,6 @@ class UserProfile(models.Model):
         ('online', 'Online'),
         ('offline', 'Offline')
     )
-    
     role = models.CharField(max_length=20, choices=ROLE_CHOICES)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='offline')  # Added status field
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="user")
@@ -41,32 +40,14 @@ class UserProfile(models.Model):
     contact_number = models.CharField(max_length=15, blank=True, null=True)
     location = models.CharField(max_length=100, blank=True, null=True)
     social_links = models.JSONField(default=dict, null=True, blank=True)  # e.g., {"linkedin": "URL", "twitter": "URL"}
+    
     resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
-    preferences = models.JSONField(default=dict, null=True, blank=True)  # {"domains": [], "roles": [], "interests": []}
-    connections = models.JSONField(default=dict, null=True, blank=True)  # {"followers_count": 0, "following_count": 0}
+    experience = models.JSONField(default=dict, null=True, blank=True) 
+    project = models.JSONField(default=dict, null=True, blank=True) 
+    linkedin_url = models.URLField(max_length=200, blank=True, null=True)
+    skills = models.JSONField(default=dict, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    resume_url = models.URLField(null=True, blank = True)
-    
-
-    # def save(self, *args, **kwargs):
-    #     try:
-    #         # Custom upload logic for PDFs
-    #         if self.resume and hasattr(self.resume, 'file'):
-    #             # Upload to Cloudinary as raw
-    #             response = uploader.upload(
-    #                 self.resume.file,  # Pass the file object
-    #                 resource_type="image",  # Ensure it's uploaded as raw ** now trying image itself
-    #                 folder="shikshasangam/resume",
-    #                 format ="pdf"
-    #             )
-    #             self.resume_url = response['secure_url']  # Save the URL
-    #             self.resume = response['public_id']  # Save the public ID
-    #     except Exception as e:
-    #         print(f"Cloudinary upload error: {e}")
-    #     super().save(*args, **kwargs)
-
-    
 
     def __str__(self):
 
@@ -95,7 +76,6 @@ class AlumnusProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
     graduation_year = models.PositiveIntegerField(blank=True, null=True)
     current_employment = models.JSONField(default=dict, blank=True, null=True)
-    career_path = models.TextField(blank=True, null=True)
     specialization = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
 
