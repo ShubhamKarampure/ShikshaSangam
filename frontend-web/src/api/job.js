@@ -31,3 +31,17 @@ export const createJob = async (jobData) => {
     throw error;
   }
 };
+
+export const uploadResume = async (formData) => {
+    const response = await fetch("/api/resumes/upload", {
+      method: "POST",
+      body: formData,
+    });
+  
+    if (!response.ok) {
+      throw new Error("Failed to upload resume");
+    }
+  
+    return response.json();
+  };
+  

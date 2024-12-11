@@ -1,11 +1,33 @@
-import React from "react";
-import TextFormInput from '@/components/form/TextFormInput';
-import TextAreaFormInput from '@/components/form/TextAreaFormInput';
-import DateFormInput from '@/components/form/DateFormInput';
-import DropzoneFormInput from '@/components/form/DropzoneFormInput';
-import {  BsFileEarmarkText } from 'react-icons/bs';
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row,  } from 'react-bootstrap';
-function CreateEventForm({isOpen, toggle,control,handleSubmit,guests}) {
+import React, { useState } from "react";
+import TextFormInput from "@/components/form/TextFormInput";
+import TextAreaFormInput from "@/components/form/TextAreaFormInput";
+import DateFormInput from "@/components/form/DateFormInput";
+import DropzoneFormInput from "@/components/form/DropzoneFormInput";
+import { BsFileEarmarkText } from "react-icons/bs";
+import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
+import { Controller, useWatch } from "react-hook-form";
+import { useNotificationContext } from "@/context/useNotificationContext";
+import {createMeeting} from "@/api/meet"
+import { useForm } from "react-hook-form";
+
+function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
+  // Watch the value of 'mode' to conditionally render the location field
+  const mode = useWatch({ control, name: "mode", defaultValue: "online" });
+  const { showNotification } = useNotificationContext();
+  const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
+  const { setValue } = useForm();
+  const [disable,setDisable]=useState(false);
+  const handleMeetCreation=async()=>{
+    const response=await createMeeting({token:VIDEOSDK_TOKEN})
+    if(response.meetingId){
+      setValue("online_meet_id",response.meetingId)
+      console.log(response.meetingId);      
+      setDisable(true)
+    }else{
+      console.log(response.err);
+      
+    }
+  }
   return (
     <Modal
       show={isOpen}
@@ -40,7 +62,6 @@ function CreateEventForm({isOpen, toggle,control,handleSubmit,guests}) {
               containerClassName="col-12"
               control={control}
             />
-
             <Col sm={4}>
               <label className="form-label">Date</label>
               <DateFormInput
@@ -71,43 +92,53 @@ function CreateEventForm({isOpen, toggle,control,handleSubmit,guests}) {
               containerClassName="col-sm-4"
               control={control}
             />
-            <TextFormInput
-              name="location"
-              label="Location"
-              placeholder="Logansport, IN 46947"
-              containerClassName="col-12"
+
+            {/* Mode Selection */}
+            <Controller
+              name="mode"
               control={control}
+              defaultValue="online"
+              render={({ field }) => (
+                <Col sm={6}>
+                  <label className="form-label">Mode</label>
+                  <select {...field} className="form-select">
+                    <option value="online">Online</option>
+                    <option value="offline">Offline</option>
+                  </select>
+                </Col>
+              )}
             />
+
+            {/* Conditional Location Field */}
+            {mode === "offline" && (
+              <TextFormInput
+                name="location"
+                label="Location"
+                placeholder="Event location here"
+                containerClassName="col-12"
+                control={control}
+              />
+            )}
+            {mode ==='online' &&(
+              <Button onClick={handleMeetCreation} disabled={disable}>
+                Create Meet link
+              </Button>  
+            )}
+
             <TextFormInput
-              name="guest"
+              name="Speakers"
               type="email"
-              label="Add guests"
-              placeholder="Guest email"
+              label="Add Speakers"
+              placeholder="Speaker email"
               containerClassName="col-12"
               control={control}
             />
-            <Col xs={12} className="mt-3">
-              <ul className="avatar-group list-unstyled align-items-center mb-0">
-                {guests.map((avatar, idx) => (
-                  <li className="avatar avatar-xs" key={idx}>
-                    <img
-                      className="avatar-img rounded-circle"
-                      src={avatar}
-                      alt="avatar"
-                    />
-                  </li>
-                ))}
-                <li className="ms-3">
-                  <small> +50 </small>
-                </li>
-              </ul>
-            </Col>
             <div className="mb-3">
               <DropzoneFormInput
                 showPreview
-                helpText="Drop presentation and document here or click to upload."
+                helpText="Drop Banner Image here or click to upload."
                 icon={BsFileEarmarkText}
-                label="Upload attachment"
+                label="Upload Banner"
               />
             </div>
           </Row>

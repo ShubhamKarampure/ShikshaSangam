@@ -55,17 +55,16 @@ def generate_user_embedding(user_profile):
     bio = user_profile.bio or ""
     college_name = user_profile.college.college_name if user_profile.college else "No College"
     role_str = ''
-    if  user_profile.studentprofile:
+    if hasattr(user_profile, 'studentprofile') and user_profile.studentprofile:
         sp = user_profile.studentprofile
         program = sp.current_program
         
     # Convert preferences to string
-    skills_text = preferences_to_string(skills)
-    experience_text = preferences_to_string(experience)
-    project_text = preferences_to_string(project)
+    skills_text = json_to_string(skills) or ''
+    experience_text = json_to_string(experience) or ''
+    project_text = json_to_string(project) or ''
 
     
-   
 
     
     # Extract resume text
@@ -82,16 +81,18 @@ def generate_user_embedding(user_profile):
     # Generate embedding
     return embedding_model.encode(combined_text)
 
+def json_to_string(data):
+    if isinstance(data, dict):
+        return ", ".join([f"{key}: {value}" for key, value in data.items()])
+    elif isinstance(data, list):
+        return ", ".join([str(item) for item in data])
+    else:
+        return str(data)
 def preferences_to_string(preferences):
     """
     Convert JSON preferences into a meaningful string.
     """
-    domains = ", ".join(preferences.get("domains", [])) or ""
-    roles = ", ".join(preferences.get("roles", [])) or ''
-    interests = ", ".join(preferences.get("interests", [])) or ''
-    skills = ", ".join(preferences.get("skills", [])) or ' '
-    return f"Domains: {domains}. Roles: {roles}. Interests: {interests}."
-
+  
 def extract_resume_text_from_url(resume_url):
     """
     Extract text from a PDF stored at the given URL.

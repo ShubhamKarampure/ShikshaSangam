@@ -64,7 +64,7 @@ const AlumniUpload = lazy(() => import("@/app/(admin)/uploadAlumni/page"));
 const AdminDashboard = lazy(() => import("@/app/(admin)/dashboard/page"));
 const EventSchedule = lazy(() => import("@/app/(admin)/eventschedule/page"));
 const DonationsPage = lazy(() => import("@/app/(admin)/donation/page"));
-
+const UserView=lazy(()=>import("@/app/(admin)/UserPage/page"))
 //profile pages
 const ProfileFeed = lazy(() => import("@/app/(social)/profile/feed/page"));
 const ProfileAbout = lazy(() => import("@/app/(social)/profile/about/page"));
@@ -421,6 +421,10 @@ export const adminRoutes = [
     path: "/admin/donations",
     name: "Donations",
     element: <DonationsPage />,
+  },{
+    path: "/admin/view",
+    name: "View Users",
+    element: <UserView />,
   },
 ];
 export const appRoutes = [...otherRoutes];
