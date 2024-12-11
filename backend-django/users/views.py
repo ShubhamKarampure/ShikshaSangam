@@ -62,13 +62,13 @@ class UserRegistrationView(APIView):
 
             # Check if UserProfile exists or create one
             user_profile_id = None
-            try:
-                user_profile = user.user  # Access related UserProfile
-                user_profile_id = user_profile.id
-            except ObjectDoesNotExist:
-                # Create a UserProfile if it does not exist
-                user_profile = UserProfile.objects.create(user=user)
-                user_profile_id = user_profile.id
+            # try:
+            #     user_profile = user.user  # Access related UserProfile
+            #     user_profile_id = user_profile.id
+            # except ObjectDoesNotExist:
+            #     # Create a UserProfile if it does not exist
+            #     user_profile = UserProfile.objects.create(user=user)
+            #     user_profile_id = user_profile.id
 
             # Return the JWT tokens and user details
             return Response({
