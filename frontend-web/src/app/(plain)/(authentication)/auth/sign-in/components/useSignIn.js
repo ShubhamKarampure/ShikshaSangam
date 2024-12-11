@@ -34,7 +34,7 @@ const useSignIn = (emailOptions) => {
   });
 
   // Redirect logic
-  const redirectUser = async (loggedInUser) => {
+  const redirectUser = async (loggedInUser,res) => {
     const redirectLink = searchParams.get('redirectTo');
     if(loggedInUser.profile_id===null){
       setCookie("_PROFILE_SETUP_", false);
@@ -76,7 +76,7 @@ const useSignIn = (emailOptions) => {
     try {
       const response = await signin(data);
       const { access, refresh, user: loggedInUser } = response;
-      await saveSession({ access, refresh, user: loggedInUser });
+      const res=await saveSession({ access, refresh, user: loggedInUser });
       axios.defaults.headers.common['Authorization'] = `Bearer ${data.access}`;
 
       showNotification({
@@ -84,7 +84,7 @@ const useSignIn = (emailOptions) => {
         variant: 'success'
       });
 
-      redirectUser(loggedInUser);
+      redirectUser(loggedInUser,res);
     } catch (e) {
       console.log(e);
       
