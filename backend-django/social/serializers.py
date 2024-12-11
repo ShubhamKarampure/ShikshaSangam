@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import Post, Comment, Like, Follow, Share, Poll, PollOption, PollVote, Reply,Notification
 from users.models import UserProfile
 from users.serializers import UserProfileSerializer
+from .Text_Moderator import TextModeration
 
 class SocialUserProfileSerializer(serializers.ModelSerializer): # Can be used to avoid writing long views, Still working on it....
     """Serializer for UserProfile to include basic user details."""
@@ -16,6 +17,25 @@ class PostSerializer(serializers.ModelSerializer):
     class Meta:
         model = Post
         fields = '__all__'
+    
+    def create(self, validated_data):
+        # Get the content from the request data
+        content = validated_data.get('content', '')
+
+        # Initialize the TextModeration instance
+        moderator = TextModeration(thresholdOK=0.2)
+
+        # Moderate the content
+        is_safe = moderator.moderate_text(content)
+
+        # If the content is not safe, raise a validation error
+        if not is_safe:
+            raise serializers.ValidationError(
+                {"content": "The content of this post is not safe and violates our guidelines."}
+            )
+
+        # Proceed with the default creation if the content is safe
+        return super().create(validated_data)
 
 class CommentSerializer(serializers.ModelSerializer):
     # Includes all fields in Comment model
