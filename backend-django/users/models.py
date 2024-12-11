@@ -43,6 +43,7 @@ class UserProfile(models.Model):
     resume = CloudinaryField('resume', folder='shikshasangam/resume', null=True, blank=True)
     experience = models.JSONField(default=dict, null=True, blank=True) 
     project = models.JSONField(default=dict, null=True, blank=True) 
+    linkedin_url = models.URLField(max_length=200, blank=True, null=True)
     skills = models.JSONField(default=dict, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -74,7 +75,6 @@ class AlumnusProfile(models.Model):
     profile = models.OneToOneField(UserProfile, on_delete=models.CASCADE)
     graduation_year = models.PositiveIntegerField(blank=True, null=True)
     current_employment = models.JSONField(default=dict, blank=True, null=True)
-    career_path = models.TextField(blank=True, null=True)
     specialization = models.CharField(max_length=100, blank=True, null=True)
     is_verified = models.BooleanField(default=False)
 
