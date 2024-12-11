@@ -12,6 +12,7 @@ class UserEmbedding(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     vector = models.JSONField(null=True, blank=True)
+    
 
 class PostEmbedding(models.Model):
     post = models.OneToOneField('social.Post', on_delete=models.CASCADE, related_name='embedding')

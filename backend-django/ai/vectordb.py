@@ -26,16 +26,25 @@ def store_user_embedding(user_profile):
         print('duplicate vector detected')
         #faiss_manager.remove(vector_id)
     
-    
-    # Add to FAISS
-    faiss_manager.add(embedding, id=vector_id, metadata=metadata)
-    serialized_embedding = embedding.tolist()
-    # Save to UserEmbedding model
-    UserEmbedding.objects.update_or_create(
-        user=user_profile,
-        defaults={"vector_id": vector_id, "metadata": metadata},
-        vector = serialized_embedding
-    )
+    try:
+        user_embedding = UserEmbedding.objects.get(vector_id=vector_id)
+        # Update the existing object
+        faiss_manager.add(embedding, id=vector_id, metadata=metadata)
+        user_embedding.embedding = embedding.tolist()
+        user_embedding.metadata = metadata
+        user_embedding.save()
+        print(f"Updated UserEmbedding for {vector_id}")
+    except UserEmbedding.DoesNotExist:
+        # Create a new object
+        UserEmbedding.objects.create(
+            vector_id=vector_id,
+            vector=embedding.tolist(),
+            metadata=metadata,
+            user = user_profile 
+        )
+        faiss_manager.add(embedding, id=vector_id, metadata=metadata)
+        print(f"Created new UserEmbedding for {vector_id}")
+     
 
 def get_user_embedding(user_profile):
     user_embedding = UserEmbedding.objects.get(user=user_profile)
