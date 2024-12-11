@@ -17,21 +17,17 @@ import {
 import { FaCheck, FaTimes } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
-const ApprovalCard = ({ users, handleApprove }) => {
-  const navigate = useNavigate();
-  const [searchQuery, setSearchQuery] = useState("");
-
-  // Filter users based on search query
-  const filteredUsers = users.filter((user) =>
-    `${user.name} ${user.email} ${user.role}`
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase())
-  );
-
+function StudentTable({ students }) {
+    const filteredUsers = students.filter((user) =>
+        `${user.name} ${user.email} ${user.role}`
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      );
+    const [searchQuery, setSearchQuery] = useState("");
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
       <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
-        <h2 className="mb-0">Users</h2>
+        <h2 className="mb-0">Students</h2>
         <div className="d-flex gap-3 align-items-center">
           <TextField
             variant="outlined"
@@ -46,17 +42,8 @@ const ApprovalCard = ({ users, handleApprove }) => {
               },
             }}
           />
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/admin/upload")}
-          >
+          <Button variant="outlined" onClick={() => navigate("/admin/upload")}>
             Add Bulk
-          </Button>
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/admin/view")}
-          >
-            View More
           </Button>
         </div>
       </div>
@@ -89,7 +76,9 @@ const ApprovalCard = ({ users, handleApprove }) => {
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">{user.full_name || "User"}</TableCell>
+                    <TableCell align="left">
+                      {user.full_name || "User"}
+                    </TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>
@@ -130,6 +119,6 @@ const ApprovalCard = ({ users, handleApprove }) => {
       </CardContent>
     </Card>
   );
-};
+}
 
-export default ApprovalCard;
+export default StudentTable;
