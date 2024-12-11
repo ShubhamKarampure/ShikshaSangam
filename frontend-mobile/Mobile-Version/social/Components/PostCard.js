@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Modal, Pressable, TouchableOpacity } from "react-native";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useState } from "react";
 import LikeButton from "../Components/LikeButton";
 import CommentButton from "../Components/CommentButton";
@@ -9,6 +10,7 @@ import timePassed from "../../Utility/timePassed";
 import { processImageUrl } from "../../Utility/urlUtils";
 
 const PostCard = ({ item, isDarkMode, navigation}) => {
+  const [isModalVisible, setModalVisible] = useState(false);
 
   //console.log(item);
 
@@ -30,7 +32,9 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
           <Image
             source={{
               uri:
-                item.user.avatar !== null ? processImageUrl(item.user.avatar) : defaultAvatarURL,
+                item.user.avatar !== null
+                  ? processImageUrl(item.user.avatar)
+                  : defaultAvatarURL,
             }}
             style={styles.avatar}
           />
@@ -55,16 +59,25 @@ const PostCard = ({ item, isDarkMode, navigation}) => {
         </Text>
         {/* Post Image */}
 
-        <Image
-          source={{
-            uri: item.post.media !== null ? processImageUrl(item.post.media) : defaultImageURL,
-          }}
-          style={styles.postImage}
-        />
+        <Pressable onPress={() => setModalVisible(true)}>
+          <Image
+            source={{
+              uri:
+                item.post.media !== null
+                  ? processImageUrl(item.post.media)
+                  : defaultImageURL,
+            }}
+            style={styles.postImage}
+          />
+        </Pressable>
 
         {/* Actions: Like, Comment, Share */}
         <View style={styles.actions}>
-          <LikeButton initialLikeCount={item.post_stats.likes} post_id={item.post.id} initialIsLiked={item.is_liked}/>
+          <LikeButton
+            initialLikeCount={item.post_stats.likes}
+            post_id={item.post.id}
+            initialIsLiked={item.is_liked}
+          />
           <CommentButton
             item={item}
             isDarkMode={isDarkMode}
@@ -93,7 +106,13 @@ const styles = StyleSheet.create({
   },
   postDark: { backgroundColor: "#1E1E1E" },
   header: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
-  avatar: { width: 40, height: 40, borderRadius: 20, marginRight: 10, borderWidth:2, },
+  avatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    marginRight: 10,
+    borderWidth: 2,
+  },
   postImage: {
     width: "100%",
     height: 200,
@@ -107,6 +126,23 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: "bold", marginBottom: 5, color: "#000" },
   content: { fontSize: 14, marginBottom: 10, color: "#333" },
   actions: { flexDirection: "row", justifyContent: "space-between" },
+  // Modal styles
+  modalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  fullScreenImage: {
+    width: "100%",
+    height: "80%",
+  },
+  closeButton: {
+    position: "absolute",
+    top: 40,
+    right: 20,
+    zIndex: 1,
+  },
 });
 
 export default PostCard;
