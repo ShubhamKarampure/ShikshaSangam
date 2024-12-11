@@ -37,6 +37,10 @@ const AdminDashboard = () => {
         
       }
     }
+    const fetchCollegeSummary=async ()=>{
+
+    }
+    fetchCollegeSummary()
     fetchUserByCollege()
   },[])
   const totalUsers = users.length;

@@ -32,7 +32,7 @@ export const leftSidebarData = [{
 }, {
   icon: BsNewspaper,
   label: 'Latest News',
-  url: '/blogs'
+  url: '/jobs'
 }, {
   icon: BsCalendarEventFill,
   label: 'Events',

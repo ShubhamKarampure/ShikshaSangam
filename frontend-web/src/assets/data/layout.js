@@ -29,7 +29,7 @@ export const profilePanelLinksData1 = [{
 }, {
   image: earthImg,
   name: 'Latest News',
-  link: '/blogs'
+  link: '/job'
 }, {
   image: calendarImg,
   name: 'Events',
