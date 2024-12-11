@@ -63,10 +63,6 @@ def generate_user_embedding(user_profile):
     skills_text = json_to_string(skills) or ''
     experience_text = json_to_string(experience) or ''
     project_text = json_to_string(project) or ''
-
-    
-
-    
     # Extract resume text
     resume_text = extract_resume_text_from_url(resume_url) if resume_url else ""
     
