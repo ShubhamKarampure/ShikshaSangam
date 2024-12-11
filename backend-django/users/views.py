@@ -353,12 +353,39 @@ class CollegeViewSet(viewsets.ModelViewSet):
     #         # Only College Admins can delete a college
     #         permission_classes = [IsCollegeAdmin, IsAuthenticated]
     #     return [permission() for permission in permission_classes]
+    @action(detail=False, methods=["get"])
+    def college_statistics(self, request):
+        # Get the college of the current user
+        user_college = request.user.user.college
+
+        if not user_college:
+            return Response(
+                {"error": "User is not associated with any college."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Count users, students, and alumni
+        total_users = UserProfile.objects.filter(college=user_college).count()
+        total_students = StudentProfile.objects.filter(profile__college=user_college).count()
+        total_alumni = AlumnusProfile.objects.filter(profile__college=user_college).count()
+
+        # Prepare and return the response
+        data = {
+            "college": user_college.college_name,
+            "total_users": total_users,
+            "total_students": total_students,
+            "total_alumni": total_alumni,
+        }
+        return Response(data, status=status.HTTP_200_OK)
     
 
 # College Admin ViewSet
 class CollegeAdminViewSet(viewsets.ModelViewSet):
     queryset = CollegeAdminProfile.objects.all()
     serializer_class = CollegeAdminProfileSerializer
+
+    
+    
 
 class StudentProfileViewSet(viewsets.ModelViewSet):
     queryset = StudentProfile.objects.all()

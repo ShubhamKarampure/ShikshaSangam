@@ -10,7 +10,8 @@ import PeopleIcon from "@mui/icons-material/People";
 import PendingActionsIcon from "@mui/icons-material/PendingActions";
 import SchoolIcon from "@mui/icons-material/School";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
-import { getUserByCollege } from "../../../../api/users";
+import { getUserByCollege } from "@/api/users";
+import { getCollegeSummary } from "@/api/college";
 
 // Mock data for users
 
@@ -24,6 +25,7 @@ const events = [
 
 const AdminDashboard = () => {
   // Calculate statistics
+  const [stats,setStats]=useState(null)
   const [users,setUsers]=useState([])
   useEffect(()=>{
     const fetchUserByCollege=async()=>{
@@ -38,55 +40,51 @@ const AdminDashboard = () => {
       }
     }
     const fetchCollegeSummary=async ()=>{
-
+      const res=await getCollegeSummary()
+      if(res){
+        setStats(res)
+      }else{
+        console.log(res);
+        
+      }
     }
     fetchCollegeSummary()
     fetchUserByCollege()
   },[])
-  const totalUsers = users.length;
-  const pendingApproval = users.filter(
-    (user) => user.status === "Pending"
-  ).length;
-  const approvedAlumni = users.filter(
-    (user) => user.status === "Approved" && user.role === "Alumni"
-  ).length;
-  const approvedStudents = users.filter(
-    (user) => user.status === "Approved" && user.role === "Student"
-  ).length;
   return (
     <div className="py-4 w-100">
       <h1 className="mb-4">Admin Dashboard</h1>
     
       {/* Summary Cards */}
-      <Row className="mb-4">
+      <Row className="mb-4 d-flex" style={{"justifyContent":"center"}}>
         <Col md={3}>
           <SummaryCard
             title="Total Users"
-            value={totalUsers}
+            value={stats?.total_users}
             icon={<PeopleIcon style={{ color: "#1976d2" }} />}
             percentage={'1'}
           />
         </Col>
-        <Col md={3}>
+        {/* <Col md={3}>
           <SummaryCard
-            title="Pending Approval"
-            value={pendingApproval}
+            title="College"
+            value={stats?.total_users}
             icon={<PendingActionsIcon style={{ color: "#f57c00" }} />}
             percentage={'3'}
           />
-        </Col>
+        </Col> */}
         <Col md={3}>
           <SummaryCard
-            title="Approved Alumni"
-            value={approvedAlumni}
+            title="Alumni"
+            value={stats?.total_alumni}
             icon={<SchoolIcon style={{ color: "#388e3c" }} />}
             percentage={'-2'}
           />
         </Col>
         <Col md={3}>
           <SummaryCard
-            title="Approved Students"
-            value={approvedStudents}
+            title="Students"
+            value={stats?.total_students}
             icon={<CheckCircleIcon style={{ color: "#1976d2" }} />}
             percentage={'5'}
           />
