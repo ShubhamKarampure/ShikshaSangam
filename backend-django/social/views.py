@@ -441,7 +441,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'specialization': follower.alumnusprofile.specialization,
                     'graduation_year': follower.alumnusprofile.graduation_year,
                     'role': follower.role,
-                    'location':follower.alumnusprofile.location,
+                    'location':follower.location,
                     'username':follower.user.username,
                 })
             else:
@@ -475,7 +475,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'avatar_image': followed.avatar_image.url if followed.avatar_image else None,
                     'current_program': followed.studentprofile.current_program,
                     'specialization': followed.studentprofile.specialization,
-                     'location':followed.studentprofile.location,
+                     'location':followed.location,
                     'expected_graduation_year': followed.studentprofile.expected_graduation_year,
                     'role': followed.role,
                     'username':followed.user.username,
@@ -487,7 +487,7 @@ class FollowViewSet(viewsets.ModelViewSet):
                     'avatar_image': followed.avatar_image.url if followed.avatar_image else None,
                     'specialization': followed.alumnusprofile.specialization,
                     'graduation_year': followed.alumnusprofile.graduation_year,
-                    'location':followed.alumnusprofile.location,
+                    'location':followed.location,
                     'role': followed.role,
                     'username':followed.user.username,
                 })

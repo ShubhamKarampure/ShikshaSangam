@@ -54,5 +54,8 @@ export const API_ROUTES = {
   UNLIKE: `${API_BASE_URL}/social/likes/unlike/`, // Unlike
   FOLLOWERS_SUMMARY: `${API_BASE_URL}/social/followers/summary/`, // Followers summary
 
-  NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`
+  NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`,
+
+  // Jobs
+  JOBS : `${API_BASE_URL}/jobs/jobs/`
 }

@@ -34,6 +34,7 @@ def login():
     password = driver.find_element(By.ID, 'password')
     password.send_keys(os.environ['PASSWORD'])
     password.submit()
+    sleep(10)
 
     try:
         wait.until(EC.url_contains("/feed/"))
@@ -78,7 +79,7 @@ def scrape_pfp_banner():
 
     try:
         image_div = soup.find('div', {'class': 'ph5 pb5'})
-        image_tag = image_div.find('img', {'class' : 'gYwGeQHVKFihyyWibCvmHZFDQZfKneaBo pv-top-card-profile-picture__image--show evi-image ember-view'})
+        image_tag = image_div.find('img', {'class' : 'xGjJxwyrLnfqcnSORmaFTppGosdPvatKxpUzzI pv-top-card-profile-picture__image--show evi-image ember-view'})
         pfp_uri = image_tag.get('src')
     except Exception as e:
         print(e)
@@ -151,7 +152,7 @@ def get_exp(exp):
     exp_dict['logo'] = logo  
 
     # Extract designations
-    designations = exp.find_all('div', {'class': 'fPLNkfiTqBJivqMiXLaRuObcmlUMZsDPkIAVk yCpXOOXwXcJnFOsCoYTsmMdAvLcplVbgNCBU'}) or []
+    designations = exp.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM jHYnaxErEEIsToOxOmBzTNPyzeGMGrLnXpAo'}) or []
     item_list = []
 
     for position in designations:
@@ -179,7 +180,7 @@ def scrape_experience(sections):
             return
 
         try:
-            experiences = experience_section.find_all('div', {'class': 'fPLNkfiTqBJivqMiXLaRuObcmlUMZsDPkIAVk SeRILEEOfWLelfcuceiLywOjAamlMoEkmnTdFk itGgYIXPpfAaqNrUDXHQVkGSUXMzldwQtdzM'})
+            experiences = experience_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'})
             profile_data['experience'] = [get_exp(exp) for exp in experiences]
             #print('EXPERIENCE DONE                   =\n',profile_data['experience'])
         except Exception as e:
@@ -225,7 +226,7 @@ def scrape_projects():
     soup = BeautifulSoup(page_source, 'lxml')
 
     projects_section = soup.find('section', {'class': 'artdeco-card pb3'})
-    items = projects_section.find_all('div', {'class': 'fPLNkfiTqBJivqMiXLaRuObcmlUMZsDPkIAVk SeRILEEOfWLelfcuceiLywOjAamlMoEkmnTdFk itGgYIXPpfAaqNrUDXHQVkGSUXMzldwQtdzM'}) if projects_section else []
+    items = projects_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'}) if projects_section else []
 
     profile_data['projects'] = [get_project(item) for item in items]
     #print('PROJECT DONE                    =\n',profile_data['projects'])
@@ -266,7 +267,7 @@ def scrape_skills():
     soup = BeautifulSoup(page_source, 'lxml')
 
     skills_section = soup.find('section', {'class': 'artdeco-card pb3'})
-    items = skills_section.find_all('div', {'class': 'fPLNkfiTqBJivqMiXLaRuObcmlUMZsDPkIAVk SeRILEEOfWLelfcuceiLywOjAamlMoEkmnTdFk itGgYIXPpfAaqNrUDXHQVkGSUXMzldwQtdzM'}) if skills_section else []
+    items = skills_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'}) if skills_section else []
 
     profile_data['skills'] = [get_skills(item) for item in items]
     #print('Skills done             =\n',profile_data['skills'])
@@ -275,56 +276,119 @@ def scrape_skills():
     driver.back()
     sleep(4)
 
-
-
-def save_profile_data_to_json(profile_data, file_name="profile_data.json"):
-    try:
-        # Convert Python dictionary to a JSON string and save it to a file
-        with open(file_name, 'w', encoding='utf-8') as json_file:
-            json.dump(profile_data, json_file, indent=4, ensure_ascii=False)
-        print(f"Profile data saved to {file_name}")
-    except Exception as e:
-        print(f"An error occurred while saving JSON: {e}")
-
-def scrape_linkedin_profile(profile_url):
-    load_dotenv(override=True)
-    global driver
-    global wait
+def scrape_linkedin_profile(driver, wait, profile_url):
     global profile_data
     global url
 
     url = profile_url
+    profile_data = {}  # Dictionary to store profile data
+    sections = None  # Sections in LinkedIn (e.g., about section, experience section, etc.)
 
-    driver = webdriver.Chrome()  # start a new window with chrome web browser
-    wait = WebDriverWait(driver, 10)  # WebDriverWait instance with a 10-second timeout
-    profile_data = {}  # dictionary to store profile data
-    sections = None # sections in linkedin (eg about section, experience section, etc)
     try:
-        login()
+        driver.get(profile_url)
         scrape_name_headline()
         scrape_pfp_banner()
         sections = get_all_sections_list()
-        #print('sections = ',sections)
         scrape_about(sections)
         scrape_experience(sections)
         scrape_projects()
         scrape_skills()
-        # print("Profile_data = ", profile_data)
     except TimeoutException:
-        print("Timed out waiting for a page element. Ensure that the provided URL is correct or maybe a wild captcha appeared.")
+        print(f"Timeout while scraping {profile_url}. Ensure the URL is correct or handle CAPTCHA.")
     except Exception as e:
-        print(f"An error occurred: {e}")
+        print(f"Error occurred while scraping {profile_url}: {e}")
     finally:
-        driver.quit()
-        #save_profile_data_to_json(profile_data)  # Saves the JSON file in the same directory
         return profile_data
+    
+def save_profile_data_to_json(data, file_name="profile_datas.json"):
+    try:
+        # Convert Python dictionary to a JSON string and save it to a file
+        with open(file_name, 'w', encoding='utf-8') as json_file:
+            json.dump(data, json_file, indent=4, ensure_ascii=False)
+        print(f"Profile data saved to {file_name}")
+    except Exception as e:
+        print(f"An error occurred while saving JSON: {e}")
+
+def scrape_multiple_profiles(profile_urls):
+    load_dotenv(override=True)
+    
+    global driver
+    global wait
+    results = []
+    driver = webdriver.Chrome()  # Start a new browser window
+    wait = WebDriverWait(driver, 10)  # WebDriverWait instance with a 10-second timeout
+
+    try:
+        login()  # Perform login once
+        for url in profile_urls:
+            print(f"Scraping URL: {url}")
+            profile_data = scrape_linkedin_profile(driver, wait, url)
+            results.append(profile_data)
+    except Exception as e:
+        print(f"Error during scraping multiple profiles: {e}")
+    finally:
+        driver.quit()  # Ensure the driver is closed properly
+    save_profile_data_to_json(results, 'testing_data.json')
+    return results
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python scraper.py <LinkedIn_Profile_URL>")
+        print("Usage: python scraper.py <LinkedIn_Profile_URL1> <LinkedIn_Profile_URL2> ...")
         sys.exit(1)
-    profile_url = sys.argv[1]
-    scrape_linkedin_profile(profile_url)   # is exported and can be imported to other python files
+
+    profile_urls = sys.argv[1:]  # Accept multiple URLs from command-line arguments
+    scraped_data = scrape_multiple_profiles(profile_urls)
+
+    # Optionally save the scraped data to a JSON file
+    with open("scraped_profiles.json", "w") as file:
+        json.dump(scraped_data, file, indent=4)
+
+    print("Scraping completed. Results saved to scraped_profiles.json")
+
+
+
+
+
+# def scrape_linkedin_profile(profile_url):
+#     load_dotenv(override=True)
+#     global driver
+#     global wait
+#     global profile_data
+#     global url
+
+#     url = profile_url
+
+#     driver = webdriver.Chrome()  # start a new window with chrome web browser
+#     wait = WebDriverWait(driver, 10)  # WebDriverWait instance with a 10-second timeout
+#     profile_data = {}  # dictionary to store profile data
+#     sections = None # sections in linkedin (eg about section, experience section, etc)
+#     try:
+#         login()
+#         scrape_name_headline()
+#         scrape_pfp_banner()
+#         sections = get_all_sections_list()
+#         #print('sections = ',sections)
+#         scrape_about(sections)
+#         scrape_experience(sections)
+#         scrape_projects()
+#         scrape_skills()
+#         # print("Profile_data = ", profile_data)
+#     except TimeoutException:
+#         print("Timed out waiting for a page element. Ensure that the provided URL is correct or maybe a wild captcha appeared.")
+#     except Exception as e:
+#         print(f"An error occurred: {e}")
+#     finally:
+#         driver.quit()
+#         #save_profile_data_to_json(profile_data)  # Saves the JSON file in the same directory
+#         return profile_data
+
+# if __name__ == "__main__":
+#     if len(sys.argv) < 2:
+#         print("Usage: python scraper.py <LinkedIn_Profile_URL>")
+#         sys.exit(1)
+#     profile_urls = sys.argv[1]
+#     scrape_linkedin_profile(profile_urls)   # is exported and can be imported to other python files
 
 
 

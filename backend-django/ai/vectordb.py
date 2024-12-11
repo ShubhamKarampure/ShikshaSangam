@@ -20,7 +20,13 @@ def store_user_embedding(user_profile):
     embedding = generate_user_embedding(user_profile)
     vector_id = f"user_{user_profile.id}"  # Unique identifier
     metadata = {"type": "user", "id": user_profile.id}
-
+    
+    if vector_id in faiss_manager.metadata:
+        # Remove existing vector from FAISS
+        print('duplicate vector detected')
+        #faiss_manager.remove(vector_id)
+    
+    
     # Add to FAISS
     faiss_manager.add(embedding, id=vector_id, metadata=metadata)
     serialized_embedding = embedding.tolist()

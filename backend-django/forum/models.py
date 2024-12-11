@@ -31,6 +31,44 @@ class Forum(models.Model):
 
     def __str__(self):
         return self.name
+class ForumAccess(models.Model):
+    """
+    Model for handling both join requests and invites for forums.
+    """
+    forum = models.ForeignKey(Forum, on_delete=models.CASCADE, related_name='access_requests')
+    userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE, related_name='forum_access_requests')
+    requested_by = models.ForeignKey(
+        UserProfile, 
+        on_delete=models.SET_NULL, 
+        null=True, 
+        blank=True, 
+        related_name='initiated_access_requests'
+    )  # For invites, this will track who sent the invite.
+    status = models.CharField(
+        max_length=10,
+        choices=[
+            ('Pending', 'Pending'),
+            ('Approved', 'Approved'),
+            ('Rejected', 'Rejected'),
+            ('Invited', 'Invited'),  # Denotes an invite
+        ],
+        default='Pending',
+    )
+    type = models.CharField(
+        max_length=10,
+        choices=[
+            ('Request', 'Request'),  # User requested to join
+            ('Invite', 'Invite')     # Moderator invited the user
+        ]
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('forum', 'userprofile')  # Prevent duplicate requests/invites
+
+    def __str__(self):
+        return f"{self.type} for {self.userprofile} in {self.forum} - {self.status}"
+
 
 class ForumMod(models.Model):
     userprofile = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
