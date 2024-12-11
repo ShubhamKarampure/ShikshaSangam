@@ -11,32 +11,56 @@
 #     Signal triggered after saving a UserProfile instance.
 #     Updates embedding only on creation or when specific fields are modified.
 #     """
-#     if created:  # Trigger embedding generation for new profiles
+#     print(f'signal triggered for profile {instance.id}')
+#     if created:  
+#         print('created')# Trigger embedding generation for new profiles
 #         print(f"Creating embedding for new UserProfile {instance.id}")
 #         store_user_embedding(instance)
 #         return
+    
+#       # Detect updated fields by comparing current and previous values
+#     relevant_fields = {"resume", "experience", 'skills', 'project', "bio"}
+#     changed_fields = set()
 
-#     # Handle updates for specific fields
-#     updated_fields = kwargs.get('update_fields')
-#     relevant_fields = {"resume", "preferences", "bio"}
+#     # Use `instance.__class__.objects` to fetch the current state from the database
+#     original_instance = instance.__class__.objects.get(pk=instance.pk)
 
-#     if updated_fields:
-#         if relevant_fields.intersection(updated_fields):  # Check if relevant fields were updated
-#             print(f"Updating embedding for UserProfile {instance.id}: relevant fields changed.")
-#             store_user_embedding(instance)
-#         else:
-#             print(f"Skipping embedding update for UserProfile {instance.id}: irrelevant fields updated.")
-#     else: 
-#         pass
-#         # If `update_fields` is not available, assume a full save and check fields manually
-#         if instance.resume or instance.preferences or instance.bio:
-#             # print(f"Updating embedding for UserProfile {instance.id}: full save detected.")
-#             # store_user_embedding(instance)
-#             print(f"Skipping embedding update for UserProfile {instance.id}.")
+#     for field in relevant_fields:
+#         current_value = getattr(instance, field)
+#         original_value = getattr(original_instance, field)
+#         if current_value != original_value:
+#             changed_fields.add(field)
 
-#             pass
-#         else:
-#             print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
+#     # Check if any relevant fields were updated
+#     if changed_fields:
+#         print(f"Updating embedding for UserProfile {instance.id}: fields changed = {changed_fields}")
+#         store_user_embedding(instance)
+#     else:
+#         print(f"Skipping embedding update for UserProfile {instance.id}: no relevant fields updated.")
+
+    # Handle updates for specific fields
+    # updated_fields = kwargs.get('update_fields')
+    # print(f'updated_fields = {updated_fields}')
+    # relevant_fields = {"resume", "preferences", "bio"}
+
+    # if updated_fields:
+    #     print('updated')
+    #     if relevant_fields.intersection(updated_fields):  # Check if relevant fields were updated
+    #         print(f"Updating embedding for UserProfile {instance.id}: relevant fields changed.")
+    #         store_user_embedding(instance)
+    #     else:
+    #         print(f"Skipping embedding update for UserProfile {instance.id}: irrelevant fields updated.")
+    # else: 
+    #     pass
+    #     # If `update_fields` is not available, assume a full save and check fields manually
+    #     if instance.resume or instance.preferences or instance.bio:
+    #         # print(f"Updating embedding for UserProfile {instance.id}: full save detected.")
+    #         # store_user_embedding(instance)
+    #         print(f"Skipping embedding update for UserProfile {instance.id}.")
+
+    #         pass
+    #     else:
+    #         print(f"Skipping embedding update for UserProfile {instance.id}: insufficient data.")
 
 # @receiver(post_save, sender=Post)
 # def update_post_embedding(sender, instance, **kwargs):

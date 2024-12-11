@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const ApprovalCard = ({ users, handleApprove }) => {
   const navigate = useNavigate();
@@ -89,7 +89,10 @@ const ApprovalCard = ({ users, handleApprove }) => {
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">{user.full_name || "User"}</TableCell>
+                    <TableCell align="left">
+                      <Link to={`/profile/feed/${user.id}`}>
+                      {user.full_name || "User"}
+                      </Link></TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>

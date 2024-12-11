@@ -15,7 +15,7 @@ import {
   TextField,
 } from "@mui/material";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function AlumniTable({ alumni }) {
   const [searchQuery, setSearchQuery] = useState("");
@@ -76,7 +76,11 @@ function AlumniTable({ alumni }) {
               <TableBody>
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
-                    <TableCell align="left">{user.name || "User"}</TableCell>
+                    <TableCell align="left">
+                      <Link to={`/profile/feed/${user.profile}`}>
+                      {user.name || "User"}
+                      </Link> 
+                    </TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>

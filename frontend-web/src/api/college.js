@@ -112,3 +112,25 @@ export const deleteCollege = async (collegeId) => {
   }
   return await response.json();
 };
+
+
+export const getCollegeSummary=async()=>{
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  const response = await fetch(`${API_ROUTES.COLLEGE}college_statistics/`, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+  return await response.json();
+}

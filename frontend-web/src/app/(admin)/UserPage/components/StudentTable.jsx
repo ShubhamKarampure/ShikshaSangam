@@ -15,15 +15,15 @@ import {
   TextField,
 } from "@mui/material";
 import { FaCheck, FaTimes } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 function StudentTable({ students }) {
   const [searchQuery, setSearchQuery] = useState("");
   const filteredUsers = students.filter((user) =>
-      `${user.name} ${user.email} ${user.role}`
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase())
-    );
+    `${user.name} ${user.email} ${user.role}`
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase())
+  );
   return (
     <Card sx={{ boxShadow: 3, borderRadius: 2, mb: 4 }}>
       <div className="d-flex gap-3 justify-content-between px-5 pt-3 align-items-center">
@@ -49,7 +49,7 @@ function StudentTable({ students }) {
       </div>
       <CardContent>
         {filteredUsers && filteredUsers.length > 0 ? (
-          <TableContainer component={Paper} >
+          <TableContainer component={Paper}>
             <Table stickyHeader>
               <TableHead>
                 <TableRow>
@@ -69,7 +69,7 @@ function StudentTable({ students }) {
                     Current Program
                   </TableCell>
                   <TableCell align="center" sx={{ fontWeight: "bold" }}>
-                  Specialization
+                    Specialization
                   </TableCell>
                 </TableRow>
               </TableHead>
@@ -77,14 +77,20 @@ function StudentTable({ students }) {
                 {filteredUsers.map((user, index) => (
                   <TableRow key={index} hover>
                     <TableCell align="left">
-                      {user.name || "User"}
+                      <Link to={`/profile/feed/${user.profile}`}>
+                        {user.name || "User"}
+                      </Link>
                     </TableCell>
                     <TableCell align="left">
                       {user.email || "123@123.com"}
                     </TableCell>
                     <TableCell align="left">Student</TableCell>
-                    <TableCell align="left">{user.enrollment_year || "2022"}</TableCell>
-                    <TableCell align="left">{user.current_program || "CSE"}</TableCell>
+                    <TableCell align="left">
+                      {user.enrollment_year || "2022"}
+                    </TableCell>
+                    <TableCell align="left">
+                      {user.current_program || "CSE"}
+                    </TableCell>
                     <TableCell align="center">
                       {/* <IconButton
                         color="success"
