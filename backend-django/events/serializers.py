@@ -31,7 +31,7 @@ class EventRegistrationSerializer(serializers.ModelSerializer):
 
 class EventSerializer(serializers.ModelSerializer):
     # created_by = EventUserProfileSerializer(read_only=True)  # Organiser details
-    speaker_profiles = EventUserProfileSerializer(read_only=True, many=True)  # Linked speakers
+    # speaker_profiles = EventUserProfileSerializer(read_only=True, many=True)  # Linked speakers
     faqs = EventFAQSerializer(read_only=True, many=True)
     likes_count = serializers.SerializerMethodField()
     registrations_count = serializers.SerializerMethodField()
