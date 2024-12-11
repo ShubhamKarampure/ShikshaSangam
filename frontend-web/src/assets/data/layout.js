@@ -28,7 +28,7 @@ export const profilePanelLinksData1 = [{
   link: '/profile/connections'
 }, {
   image: earthImg,
-  name: 'Latest News',
+  name: 'Job',
   link: '/job'
 }, {
   image: calendarImg,
