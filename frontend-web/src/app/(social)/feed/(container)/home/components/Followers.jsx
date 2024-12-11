@@ -118,12 +118,9 @@ const Followers = () => {
   return (
     <Card>
       <CardBody>
-       <div
-    className="text-muted p-1">
-    <h4 className="fw-bold">Who to Follow</h4>
-  </div>
-        <UploadResume />
-
+        <div className="text-muted p-1">
+          <h4 className="fw-bold">AI Recommendation</h4>
+        </div>
 
         <Form className="mb-3">
           <FormControl
@@ -154,7 +151,10 @@ const Followers = () => {
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  <div className="d-flex gap-2 align-items-center" style={{width:'70%'}}>
+                  <div
+                    className="d-flex gap-2 align-items-center"
+                    style={{ width: "70%" }}
+                  >
                     <div
                       className={clsx("avatar", {
                         "border-primary": follower.role === "student",
