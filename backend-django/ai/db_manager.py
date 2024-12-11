@@ -21,10 +21,12 @@ class FAISSManager:
     def add(self, vector, id, metadata=None):
         self.validate_synchronization
         if id in self.metadata:
-            print(f"ID {id} already exists. Skipping addition.")
-            return
+            print(f"ID {id} already exists. Updating by removing earlier.")
+            self.remove(id=id)
+            #return
         vector = np.array([vector]).astype("float32")
         self.index.add(vector)  # Add to FAISS index
+        print(f"added vector {id} total = {self.size()}")
         self.metadata[id] = metadata  # Save metadata separately
         self.save()  # Save the updated index to disk
     
@@ -62,14 +64,16 @@ class FAISSManager:
             raise ValueError(f"ID {id} not found in metadata.")
         
         # Find the FAISS index position for this ID
-        pos = self.index_to_id.index(id)
+         # Find the position of the vector to remove
+        keys = list(self.metadata.keys())
+        pos = keys.index(id)  # Find the position of the ID in metadata
         
         # Remove from FAISS
         self.index.remove_ids(np.array([pos]))
         
         # Update metadata and ID mapping
         del self.metadata[id]
-        self.index_to_id.pop(pos)
+        # self.index_to_id.pop(pos)
         self.save()
     
     def validate_synchronization(self):
