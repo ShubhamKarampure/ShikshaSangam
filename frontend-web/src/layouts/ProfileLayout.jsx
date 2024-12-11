@@ -259,7 +259,7 @@ const OnboardingProfileLayout = ({ name, avatar, banner }) => {
     }
     if (banner) {
       processFile(banner, setBannerUrl);
-    }
+    } 
   }, [avatar, banner]); // This will run whenever the avatar or banner prop changes
 
   return (
