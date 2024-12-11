@@ -28,6 +28,13 @@ class CollegeAdminProfileSerializer(serializers.ModelSerializer):
         model = CollegeAdminProfile
         fields = '__all__'
 
+class MiniUserProfileSerializer(serializers.ModelSerializer):
+      # Custom field
+    username = serializers.CharField(source='user.username')  # Pulls username from related User model
+    avatar = serializers.CharField(source='avatar.url', allow_null=True) 
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'username', 'avatar', 'role', 'full_name']
 
 class CollegeSerializer(serializers.ModelSerializer):
     admin_user_id = serializers.IntegerField(write_only=True)  # Field to pass the admin user's ID
@@ -88,8 +95,9 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
         # Validate role-specific fields
         if role == 'student':
-            if not data.get('enrollment_year') or not data.get('current_program'):
-                raise serializers.ValidationError("Enrollment year and current program are required for students.")
+            pass
+            # if not data.get('enrollment_year') or not data.get('current_program'):
+            #     raise serializers.ValidationError("Enrollment year and current program are required for students.")
         elif role == 'college_admin':
             # Any specific validation for College Admin can go here
             pass

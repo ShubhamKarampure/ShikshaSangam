@@ -62,6 +62,8 @@ INSTALLED_APPS = [
     'multimedia',
     'events',
     'ai',
+    'forum',
+    'jobs',
 ]
 
 REST_USE_JWT = True

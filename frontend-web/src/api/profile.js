@@ -22,6 +22,30 @@ export const createUserProfile = async (profileData) => {
   return await response.json();
 };
 
+export const updateUserProfile = async (profileData, id) => {
+  console.log(profileData);
+
+  const token = getTokenFromCookie();
+  if (!token) throw new Error('Token not found');
+
+  const response = await fetch(`${API_ROUTES.USERPROFILE}${id}/`, {  // Add id to the URL
+    method: 'PUT',  // Change POST to PUT for updating
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',  // Assuming you're sending JSON data
+    },
+    body: JSON.stringify(profileData),  // Send the profile data as JSON
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to update profile');
+  }
+
+  return await response.json();
+};
+
+
+
 // 1. Student Profile API CRUD
 
 // Create Student Profile

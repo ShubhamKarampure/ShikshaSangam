@@ -1,43 +1,80 @@
 import { lazy, Suspense } from "react";
 const TopHeader = lazy(() => import("@/components/layout/TopHeader"));
-import GlightBox from '@/components/GlightBox';
-import { useFetchData } from '@/hooks/useFetchData';
-import clsx from 'clsx';
-import { Button, Card, CardBody, CardFooter, CardHeader, CardTitle, Col, Container, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Row } from 'react-bootstrap';
-import { BsBookmark, BsBriefcase, BsCalendar2Plus, BsCalendarDate, BsChatLeftText, BsEnvelope, BsFileEarmarkPdf, BsGear, BsGeoAlt, BsHeart, BsLock, BsPatchCheckFill, BsPencilFill, BsPersonX, BsThreeDots } from 'react-icons/bs';
-import { FaPlus } from 'react-icons/fa6';
-import { PROFILE_MENU_ITEMS } from '@/assets/data/menu-items';
-import { getAllUsers } from '@/helpers/data';
-import avatar7 from '@/assets/images/avatar/07.jpg';
-import background5 from '@/assets/images/bg/05.jpg';
-import album1 from '@/assets/images/albums/01.jpg';
-import album2 from '@/assets/images/albums/02.jpg';
-import album3 from '@/assets/images/albums/03.jpg';
-import album4 from '@/assets/images/albums/04.jpg';
-import album5 from '@/assets/images/albums/05.jpg';
-import React, { useState, useEffect } from 'react';
+import GlightBox from "@/components/GlightBox";
+import { useFetchData } from "@/hooks/useFetchData";
+import clsx from "clsx";
+import {
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Col,
+  Container,
+  Dropdown,
+  DropdownItem,
+  DropdownMenu,
+  DropdownToggle,
+  Row,
+} from "react-bootstrap";
+import {
+  BsBookmark,
+  BsBriefcase,
+  BsCalendar2Plus,
+  BsCalendarDate,
+  BsChatLeftText,
+  BsEnvelope,
+  BsFileEarmarkPdf,
+  BsGear,
+  BsGeoAlt,
+  BsHeart,
+  BsLock,
+  BsPatchCheckFill,
+  BsPencilFill,
+  BsPersonX,
+  BsThreeDots,
+} from "react-icons/bs";
+import { FaPlus } from "react-icons/fa6";
+import { PROFILE_MENU_ITEMS } from "@/assets/data/menu-items";
+import { getAllUsers } from "@/helpers/data";
+import avatar7 from "@/assets/images/avatar/07.jpg";
+import background5 from "@/assets/images/bg/05.jpg";
+import album1 from "@/assets/images/albums/01.jpg";
+import album2 from "@/assets/images/albums/02.jpg";
+import album3 from "@/assets/images/albums/03.jpg";
+import album4 from "@/assets/images/albums/04.jpg";
+import album5 from "@/assets/images/albums/05.jpg";
+import React, { useState, useEffect } from "react";
 import { experienceData } from "@/assets/data/layout";
 import { Link, useLocation } from "react-router-dom";
 import FallbackLoading from "@/components/FallbackLoading";
 import Preloader from "@/components/Preloader";
-import { useAuthContext } from '@/context/useAuthContext'
+import { useAuthContext } from "@/context/useAuthContext";
 import { useProfileContext } from "@/context/useProfileContext";
+import { getUserProfile } from "@/api/profile";
+import { useParams } from "react-router-dom";
+import Loader from "@/components/layout/loadingAnimation";
 
 const Experience = () => {
-  return <Card>
+  return (
+    <Card>
       <CardHeader className="d-flex justify-content-between border-0">
         <h5 className="card-title">Experience</h5>
         <Button variant="primary-soft" size="sm">
-          
           <FaPlus />
         </Button>
       </CardHeader>
       <CardBody className="position-relative pt-0">
-        {experienceData.map((experience, idx) => <div className="d-flex" key={idx}>
+        {experienceData.map((experience, idx) => (
+          <div className="d-flex" key={idx}>
             <div className="avatar me-3">
               <span role="button">
-                
-                <img className="avatar-img rounded-circle" src={experience.logo} alt="" />
+                <img
+                  className="avatar-img rounded-circle"
+                  src={experience.logo}
+                  alt=""
+                />
               </span>
             </div>
             <div>
@@ -51,12 +88,15 @@ const Experience = () => {
                 </Link>
               </p>
             </div>
-          </div>)}
+          </div>
+        ))}
       </CardBody>
-    </Card>;
+    </Card>
+  );
 };
 const Photos = () => {
-  return <Card>
+  return (
+    <Card>
       <CardHeader className="d-sm-flex justify-content-between border-0">
         <CardTitle>Photos</CardTitle>
         <Button variant="primary-soft" size="sm">
@@ -67,80 +107,119 @@ const Photos = () => {
         <Row className="g-2">
           <Col xs={6}>
             <GlightBox href={album1} data-gallery="image-popup">
-              <img className="rounded img-fluid" src={album1} alt="album-image" />
+              <img
+                className="rounded img-fluid"
+                src={album1}
+                alt="album-image"
+              />
             </GlightBox>
           </Col>
           <Col xs={6}>
             <GlightBox href={album2} data-gallery="image-popup">
-              <img className="rounded img-fluid" src={album2} alt="album-image" />
+              <img
+                className="rounded img-fluid"
+                src={album2}
+                alt="album-image"
+              />
             </GlightBox>
           </Col>
           <Col xs={4}>
             <GlightBox href={album3} data-gallery="image-popup">
-              <img className="rounded img-fluid" src={album3} alt="album-image" />
+              <img
+                className="rounded img-fluid"
+                src={album3}
+                alt="album-image"
+              />
             </GlightBox>
           </Col>
           <Col xs={4}>
             <GlightBox href={album4} data-gallery="image-popup">
-              <img className="rounded img-fluid" src={album4} alt="album-image" />
+              <img
+                className="rounded img-fluid"
+                src={album4}
+                alt="album-image"
+              />
             </GlightBox>
           </Col>
           <Col xs={4}>
             <GlightBox href={album5} data-gallery="image-popup">
-              <img className="rounded img-fluid" src={album5} alt="album-image" />
+              <img
+                className="rounded img-fluid"
+                src={album5}
+                alt="album-image"
+              />
             </GlightBox>
           </Col>
         </Row>
       </CardBody>
-    </Card>;
+    </Card>
+  );
 };
-
 
 const Friends = () => {
   const allFriends = useFetchData(getAllUsers);
-  return <Card>
+  return (
+    <Card>
       <CardHeader className="d-sm-flex justify-content-between align-items-center border-0">
         <CardTitle>
-          Friends <span className="badge bg-danger bg-opacity-10 text-danger">230</span>
+          Friends{" "}
+          <span className="badge bg-danger bg-opacity-10 text-danger">230</span>
         </CardTitle>
         <Button variant="primary-soft" size="sm">
-          
           See all friends
         </Button>
       </CardHeader>
       <CardBody className="position-relative pt-0">
         <Row className="g-3">
-          {allFriends?.slice(0, 4).map((friend, idx) => <Col xs={6} key={idx}>
+          {allFriends?.slice(0, 4).map((friend, idx) => (
+            <Col xs={6} key={idx}>
               <Card className="shadow-none text-center h-100">
                 <CardBody className="p-2 pb-0">
-                  <div className={clsx('avatar avatar-xl', {
-                'avatar-story': friend.isStory
-              })}>
+                  <div
+                    className={clsx("avatar avatar-xl", {
+                      "avatar-story": friend.isStory,
+                    })}
+                  >
                     <span role="button">
-                      <img className="avatar-img rounded-circle" src={friend.avatar} alt="" />
+                      <img
+                        className="avatar-img rounded-circle"
+                        src={friend.avatar}
+                        alt=""
+                      />
                     </span>
                   </div>
                   <h6 className="card-title mb-1 mt-3">
-                    
                     <Link to=""> {friend.name} </Link>
                   </h6>
-                  <p className="mb-0 small lh-sm">{friend.mutualCount} mutual connections</p>
+                  <p className="mb-0 small lh-sm">
+                    {friend.mutualCount} mutual connections
+                  </p>
                 </CardBody>
                 <div className="card-footer p-2 border-0">
-                  <button className="btn btn-sm btn-primary me-1" data-bs-toggle="tooltip" data-bs-placement="top" title="Send message">
-                    
+                  <button
+                    className="btn btn-sm btn-primary me-1"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Send message"
+                  >
                     <BsChatLeftText />
                   </button>
-                  <button className="btn btn-sm btn-danger" data-bs-toggle="tooltip" data-bs-placement="top" title="Remove friend">
-                    
+                  <button
+                    className="btn btn-sm btn-danger"
+                    data-bs-toggle="tooltip"
+                    data-bs-placement="top"
+                    title="Remove friend"
+                  >
                     <BsPersonX />
                   </button>
                 </div>
               </Card>
-            </Col>)}
+            </Col>
+          ))}
         </Row>
       </CardBody>
-    </Card>;
+    </Card>
+  );
 };
 
 const OnboardingProfileLayout = ({ name, avatar, banner }) => {
@@ -174,9 +253,9 @@ const OnboardingProfileLayout = ({ name, avatar, banner }) => {
             backgroundImage: bannerUrl
               ? `url(${bannerUrl})`
               : `url(${background5})`, // Fallback to background5 if no banner URL
-            backgroundPosition: 'center',
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat',
+            backgroundPosition: "center",
+            backgroundSize: "cover",
+            backgroundRepeat: "no-repeat",
           }}
         />
         <CardBody className="py-0">
@@ -200,7 +279,8 @@ const OnboardingProfileLayout = ({ name, avatar, banner }) => {
             </div>
             <div className="ms-sm-4 mt-sm-3">
               <h1 className="mb-0 h5">
-                {name ? name : 'Sam Lanson'} <BsPatchCheckFill className="text-success small" />
+                {name ? name : "Sam Lanson"}{" "}
+                <BsPatchCheckFill className="text-success small" />
               </h1>
             </div>
           </div>
@@ -210,183 +290,241 @@ const OnboardingProfileLayout = ({ name, avatar, banner }) => {
   );
 };
 
-
 // Default props in case any prop is not passed
 OnboardingProfileLayout.defaultProps = {
   banner: background5, // Fallback banner image
 };
 
-const ProfileLayout = ({
-  children
-}) => {
-  const {
-    pathname
-  } = useLocation();
-  const { user } = useAuthContext();
-  const { profile } = useProfileContext();
+const ProfileLayout = ({ children }) => {
+  const { pathname } = useLocation();
+  const { user } = useAuthContext(); // Current logged-in user
+  const { profile } = useProfileContext(); // Current user's profile
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const { userId } = useParams(); // Fetch userId from route params
 
- const avatarUrl = user.role !== 'college_staff' && profile && profile.avatar_image && cloudName
-  ? `https://res.cloudinary.com/${cloudName}/${profile.avatar_image}`
-    : `https://ui-avatars.com/api/?name=${user.username}&background=0D8ABC&color=fff`;
+  const [userProfile, setUserProfile] = useState(profile); // State to hold the user profile
+  const [loading, setLoading] = useState(true); // State for loading status
 
-  const bannerUrl = user.role !== 'college_staff' && profile && profile.banner_image && cloudName
-    ? `https://res.cloudinary.com/${cloudName}/${profile.banner_image}`
-    : background5
-  
-  const bio = user.role !== 'college_staff' && profile && profile.bio ? 
-    profile.bio : 'Here to connect, learn, and grow.'
-  
-  const full_name = profile && profile.full_name ?
-     profile.full_name : user.username
-  
-  const specilizatoin = user.role !== 'college_staff' && profile && profile.specilizatoin ?
-    profile.specilizatoin : user.role;
-  
-  const location = user.role !== 'college_staff' && profile && profile.location ?
-    profile.location : '';
-  
-  return <>
+  // Determine if the profile being viewed is the current user's or someone else's
+  const isCurrentUser = !userId || userId === user.id;
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      setLoading(true); // Set loading to true when fetching starts
+      if (!isCurrentUser) {
+        try {
+          const fetchedProfile = await getUserProfile(userId);
+          console.log(fetchedProfile);
+          setUserProfile(fetchedProfile); // Update state with the fetched profile
+        } catch (error) {
+          console.error("Error fetching user profile:", error);
+        }
+      } else {
+        setUserProfile(profile); // Use current user's profile
+      }
+      setLoading(false); // Set loading to false when fetching is complete
+    };
+
+    fetchUserProfile();
+  }, [isCurrentUser, userId, profile]);
+
+  const avatarUrl =
+    userProfile?.avatar_image && cloudName
+      ? `https://res.cloudinary.com/${cloudName}/${userProfile.avatar_image}`
+      : `https://ui-avatars.com/api/?name=${userProfile?.full_name || "Unknown"}&background=0D8ABC&color=fff`;
+
+  const bannerUrl =
+    userProfile?.banner_image && cloudName
+      ? `https://res.cloudinary.com/${cloudName}/${userProfile.banner_image}`
+      : background5;
+
+  const bio = userProfile?.bio || "Here to connect, learn, and grow.";
+  const full_name =
+    userProfile?.full_name || userProfile?.username || "Unknown User";
+  const specialization =
+    userProfile?.specialization || userProfile?.role || "No specialization";
+  const location = userProfile?.location || "";
+
+  return (
+    <>
       <Suspense fallback={<Preloader />}>
         <TopHeader />
       </Suspense>
 
       <main>
-        <Container>
-          <Row className="g-4">
-            <Col lg={8} className="vstack gap-4">
-              <Card>
-                <div className="h-200px rounded-top" style={{
-                backgroundImage: `url(${bannerUrl})`,
-                backgroundPosition: 'center',
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat'
-              }} />
-                <CardBody className="py-0">
-                  <div className="d-sm-flex align-items-start text-center text-sm-start">
-                    <div>
-                      <div className="avatar avatar-xxl mt-n5 mb-3">
-                        <img className="avatar-img rounded-circle border border-white border-3" src={avatarUrl} alt="avatar" />
+        {loading ? (
+          <Loader /> // Show the preloader while the data is being fetched
+        ) : (
+          <Container>
+            <Row className="g-4">
+              <Col lg={8} className="vstack gap-4">
+                <Card>
+                  <div
+                    className="h-200px rounded-top"
+                    style={{
+                      backgroundImage: `url(${bannerUrl})`,
+                      backgroundPosition: "center",
+                      backgroundSize: "cover",
+                      backgroundRepeat: "no-repeat",
+                    }}
+                  />
+                  <CardBody className="py-0">
+                    <div className="d-sm-flex align-items-start text-center text-sm-start">
+                      <div>
+                        <div className="avatar avatar-xxl mt-n5 mb-3">
+                          <img
+                            className="avatar-img rounded-circle border border-white border-3"
+                            src={avatarUrl}
+                            alt="avatar"
+                          />
+                        </div>
+                      </div>
+                      <div className="ms-sm-4 mt-sm-3">
+                        <h1 className="mb-0 h5">
+                          {full_name}{" "}
+                          <BsPatchCheckFill className="text-success small" />
+                        </h1>
+                        <p>250 connections</p>
+                      </div>
+                      <div className="d-flex mt-3 justify-content-center ms-sm-auto">
+                        {isCurrentUser && (
+                          <div className="d-flex justify-content-center mt-3">
+                            <Button
+                              variant="danger-soft"
+                              className="me-2"
+                              type="button"
+                            >
+                              <BsPencilFill size={19} className="pe-1" /> Edit
+                              profile
+                            </Button>
+                          </div>
+                        )}
+                          {isCurrentUser && (<Dropdown>
+                            <DropdownToggle
+                              as="a"
+                              className="icon-md btn btn-light content-none"
+                              type="button"
+                              id="profileAction2"
+                              data-bs-toggle="dropdown"
+                              aria-expanded="false"
+                            >
+                              <span>
+                                <BsThreeDots />
+                              </span>
+                            </DropdownToggle>
+                            <DropdownMenu
+                              className="dropdown-menu-end"
+                              aria-labelledby="profileAction2"
+                            >
+                              <li>
+                                <DropdownItem>
+                                  <BsBookmark size={22} className="fa-fw pe-2" />
+                                  Share profile in a message
+                                </DropdownItem>
+                              </li>
+                              <li>
+                                <DropdownItem>
+                                  <BsFileEarmarkPdf
+                                    size={22}
+                                    className="fa-fw pe-2"
+                                  />
+                                  Save your profile to PDF
+                                </DropdownItem>
+                              </li>
+                              <li>
+                                <DropdownItem>
+                                  <BsLock size={22} className="fa-fw pe-2" />
+                                  Lock profile
+                                </DropdownItem>
+                              </li>
+                              <li>
+                                <hr className="dropdown-divider" />
+                              </li>
+                              <li>
+                                <DropdownItem>
+                                  <BsGear size={22} className="fa-fw pe-2" />
+                                  Profile settings
+                                </DropdownItem>
+                              </li>
+                            </DropdownMenu>
+                          </Dropdown>)}
                       </div>
                     </div>
-                    <div className="ms-sm-4 mt-sm-3">
-                      <h1 className="mb-0 h5">
-                        {full_name} <BsPatchCheckFill className="text-success small" />
-                      </h1>
-                      <p>250 connections</p>
-                    </div>
-                    <div className="d-flex mt-3 justify-content-center ms-sm-auto">
-                      <Button variant="danger-soft" className="me-2" type="button">
-                        
-                        <BsPencilFill size={19} className="pe-1" /> Edit profile
-                      </Button>
-                      <Dropdown>
-                        <DropdownToggle as="a" className="icon-md btn btn-light content-none" type="button" id="profileAction2" data-bs-toggle="dropdown" aria-expanded="false">
-                          <span>
-                            
-                            <BsThreeDots />
-                          </span>
-                        </DropdownToggle>
-                        <DropdownMenu className="dropdown-menu-end" aria-labelledby="profileAction2">
-                          <li>
-                            <DropdownItem>
-                              
-                              <BsBookmark size={22} className="fa-fw pe-2" />
-                              Share profile in a message
-                            </DropdownItem>
-                          </li>
-                          <li>
-                            <DropdownItem>
-                              
-                              <BsFileEarmarkPdf size={22} className="fa-fw pe-2" />
-                              Save your profile to PDF
-                            </DropdownItem>
-                          </li>
-                          <li>
-                            <DropdownItem>
-                              
-                              <BsLock size={22} className="fa-fw pe-2" />
-                              Lock profile
-                            </DropdownItem>
-                          </li>
-                          <li>
-                            <hr className="dropdown-divider" />
-                          </li>
-                          <li>
-                            <DropdownItem>
-                              
-                              <BsGear size={22} className="fa-fw pe-2" />
-                              Profile settings
-                            </DropdownItem>
-                          </li>
-                        </DropdownMenu>
-                      </Dropdown>
-                    </div>
-                  </div>
-                  <ul className="list-inline mb-0 text-center text-sm-start mt-3 mt-sm-0">
-                    <li className="list-inline-item">
-                    <BsBriefcase className="me-1" /> {user.role}
-                    </li>
-                    <li className="list-inline-item">
-                      <BsGeoAlt className="me-1" />{location}
-                    </li>
-                    <li className="list-inline-item">
-                      <BsCalendar2Plus className="me-1" /> Joined on Nov 26, 2019
-                    </li>
-                  </ul>
-                </CardBody>
-                <CardFooter className="card-footer mt-3 pt-2 pb-0">
-                  <ul className="nav nav-bottom-line align-items-center justify-content-center justify-content-md-start mb-0 border-0">
-                    {PROFILE_MENU_ITEMS.map((item, idx) => <li className="nav-item" key={idx}>
-                        
-                        <Link className={clsx('nav-link', {
-                      active: pathname === item.url
-                    })} to={item.url ?? ''}>
-                          
-                          {item.label} {item.badge && <span className="badge bg-success bg-opacity-10 text-success small"> {item.badge.text}</span>}
-                        </Link>
-                      </li>)}
-                  </ul>
-                </CardFooter>
-              </Card>
-              <Suspense fallback={<FallbackLoading />}> {children}</Suspense>
-            </Col>
-            <Col lg={4}>
-              <Row className="g-4">
-                <Col md={6} lg={12}>
-                  <Card>
-                    <CardHeader className="border-0 pb-0">
-                      <CardTitle>About</CardTitle>
-                    </CardHeader>
-                    <CardBody className="position-relative pt-0">
-                    <p>{bio}</p>
-                      <ul className="list-unstyled mt-3 mb-0">
-                        <li className="mb-2">
-                          
-                          <BsCalendarDate size={18} className="fa-fw pe-1" /> Born: <strong> October 20, 1990 </strong>
+                    <ul className="list-inline mb-0 text-center text-sm-start mt-3 mt-sm-0">
+                      <li className="list-inline-item">
+                        <BsBriefcase className="me-1" /> {user.role}
+                      </li>
+                      <li className="list-inline-item">
+                        <BsGeoAlt className="me-1" />
+                        {location}
+                      </li>
+                      <li className="list-inline-item">
+                        <BsCalendar2Plus className="me-1" /> Joined on Nov 26,
+                        2019
+                      </li>
+                    </ul>
+                  </CardBody>
+                  <CardFooter className="card-footer mt-3 pt-2 pb-0">
+                    <ul className="nav nav-bottom-line align-items-center justify-content-center justify-content-md-start mb-0 border-0">
+                      {PROFILE_MENU_ITEMS.map((item, idx) => (
+                        <li className="nav-item" key={idx}>
+                          <Link
+                            className={clsx("nav-link", {
+                              active: pathname === item.url,
+                            })}
+                            to={item.url ?? ""}
+                          >
+                            {item.label}{" "}
+                            {item.badge && (
+                              <span className="badge bg-success bg-opacity-10 text-success small">
+                                {" "}
+                                {item.badge.text}
+                              </span>
+                            )}
+                          </Link>
                         </li>
-                        <li>
-                      
-                          <BsEnvelope size={18} className="fa-fw pe-1" /> Email: <strong> {user.email} </strong>
-                        </li>
-                      </ul>
-                    </CardBody>
-                  </Card>
-                </Col>
-                <Col md={6} lg={12}>
-                  <Experience />
-                </Col>
-                <Col md={6} lg={12}>
-                  <Photos />
-                </Col>
-                <Col md={6} lg={12}>
-                  <Friends />
-                </Col>
-              </Row>
-            </Col>
-          </Row>
-        </Container>
+                      ))}
+                    </ul>
+                  </CardFooter>
+                </Card>
+                <Suspense fallback={<FallbackLoading />}> {children}</Suspense>
+              </Col>
+              <Col lg={4}>
+                <Row className="g-4">
+                  <Col md={6} lg={12}>
+                    <Card>
+                      <CardHeader className="border-0 pb-0">
+                        <CardTitle>About</CardTitle>
+                      </CardHeader>
+                      <CardBody className="position-relative pt-0">
+                        <p>{bio}</p>
+                        <ul className="list-unstyled mt-3 mb-0">
+                          <li className="mb-2">
+                            <BsCalendarDate size={18} className="fa-fw pe-1" />{" "}
+                            Born: <strong> October 20, 1990 </strong>
+                          </li>
+                          <li>
+                            <BsEnvelope size={18} className="fa-fw pe-1" />{" "}
+                            Email: <strong> {user.email} </strong>
+                          </li>
+                        </ul>
+                      </CardBody>
+                    </Card>
+                  </Col>
+                  <Col md={6} lg={12}>
+                    <Experience />
+                  </Col>
+                  
+                  <Col md={6} lg={12}>
+                    <Friends />
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+          </Container>
+        )}
       </main>
-    </>;
+    </>
+  );
 };
 export { ProfileLayout, OnboardingProfileLayout };

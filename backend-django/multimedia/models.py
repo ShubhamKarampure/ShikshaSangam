@@ -5,11 +5,13 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from cloudinary.models import CloudinaryField 
 
+
+
 class Chat(models.Model):
     participants = models.ManyToManyField(UserProfile, related_name='chats')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)  # Useful for ordering chats by recent activity
-
+   
     class Meta:
         ordering = ['-updated_at']  # Recent chats appear first
 

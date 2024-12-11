@@ -19,16 +19,6 @@ export const PROFILE_MENU_ITEMS = [{
   },
   parentKey: 'pages-profile'
 }, {
-  key: 'profile-media',
-  label: 'Media',
-  url: '/profile/media',
-  parentKey: 'pages-profile'
-}, {
-  key: 'profile-videos',
-  label: 'Videos',
-  url: '/profile/videos',
-  parentKey: 'pages-profile'
-}, {
   key: 'profile-events',
   label: 'Events',
   url: '/profile/events',

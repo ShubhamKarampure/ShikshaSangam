@@ -1,140 +1,474 @@
-import DateFormInput from '@/components/form/DateFormInput';
-import PasswordFormInput from '@/components/form/PasswordFormInput';
-import TextAreaFormInput from '@/components/form/TextAreaFormInput';
-import TextFormInput from '@/components/form/TextFormInput';
-import PasswordStrengthMeter from '@/components/PasswordStrengthMeter';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Button, Card, CardBody, CardHeader, CardTitle, Col } from 'react-bootstrap';
-import { useForm } from 'react-hook-form';
-import { BsPlusCircleDotted } from 'react-icons/bs';
-import * as yup from 'yup';
-const ChangePassword = () => {
-  const [firstPassword, setFirstPassword] = useState('');
-  const resetPasswordSchema = yup.object().shape({
-    currentPass: yup.string().required('Please enter current Password'),
-    newPassword: yup.string().min(8, 'Password must of minimum 8 characters').required('Please enter Password'),
-    confirmPassword: yup.string().oneOf([yup.ref('password')], 'Passwords must match')
-  });
-  const {
-    control,
-    handleSubmit,
-    getValues,
-    watch
-  } = useForm({
-    resolver: yupResolver(resetPasswordSchema)
-  });
-  useEffect(() => {
-    setFirstPassword(getValues().newPassword);
-  }, [watch('newPassword')]);
-  return <Card>
-      <CardHeader className="border-0 pb-0">
-        <CardTitle>Change your password</CardTitle>
-        <p className="mb-0">See resolved goodness felicity shy civility domestic had but.</p>
-      </CardHeader>
-      <CardBody>
-        <form className="row g-3" onSubmit={handleSubmit(() => {})}>
-          <PasswordFormInput name="currentPass" label="Current password" control={control} containerClassName="col-12" />
-          <Col xs={12}>
-            <PasswordFormInput name="newPassword" label="New password" control={control} />
-            <div className="mt-2">
-              <PasswordStrengthMeter password={firstPassword} />
-            </div>
-          </Col>
-          <PasswordFormInput name="confirmPassword" label="Confirm password" control={control} containerClassName="col-12" />
-          <Col xs={12} className="text-end">
-            <Button variant="primary" type="submit" className="mb-0">
-              Update password
-            </Button>
-          </Col>
-        </form>
-      </CardBody>
-    </Card>;
-};
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { Button, Card, CardBody, CardHeader, Col, Form } from "react-bootstrap";
+import { useForm, useFieldArray } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import TextFormInput from "@/components/form/TextFormInput";
+import TextAreaFormInput from "@/components/form/TextAreaFormInput";
+import DateFormInput from "@/components/form/DateFormInput";
+import PasswordFormInput from "@/components/form/PasswordFormInput";
+import PasswordStrengthMeter from "@/components/PasswordStrengthMeter";
+import { BsPlusCircleDotted, BsTrash } from "react-icons/bs";
+import { useAuthContext } from "@/context/useAuthContext";
+import { useProfileContext } from "@/context/useProfileContext";
+import { updateUserProfile } from "@/api/profile";
+
 const AccountSettings = () => {
-  const createFormSchema = yup.object({
-    fName: yup.string().required('Please enter your first name'),
-    lName: yup.string().required('Please enter your last name'),
-    additionalName: yup.string().required('Please enter additional name'),
-    userName: yup.string().required('Please enter your username'),
-    phoneNo: yup.string().required('Please enter your phone number'),
-    email: yup.string().required('Please enter your email').required('Please enter your email'),
-    overview: yup.string().required('Please enter your page description').max(300, 'character limit must less then 300')
-  });
-  const {
-    control,
-    handleSubmit
-  } = useForm({
-    resolver: yupResolver(createFormSchema),
-    defaultValues: {
-      fName: 'Sam',
-      lName: 'Lanson',
-      additionalName: '',
-      userName: '@samlanson',
-      email: 'sam@webestica.com',
-      overview: 'Interested has all Devonshire difficulty gay assistance joy. Handsome met debating sir dwelling age material. As style lived he worse dried. Offered related so visitors we private removed. Moderate do subjects to distance.',
-      phoneNo: '(678) 324-1251'
+  const { user } = useAuthContext(); // Current logged-in user
+  const { profile } = useProfileContext(); // Current user's profile
+
+  const [userRole, setUserRole] = useState(profile.role);
+
+  const [firstPassword, setFirstPassword] = useState("");
+
+  
+  const onSubmit = async (data) => {
+    try {
+
+    // Send the FormData to the API
+    const response = await updateUserProfile(data,profile.id);
+
+      // Handle the response (e.g., show success message)
+      console.log(response.data);
+    } catch (error) {
+      // Handle the error (e.g., show error message)
+      console.error("Error updating profile:", error);
     }
+  };
+
+  // Dynamic validation schema
+  const getValidationSchema = (role) => {
+    const baseSchema = {
+      full_name: yup.string().required("Please enter full name"),
+      contact_number: yup.string().required("Please enter contact number"),
+      bio: yup.string().max(500, "Bio must be max 500 characters"),
+      location: yup.string(),
+      social_links: yup.object().shape({
+        linkedin: yup.string().url("Invalid LinkedIn URL"),
+        twitter: yup.string().url("Invalid Twitter URL"),
+        github: yup.string().url("Invalid GitHub URL"),
+      }),
+      preferences: yup.object().shape({
+        domains: yup.array().of(yup.string()),
+        interests: yup.array().of(yup.string()),
+      }),
+    };
+
+    const roleSpecificFields = {
+      student: {
+        ...baseSchema,
+        enrollment_year: yup
+          .number()
+          .positive()
+          .integer()
+          .required("Enter enrollment year"),
+        current_program: yup.string().required("Enter current program"),
+        expected_graduation_year: yup
+          .number()
+          .positive()
+          .integer()
+          .required("Enter expected graduation year"),
+        specialization: yup.string(),
+      },
+      alumni: {
+        ...baseSchema,
+        graduation_year: yup
+          .number()
+          .positive()
+          .integer()
+          .required("Enter graduation year"),
+        current_employment: yup.object().shape({
+          company: yup.string().required("Enter current company"),
+          position: yup.string().required("Enter current position"),
+        }),
+        career_path: yup.string().required("Describe your career path"),
+        specialization: yup.string(),
+      },
+      college_staff: {
+        ...baseSchema,
+        position: yup.string().required("Enter position"),
+        department: yup.string().required("Enter department"),
+      },
+      college_admin: baseSchema,
+    };
+
+    return yup.object().shape(roleSpecificFields[role]);
+  };
+
+  // Default values based on role
+  const getDefaultValues = (role) => {
+    const baseDefaults = {
+      full_name: profile?.full_name || "",
+      contact_number: profile?.contact_number || "",
+      bio: profile?.bio || "",
+      location: profile?.location || "",
+      social_links: {
+        linkedin: profile?.social_links?.linkedin || "",
+        twitter: profile?.social_links?.twitter || "",
+        github: profile?.social_links?.github || "",
+      },
+      preferences: {
+        domains: profile?.preferences?.domains || [],
+        interests: profile?.preferences?.interests || [],
+      },
+    };
+
+    const roleSpecificDefaults = {
+      student: {
+        ...baseDefaults,
+        enrollment_year: profile?.studentprofile?.enrollment_year || "",
+        current_program: profile?.studentprofile?.current_program || "",
+        expected_graduation_year:
+          profile?.studentprofile?.expected_graduation_year || "",
+        specialization: profile?.studentprofile?.specialization || "",
+      },
+      alumni: {
+        ...baseDefaults,
+        graduation_year: profile?.alumnusprofile?.graduation_year || "",
+        current_employment: profile?.alumnusprofile?.current_employment || {
+          company: "",
+          position: "",
+        },
+        career_path: profile?.alumnusprofile?.career_path || "",
+        specialization: profile?.alumnusprofile?.specialization || "",
+      },
+      college_staff: {
+        ...baseDefaults,
+        position: profile?.collegestaffprofile?.position || "",
+        department: profile?.collegestaffprofile?.department || "",
+      },
+      college_admin: baseDefaults,
+    };
+
+    return roleSpecificDefaults[role];
+  };
+
+  // Render role-specific additional fields
+  const renderRoleSpecificFields = () => {
+    switch (userRole) {
+      case "student":
+        return (
+          <>
+            <TextFormInput
+              name="enrollment_year"
+              label="Enrollment Year"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="current_program"
+              label="Current Program"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="expected_graduation_year"
+              label="Expected Graduation Year"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="specialization"
+              label="Specialization"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+          </>
+        );
+      case "alumni":
+        return (
+          <>
+            <TextFormInput
+              name="graduation_year"
+              label="Graduation Year"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="current_employment.company"
+              label="Current Company"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="current_employment.position"
+              label="Current Position"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextAreaFormInput
+              name="career_path"
+              label="Career Path"
+              control={control}
+              containerClassName="col-12"
+              rows={3}
+            />
+            <TextFormInput
+              name="specialization"
+              label="Specialization"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+          </>
+        );
+      case "college_staff":
+        return (
+          <>
+            <TextFormInput
+              name="department"
+              label="Department"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+            <TextFormInput
+              name="position"
+              label="Position"
+              control={control}
+              containerClassName="col-sm-6"
+            />
+          </>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const { control, handleSubmit, reset, watch } = useForm({
+    resolver: yupResolver(getValidationSchema(userRole)),
+    defaultValues: getDefaultValues(userRole),
   });
-  return <>
-      <Card className="mb-4">
+
+  // Domains and Interests Field Arrays
+  const {
+    fields: domainFields,
+    append: appendDomain,
+    remove: removeDomain,
+  } = useFieldArray({
+    control,
+    name: "preferences.domains",
+  });
+
+  const {
+    fields: interestFields,
+    append: appendInterest,
+    remove: removeInterest,
+  } = useFieldArray({
+    control,
+    name: "preferences.interests",
+  });
+
+  // Password Change Component (kept from previous version)
+  const ChangePassword = () => {
+    const resetPasswordSchema = yup.object().shape({
+      currentPass: yup.string().required("Please enter current Password"),
+      newPassword: yup
+        .string()
+        .min(8, "Password must be minimum 8 characters")
+        .required("Please enter Password"),
+      confirmPassword: yup
+        .string()
+        .oneOf([yup.ref("newPassword")], "Passwords must match"),
+    });
+
+    const passwordForm = useForm({
+      resolver: yupResolver(resetPasswordSchema),
+    });
+
+    return (
+      <Card className="mt-4">
         <CardHeader className="border-0 pb-0">
-          <h1 className="h5 card-title">Account Settings</h1>
-          <p className="mb-0">
-            He moonlights difficult engrossed it, sportsmen. Interested has all Devonshire difficulty gay assistance joy. Unaffected at ye of
-            compliment alteration to.
-          </p>
+          <h1 className="h5 card-title">Change Password</h1>
         </CardHeader>
         <CardBody>
-          <form className="row g-3" onSubmit={handleSubmit(() => {})}>
-            <TextFormInput name="fName" label="First name" control={control} containerClassName="col-sm-6 col-lg-4" />
-            <TextFormInput name="lName" label="Last name" control={control} containerClassName="col-sm-6 col-lg-4" />
-            <TextFormInput name="additionalName" label="Additional name" control={control} containerClassName="col-sm-6 col-lg-4" />
-            <TextFormInput name="userName" label="User name" control={control} containerClassName="col-sm-6" />
-            <Col lg={6}>
-              <label className="form-label">Birthday </label>
-              <DateFormInput placeholder="12/12/1990" className="form-control" options={{
-              defaultDate: '12/12/1990'
-            }} />
-            </Col>
+          <form
+            className="row g-3"
+            onSubmit={passwordForm.handleSubmit(() => {})}
+          >
+            <PasswordFormInput
+              name="currentPass"
+              label="Current password"
+              control={passwordForm.control}
+              containerClassName="col-12"
+            />
             <Col xs={12}>
-              <div className="form-check">
-                <input className="form-check-input" type="checkbox" id="allowChecked" defaultChecked />
-                <label className="form-check-label" htmlFor="allowChecked">
-                  Allow anyone to add you to their team
-                </label>
+              <PasswordFormInput
+                name="newPassword"
+                label="New password"
+                control={passwordForm.control}
+                onChange={(e) => setFirstPassword(e.target.value)}
+              />
+              <div className="mt-2">
+                <PasswordStrengthMeter password={firstPassword} />
               </div>
             </Col>
-            <Col sm={6}>
-              <TextFormInput name="phoneNo" label="Phone number" control={control} />
-              <Link className="btn btn-sm btn-dashed rounded mt-2" to="">
-                
-                <BsPlusCircleDotted className="me-1" />
-                Add new phone number
-              </Link>
-            </Col>
-            <Col sm={6}>
-              <TextFormInput name="email" label="Email" control={control} />
-              <Link className="btn btn-sm btn-dashed rounded mt-2" to="">
-                
-                <BsPlusCircleDotted className="me-1" />
-                Add new email address
-              </Link>
-            </Col>
-            <Col xs={12}>
-              <TextAreaFormInput name="overview" label="Overview" rows={4} placeholder="Description (Required)" control={control} />
-              <small>Character limit: 300</small>
-            </Col>
+            <PasswordFormInput
+              name="confirmPassword"
+              label="Confirm password"
+              control={passwordForm.control}
+              containerClassName="col-12"
+            />
             <Col xs={12} className="text-end">
-              <Button variant="primary" type="submit" size="sm" className="mb-0">
-                Save changes
+              <Button
+                variant="primary"
+                type="submit"
+                size="sm"
+                className="mb-0"
+              >
+                Update password
               </Button>
             </Col>
           </form>
         </CardBody>
       </Card>
-      <ChangePassword />
-    </>;
+    );
+  };
+
+  return (
+  <>
+    <Card className="mb-4">
+      <CardHeader className="border-0 pb-0">
+        <h1 className="h5 card-title">Account Settings</h1>
+      </CardHeader>
+      <CardBody>
+        <form className="row g-3" onSubmit={handleSubmit(onSubmit)}>
+
+          <h5>Basic Profile</h5>
+          <TextFormInput
+            name="full_name"
+            label="Full Name"
+            control={control}
+            containerClassName="col-12"
+          />
+          <TextFormInput
+            name="contact_number"
+            label="Contact Number"
+            control={control}
+            containerClassName="col-sm-6"
+          />
+          <TextFormInput
+            name="location"
+            label="Location"
+            control={control}
+            containerClassName="col-12"
+          />
+          <Col xs={12}>
+            <TextAreaFormInput
+              name="bio"
+              label="Bio"
+              rows={4}
+              control={control}
+              placeholder="Tell us about yourself"
+            />
+          </Col>
+
+          <hr className="my-4" /> {/* Added break here */}
+
+          <Col xs={12}>
+            <h5>Social Links</h5>
+            <div className="row">
+              <TextFormInput
+                name="social_links.linkedin"
+                label="LinkedIn"
+                control={control}
+                containerClassName="col-sm-4"
+              />
+              <TextFormInput
+                name="social_links.twitter"
+                label="Twitter"
+                control={control}
+                containerClassName="col-sm-4"
+              />
+              <TextFormInput
+                name="social_links.github"
+                label="GitHub"
+                control={control}
+                containerClassName="col-sm-4"
+              />
+            </div>
+          </Col>
+
+          <hr className="my-4" /> {/* Added break here */}
+
+          <h5>Education & Work Experience</h5>
+          {renderRoleSpecificFields()}
+
+          <hr className="my-4" /> {/* Added break here */}
+
+          <Col xs={12}>
+            <h5>Domains</h5>
+            {domainFields.map((field, index) => (
+              <div key={field.id} className="d-flex mb-2">
+                <TextFormInput
+                  name={`preferences.domains.${index}`}
+                  control={control}
+                  containerClassName="flex-grow-1 me-2"
+                />
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => removeDomain(index)}
+                >
+                  <BsTrash />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => appendDomain("")}
+            >
+              Add Domain
+            </Button>
+          </Col>
+
+          <hr className="my-4" /> {/* Added break here */}
+
+          <Col xs={12}>
+            <h5>Interests</h5>
+            {interestFields.map((field, index) => (
+              <div key={field.id} className="d-flex mb-2">
+                <TextFormInput
+                  name={`preferences.interests.${index}`}
+                  control={control}
+                  containerClassName="flex-grow-1 me-2"
+                />
+                <Button
+                  variant="danger"
+                  size="sm"
+                  onClick={() => removeInterest(index)}
+                >
+                  <BsTrash />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline-primary"
+              size="sm"
+              onClick={() => appendInterest("")}
+            >
+              Add Interest
+            </Button>
+          </Col>
+
+          <hr className="my-4" /> {/* Added break here */}
+
+          <Col xs={12} className="text-end">
+            <Button
+              variant="primary"
+              type="submit"
+              size="sm"
+              className="mb-0"
+            >
+              Save changes
+            </Button>
+          </Col>
+        </form>
+      </CardBody>
+    </Card>
+    <ChangePassword />
+  </>
+);
 };
+
 export default AccountSettings;

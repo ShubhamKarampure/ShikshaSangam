@@ -96,13 +96,7 @@ const CreatePostCard = () => {
               Event
             </a>
           </li>
-          <li className="nav-item">
-            <a className="nav-link bg-light py-1 px-2 mb-0" onClick={togglePost}>
-              
-              <BsEmojiSmileFill size={20} className="text-warning pe-2" />
-              Feeling /Activity
-            </a>
-          </li>
+          
           <Dropdown drop="start" className="nav-item ms-lg-auto">
             <DropdownToggle as="a" className="nav-link bg-light py-1 px-2 mb-0 content-none" id="feedActionShare" data-bs-toggle="dropdown" aria-expanded="false">
               <BsThreeDots />
@@ -290,12 +284,7 @@ const CreatePostCard = () => {
                 <BsCalendar2EventFill />
               </Link>
             </OverlayTrigger>
-            <OverlayTrigger overlay={<Tooltip>Feeling/Activity</Tooltip>}>
-              <Link className="icon-md bg-warning bg-opacity-10 text-warning rounded-circle" to="">
-                
-                <BsEmojiSmileFill />
-              </Link>
-            </OverlayTrigger>
+            
             <OverlayTrigger overlay={<Tooltip>Check in</Tooltip>}>
               <Link className="icon-md bg-light text-secondary rounded-circle" to="">
                 

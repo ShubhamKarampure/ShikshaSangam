@@ -149,8 +149,12 @@ export const sendFile = async (chatId, content, file) => {
   if(content!==null && content!==""){
     formData.append("content", content);
   }
-  if (file) {  // if file exists
-    formData.append("media",file); // gauranteed to be 1 file
+  if (file) {  // if file exists  // gauranteed to be 1 file
+    formData.append("media",{
+      uri: file.uri,
+      type: file.mimeType,
+      name: file.name,
+    });
   }
   else{
     console.log("ERROR: NO FILE FOUND");
@@ -168,6 +172,7 @@ export const sendFile = async (chatId, content, file) => {
     method: "POST",
     headers: {
       Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
     },
     body: formData, 
   });
