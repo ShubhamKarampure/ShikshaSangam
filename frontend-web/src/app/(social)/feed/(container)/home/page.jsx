@@ -12,13 +12,15 @@ import Followers from "./components/Followers";
 import CreatePostCard from "@/components/cards/CreatePostCard";
 import { Link } from "react-router-dom";
 import LoadContentButton from "@/components/LoadContentButton";
+import { useState } from "react";
 
 const Home = () => {
+  const [allPosts, setAllPosts] = useState([]);
   return (
     <>
       <Col md={8} lg={6} className="vstack gap-4">
-        <CreatePostCard />
-        <Feeds />
+        <CreatePostCard allPosts={allPosts} setAllPosts={setAllPosts}/>
+        <Feeds allPosts={allPosts} setAllPosts={setAllPosts}/>
       </Col>
 
       <Col lg={3}>

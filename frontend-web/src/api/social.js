@@ -44,7 +44,24 @@ export const fetchCollegePosts = async () => {
 
 // 3. **Create a Post**
 export const createPost = async (postData) => {
-  return await handleFetch(API_ROUTES.POSTS, "POST", postData);
+  const token=getTokenFromCookie()
+  if(!token){
+    console.log();   
+  }
+  const response = await fetch(`${API_ROUTES.POSTS}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    },
+    body: postData, // FormData instance
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to create user post');
+  }
+
+  return response.json();
 };
 
 // 4. **Fetch Comments**
