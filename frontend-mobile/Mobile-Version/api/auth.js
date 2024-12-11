@@ -2,7 +2,6 @@ import BACKEND_URL from "../constants";
 import { API_ROUTES } from "../constants";
 const signin = async (data) => {
   
-
   try {
     // Correct the URL here by removing spaces and using BACKEND_URL
     const response = await fetch(API_ROUTES.LOGIN, {

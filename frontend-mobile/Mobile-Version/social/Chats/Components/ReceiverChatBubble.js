@@ -25,7 +25,7 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
           source={{
             uri:
               chat.avatar !== null
-                ? processImageUrl(chat.avatar)
+                ? processImageUrl(chat.avatar, "ReceiverChatBubble avatar")
                 : defaultAvatar(chat.sender),
           }}
           style={styles.avatar}
@@ -40,18 +40,25 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
             >
               {chat.content}
             </Text>
-          ) : null}
+          ) : (
+            <></>
+          )}
 
           {chat.media !== null ? (
             <Pressable onPress={() => setModalVisible(true)}>
               <Image
                 source={{
-                  uri: processImageUrl(chat.media),
+                  uri: processImageUrl(
+                    chat.media,
+                    "ReceiverChatBubble chat.media"
+                  ),
                 }}
                 style={styles.postImage}
               />
             </Pressable>
-          ) : null}
+          ) : (
+            <></>
+          )}
 
           <Text
             style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
@@ -75,13 +82,17 @@ const ReceiverChatBubble = memo(({ chat, isDarkMode = true }) => {
           >
             <MaterialCommunityIcons name="close" size={30} color="#fff" />
           </TouchableOpacity>
-          <Image
-            source={{
-              uri: processImageUrl(chat.media),
-            }}
-            style={styles.fullScreenImage}
-            resizeMode="contain"
-          />
+          {chat.media !== null ? (
+            <Image
+              source={{
+                uri: processImageUrl(chat.media, "ReceiverChatBubble modal"),
+              }}
+              style={styles.fullScreenImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <></>
+          )}
         </View>
       </Modal>
     </View>

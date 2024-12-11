@@ -28,18 +28,22 @@ const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
             >
               {chat.content}
             </Text>
-          ) : null}
+          ) : (
+            <></>
+          )}
 
           {chat.media !== null ? (
             <Pressable onPress={() => setModalVisible(true)}>
               <Image
                 source={{
-                  uri: processImageUrl(chat.media),
+                  uri: processImageUrl(chat.media, "SenderChatBubble media"),
                 }}
                 style={styles.postImage}
               />
             </Pressable>
-          ) : null}
+          ) : (
+            <></>
+          )}
 
           <Text
             style={[styles.timestamp, isDarkMode && styles.darkModeTimestamp]}
@@ -63,13 +67,17 @@ const SenderChatBubble = memo(({ chat, isDarkMode = true }) => {
           >
             <MaterialCommunityIcons name="close" size={30} color="#fff" />
           </TouchableOpacity>
-          <Image
-            source={{
-              uri: processImageUrl(chat.media),
-            }}
-            style={styles.fullScreenImage}
-            resizeMode="contain"
-          />
+          {chat.media !== null ? (
+            <Image
+              source={{
+                uri: processImageUrl(chat.media, "SenderChatBubble modal"),
+              }}
+              style={styles.fullScreenImage}
+              resizeMode="contain"
+            />
+          ) : (
+            <></>
+          )}
         </View>
       </Modal>
     </>

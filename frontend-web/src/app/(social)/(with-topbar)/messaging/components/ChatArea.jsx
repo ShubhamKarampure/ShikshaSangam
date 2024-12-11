@@ -346,6 +346,7 @@ const ChatArea = ({ activeChat }) => {
     console.log(file);
     setFileOpen(false);
     const response = await sendMedia(activeChat.id, file);
+    console.log("response = ",response);
     setMessages([...messages, response]);
   };
 
