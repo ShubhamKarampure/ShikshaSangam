@@ -218,9 +218,10 @@ import {
 } from "react-bootstrap";
 import { useProfileContext } from "../../../../context/useProfileContext";
 import { createJob, fetchJobs, uploadResume } from "../../../../api/job";
-
+import { useNavigate } from "react-router-dom";
 const JobPage = () => {
   const { profile } = useProfileContext();
+  const navigate = useNavigate();
 
   // State Management
   const [jobs, setJobs] = useState([]);
@@ -306,6 +307,10 @@ const JobPage = () => {
     setResumeFile(e.target.files[0]);
   };
 
+  const handleAskForReferral = () => {
+    navigate("/messaging"); // Directly navigate to the chat screen
+  };
+
   // Upload Resume to Backend
   const handleUploadResume = async () => {
     if (!resumeFile) {
@@ -364,7 +369,7 @@ const JobPage = () => {
               <Button variant="primary" size="sm" onClick={() => handleApply(job.id)}>
                 Apply Now
               </Button>
-              <Button variant="secondary" size="sm" className="ms-2">
+              <Button variant="secondary" size="sm" className="ms-2" onClick={handleAskForReferral}>
                 Ask for Referral
               </Button>
             </CardFooter>
