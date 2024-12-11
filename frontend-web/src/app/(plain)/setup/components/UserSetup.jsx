@@ -417,7 +417,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
       }
       saveProfileStatus("true");
       saveProfileData(userprofile);
-      setUser((prev)=> {return {...prev,"profile_id":userprofile.profile.id,"role":userprofile.role}})
+      setUser((prev)=> {return {...prev,"profile_id":userprofile.id,"role":userprofile.role}})
       redirectUser();
     } catch (error) {
       console.error("Error creating profile:", error);
