@@ -46,21 +46,37 @@ def generate_user_embedding(user_profile):
     """
     # Extract fields
     resume_url = get_cloudinary_url(user_profile.resume) if user_profile.resume else None
-    preferences = user_profile.preferences or {}
+    skills = user_profile.skills or {}
+    experience = user_profile.experience or {}
+    project = user_profile.project or {}
+
+
     role = user_profile.role or "no role"
     bio = user_profile.bio or ""
     college_name = user_profile.college.college_name if user_profile.college else "No College"
-
+    role_str = ''
+    if  user_profile.studentprofile:
+        sp = user_profile.studentprofile
+        program = sp.current_program
+        
     # Convert preferences to string
-    preferences_text = preferences_to_string(preferences)
+    skills_text = preferences_to_string(skills)
+    experience_text = preferences_to_string(experience)
+    project_text = preferences_to_string(project)
 
+    
+   
+
+    
     # Extract resume text
     resume_text = extract_resume_text_from_url(resume_url) if resume_url else ""
-
+    
     # Combine into a single text representation
     combined_text = (
-        f"Role: {role}. Bio: {bio}. College: {college_name}. "
-        f"Preferences: {preferences_text}. Resume: {resume_text}"
+        f"Role: {role}. Bio: {bio}. College: {college_name}. "+
+        f"Preferences: {skills_text}. Resume: {resume_text}"+
+        f"Projects: {project_text}, Experience = {experience_text}"
+
     )
 
     # Generate embedding

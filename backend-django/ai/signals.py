@@ -19,7 +19,7 @@ def update_user_embedding(sender, instance, created,  **kwargs):
         return
     
       # Detect updated fields by comparing current and previous values
-    relevant_fields = {"resume", "preferences", "bio"}
+    relevant_fields = {"resume", "experience", 'skills', 'project', "bio"}
     changed_fields = set()
 
     # Use `instance.__class__.objects` to fetch the current state from the database
