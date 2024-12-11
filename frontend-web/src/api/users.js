@@ -177,3 +177,27 @@ export const getAlumniByCollege=async()=>{
   return await response.json();
 }
 
+
+// Scrape LinkedIn
+export const scrapeLinkedIn = async (linkedinUrl) => {
+  const token = getTokenFromCookie(); // Retrieve token from cookie
+
+  if (!token) {
+    throw new Error('Token is missing');
+  }
+
+  const response = await fetch(API_ROUTES.SCRAPE_LINKEDIN, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`,
+    },
+    body: JSON.stringify({ linkedin_url: linkedinUrl }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  }
+
+  return await response.json();
+};

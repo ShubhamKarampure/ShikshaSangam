@@ -7,6 +7,7 @@ export const API_ROUTES = {
   LOGIN: `${API_BASE_URL}/users/auth/login/token`, // User login (JWT)
   REFRESH: `${API_BASE_URL}/users/auth/token/refresh`, // Token refresh
   LOGOUT: `${API_BASE_URL}/users/auth/signout/`, // User logout
+  SCRAPE_LINKEDIN: `${API_BASE_URL}/users/scrape-linkedin/`, // User logout
   
   // College-related routes
   COLLEGE: `${API_BASE_URL}/users/colleges/`, // College listing, CRUD

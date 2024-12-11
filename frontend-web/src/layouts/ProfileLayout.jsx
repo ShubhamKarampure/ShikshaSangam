@@ -56,7 +56,7 @@ import { getUserProfile } from "@/api/profile";
 import { useParams } from "react-router-dom";
 import Loader from "@/components/layout/loadingAnimation";
 
-const Experience = () => {
+const Experience = ({ experienceData }) => {
   return (
     <Card>
       <CardHeader className="d-flex justify-content-between border-0">
@@ -67,26 +67,36 @@ const Experience = () => {
       </CardHeader>
       <CardBody className="position-relative pt-0">
         {experienceData.map((experience, idx) => (
-          <div className="d-flex" key={idx}>
-            <div className="avatar me-3">
-              <span role="button">
+          <div key={idx} className="mb-4">
+            {/* Company Logo and Name */}
+            <div className="d-flex align-items-start">
+              <div className="avatar me-3">
                 <img
                   className="avatar-img rounded-circle"
                   src={experience.logo}
-                  alt=""
+                  alt={`${experience.company_name} logo`}
                 />
-              </span>
+              </div>
+              <div>
+                <h6 className="mb-1">{experience.company_name}</h6>
+                <p className="small text-muted">{experience.duration}</p>
+              </div>
             </div>
-            <div>
-              <h6 className="card-title mb-0">
-                <Link to=""> {experience.title} </Link>
-              </h6>
-              <p className="small">
-                {experience.description}
-                <Link className="btn btn-primary-soft btn-xs ms-2" to="">
-                  Edit
-                </Link>
-              </p>
+
+            {/* Designations */}
+            <div className="mt-3">
+              {experience.designations.map((designation, designationIdx) => (
+                <div key={designationIdx} className="mb-3">
+                  <h6 className="mb-0">{designation.designation}</h6>
+                  <p className="small text-muted mb-1">
+                    {designation.duration} | {designation.location}
+                  </p>
+                  <p className="small">{designation.projects}</p>
+                  <Link className="btn btn-primary-soft btn-xs" to="">
+                    Edit
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         ))}
@@ -94,6 +104,8 @@ const Experience = () => {
     </Card>
   );
 };
+
+
 const Photos = () => {
   return (
     <Card>
@@ -338,7 +350,11 @@ const ProfileLayout = ({ children }) => {
       ? `https://res.cloudinary.com/${cloudName}/${userProfile.banner_image}`
       : background5;
 
-  const bio = userProfile?.bio || "Here to connect, learn, and grow.";
+   const maxBioLength = 150; // Set a maximum length for the bio
+const bio = user.role !== 'college_staff' && profile?.bio ? 
+           (profile.bio.length > maxBioLength ? profile.bio.substring(0, maxBioLength) : profile.bio) : 
+           'Here to connect, learn, and grow.';
+
   const full_name =
     userProfile?.full_name || userProfile?.username || "Unknown User";
   const specialization =
@@ -499,10 +515,7 @@ const ProfileLayout = ({ children }) => {
                       <CardBody className="position-relative pt-0">
                         <p>{bio}</p>
                         <ul className="list-unstyled mt-3 mb-0">
-                          <li className="mb-2">
-                            <BsCalendarDate size={18} className="fa-fw pe-1" />{" "}
-                            Born: <strong> October 20, 1990 </strong>
-                          </li>
+                          
                           <li>
                             <BsEnvelope size={18} className="fa-fw pe-1" />{" "}
                             Email: <strong> {user.email} </strong>
@@ -512,7 +525,7 @@ const ProfileLayout = ({ children }) => {
                     </Card>
                   </Col>
                   <Col md={6} lg={12}>
-                    <Experience />
+                    <Experience experienceData={userProfile?.experience || []} />
                   </Col>
                   
                   <Col md={6} lg={12}>

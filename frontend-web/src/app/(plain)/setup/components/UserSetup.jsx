@@ -13,6 +13,7 @@ import {
   createAlumnusProfile,
   createCollegeStaffProfile,
 } from "@/api/profile";
+import { scrapeLinkedIn } from "@/api/users";
 
 function UserSetup({ role: initialRole, onBackClick }) {
   const { user } = useAuthContext();
@@ -44,6 +45,14 @@ function UserSetup({ role: initialRole, onBackClick }) {
   const [skillsList, setSkillsList] = useState([]); // Manage a list of skills
   // Add these state variables near the other state declarations
   const [experience, setExperience] = useState([]);
+  const [scrapedData, setScrapedData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [showLinkedinInput, setShowLinkedinInput] = useState(false);
+
+  const [isCustomSpecialization, setIsCustomSpecialization] = useState(false);
+
   const [currentExperience, setCurrentExperience] = useState({
     company_name: "",
     duration: "",
@@ -64,6 +73,59 @@ function UserSetup({ role: initialRole, onBackClick }) {
     duration: "",
     description: "",
   });
+
+  const handleLinkedInScrape = async () => {
+  try {
+    // Show spinner
+    setLoading(true);
+
+    const scrapedData = await scrapeLinkedIn(linkedinUrl);
+    
+    // Update states with scraped data
+    setFullName(scrapedData.fullName);
+    setBio(scrapedData.bio);
+    setPosition(scrapedData.position);
+
+    // Handle avatar and banner image
+    if (scrapedData.avatar) {
+      // Check if avatar is a URL or a file
+      if (typeof scrapedData.avatar === 'string' && scrapedData.avatar.startsWith('http')) {
+        // If it's a URL, download and send as file
+        const response = await fetch(scrapedData.avatar);
+        const blob = await response.blob();
+        setAvatar(blob); // Set avatar as a Blob
+      } else {
+        setAvatar(scrapedData.avatar); // If it's already a file, set it directly
+      }
+    }
+
+    if (scrapedData.bannerImage) {
+      setBannerImage(scrapedData.bannerImage); // Assuming bannerImage is either URL or file
+    }
+
+    // Update experience, projects, and skills if available
+    if (scrapedData.experience) {
+      setExperience(scrapedData.experience);
+    }
+
+    if (scrapedData.projects) {
+      setProjects(scrapedData.projects);
+    }
+
+    if (scrapedData.skills) {
+      setSkillsList(scrapedData.skills);
+    }
+
+  } catch (error) {
+    console.error('Error scraping LinkedIn profile:', error);
+    // Optionally, show an error message to the user
+  } finally {
+    // Hide spinner once the scraping is done
+    setLoading(false);
+  }
+};
+
+
 
   const addProject = (e) => {
     e.preventDefault();
@@ -190,13 +252,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
     setSkillsList(skillsList.filter((skill) => skill !== skillToRemove));
   };
 
-  const [loading, setloading] = useState(false);
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const [showLinkedinInput, setShowLinkedinInput] = useState(false);
-
-  const [isCustomSpecialization, setIsCustomSpecialization] = useState(false);
-
+  
   // List of common specializations
   const commonSpecializations = [
     "Software Engineering",
@@ -246,20 +302,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
     }
   };
 
-  const submitLinkedinUrl = async () => {
-    try {
-      const response = await axios.post("/api/linkedin", { linkedinUrl });
-      if (response.status === 200) {
-        alert("LinkedIn URL successfully connected!");
-        setShowLinkedinInput(false);
-        setLinkedinUrl(""); // Reset the input field
-      }
-    } catch (error) {
-      console.error("Error connecting LinkedIn:", error);
-      alert("Failed to connect LinkedIn URL.");
-    }
-  };
-
+  
   const handleCollegeChange = (e) => {
     console.log("here");
 
@@ -283,7 +326,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setloading(true);
+    setLoading(true);
     try {
       const formData = new FormData();
 
@@ -383,7 +426,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
         variant: "danger",
       });
     }
-    setloading(false);
+    setLoading(false);
   };
 
   const renderStep = () => {
@@ -414,7 +457,7 @@ function UserSetup({ role: initialRole, onBackClick }) {
         <button
           type="button"
           className="btn btn-success"
-          onClick={submitLinkedinUrl}
+          onClick={handleLinkedInScrape}
         >
           Submit
         </button>

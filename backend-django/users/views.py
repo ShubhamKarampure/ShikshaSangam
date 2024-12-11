@@ -5,6 +5,11 @@ from datetime import timedelta, datetime
 from django.utils.timezone import now
 from django.db.models import Count
 from rest_framework.decorators import action
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
+from .scrapper import scrape_multiple_profiles
 
 from rest_framework import permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -44,33 +49,32 @@ from django.core import serializers
 
 class UserRegistrationView(APIView):
     permission_classes = [permissions.AllowAny]
+
     def post(self, request, *args, **kwargs):
         # Serialize the incoming data
         print(f"{request.data}")
         serializer = UserRegistrationSerializer(data=request.data)
-        
+
         # Validate and create the user
         if serializer.is_valid():
             print('serializer is valid')
             user = serializer.save()
-            
+
             # Generate JWT tokens for the user
             refresh = RefreshToken.for_user(user)
             access_token = refresh.access_token
-         
-            # Return the JWT tokens and user details
-            user_profile_id = None
 
-            print(f'accesss = {access_token}')
-        else:
-            print(serializer.errors)
-        try:
-            user_profile = user.user  # Accessing the related UserProfile (But how does it get created for new user?)
-            user_profile_id = user_profile.id
-            pass
-        except ObjectDoesNotExist:
-            # Profile does not exist
-            pass
+            # Check if UserProfile exists or create one
+            user_profile_id = None
+            # try:
+            #     user_profile = user.user  # Access related UserProfile
+            #     user_profile_id = user_profile.id
+            # except ObjectDoesNotExist:
+            #     # Create a UserProfile if it does not exist
+            #     user_profile = UserProfile.objects.create(user=user)
+            #     user_profile_id = user_profile.id
+
+            # Return the JWT tokens and user details
             return Response({
                 'status': 'success',
                 'message': 'User created successfully',
@@ -83,8 +87,10 @@ class UserRegistrationView(APIView):
                     "profile_id": user_profile_id,
                 }
             }, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            # Return serializer errors if validation fails
+            print(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
     permission_classes = [AllowAny]
@@ -525,3 +531,47 @@ class CollegeStaffProfileViewSet(viewsets.ModelViewSet):
             
     #         permission_classes = [IsOwnerPermission |  IsCollegeAdmin , IsVerifiedUser, IsAuthenticated,]
     #     return [permission() for permission in permission_classes]
+
+@csrf_exempt
+def linkedin_scrape(request):
+    if request.method == 'POST':
+        try:
+            # Parse the incoming JSON data
+            data = json.loads(request.body)
+            linkedin_url = data.get('linkedin_url')
+
+            if not linkedin_url:
+                return JsonResponse({'error': 'LinkedIn URL is required'}, status=400)
+
+            # Run the scraper
+            profile_data = scrape_multiple_profiles([linkedin_url]) # pass list of url
+            profile_data = profile_data[0]
+
+            # Transform scraped data to match your frontend state
+            transformed_data = {
+                'fullName': profile_data.get('name', ''),
+                'bio': profile_data.get('about', ''),
+                'avatar': profile_data.get('pfp', ''),
+                'bannerImage': profile_data.get('banner', ''),
+                'linkedinUrl': linkedin_url,
+                
+                # Experience transformation
+                'experience': profile_data.get('experience', []),
+                
+                # Projects transformation
+                'projects': profile_data.get('projects', []),
+                
+                # Skills transformation
+                'skills': profile_data.get('skills', []),
+                
+                # Headline can be used for position or specialization
+                'position': profile_data.get('headline', ''),
+            }
+
+            return JsonResponse(transformed_data)
+
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+    
