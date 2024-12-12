@@ -20,7 +20,7 @@ def chatbot_query(request):
             headers = {"Authorization": f"Bearer {GEMINI_API_KEY}"}
             payload = {"query": user_message}
             response = requests.post("https://api.gemini.com/v1/chat", json=payload, headers=headers)
-            
+            print(response)
             if response.status_code == 200:
                 reply = response.json().get("response", "")
                 return JsonResponse({"reply": reply}, status=200)

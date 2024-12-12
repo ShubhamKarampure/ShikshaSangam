@@ -32,7 +32,7 @@ export const API_ROUTES = {
   POLLS: `${API_BASE_URL}/social/polls/`,
   POLL_OPTIONS: `${API_BASE_URL}/social/polls/options/`,
   POLL_VOTES: `${API_BASE_URL}/social/polls/votes/`,
-
+  CHAT_BOT: `${API_BASE_URL}/chatbot/query/`,
   CHAT_LIST: `${API_BASE_URL}/multimedia/chats/`, // List all chats for the user
   CHAT_CREATE: `${API_BASE_URL}/multimedia/chats/create/`, // Create a new chat
   MESSAGE_LIST: (chatId) => `${API_BASE_URL}/multimedia/chats/${chatId}/messages/`, // List messages for a specific chat
@@ -47,6 +47,7 @@ export const API_ROUTES = {
   EVENT_REGISTRATION: `${API_BASE_URL}/registrations/`, // Event registration CRUD
   EVENT_FAQS: `${API_BASE_URL}/faqs/`, // Event FAQ CRUD
   EVENT_LIKES: `${API_BASE_URL}/likes/`, // Event like CRUD
+  EVENT_REGISTRATION: `${API_BASE_URL}/events/registrations/`, // Event registration CRUD
 
   UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
   FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed
@@ -59,5 +60,8 @@ export const API_ROUTES = {
   NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`,
 
   // Jobs
-  JOBS : `${API_BASE_URL}/jobs/jobs/`
+  JOBS : `${API_BASE_URL}/jobs/jobs/`,
+  // Groups--
+  GROUPS: `${API_BASE_URL}/forum/forums/`,
+  PARTICIPATE: `${API_BASE_URL}/forum/forums/group_id/participate/`
 }

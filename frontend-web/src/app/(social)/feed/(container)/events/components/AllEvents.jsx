@@ -50,7 +50,7 @@ const mapEventToCardFormat = (event) => {
 };
 
 const AllEvents = () => {
-  const eventCategories = ["all", "online"];
+  const eventCategories = ["all", "online","offline"];
 
   // const allEvents = useFetchData(getAllEvents)
   const [error, setError] = useState(null); // State to handle errors

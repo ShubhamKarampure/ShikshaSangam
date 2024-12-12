@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     'ai',
     'forum',
     'jobs',
+    'chatbot'
 ]
 
 REST_USE_JWT = True

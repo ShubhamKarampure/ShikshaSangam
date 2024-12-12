@@ -43,7 +43,23 @@ export const fetchEvents = async (eventId = null) => {
 };
 
 export const createEvent = async (eventData) => {
-  return await handleFetch(API_ROUTES.CREATE_EVENT, "POST", eventData);
+  const token = getTokenFromCookie();
+  if(!token){
+    console.log("Empty token");   
+  }
+
+  const response = await fetch(`${API_ROUTES.CREATE_EVENT}`, {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+    }
+    ,body: eventData});
+  if(response.ok){
+    return await response.json();
+  }
+  console.log(response);
+  
+
 };
 
 export const getEventDetails = async (eventId) => {
@@ -60,4 +76,8 @@ export const deleteEvent = async (eventId) => {
 
 export const getCollegeEvent = async ()=>{
   return await handleFetch(`${API_ROUTES.LIST_EVENTS}college_events/`,"GET")
+}
+
+export const registerEvent = async (body) => {
+  return await handleFetch(API_ROUTES.EVENT_REGISTRATION, "POST", body);
 }

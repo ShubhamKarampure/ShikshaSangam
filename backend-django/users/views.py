@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from .scrapper import scrape_multiple_profiles
-
+from django.db.models.functions import TruncDate
 from rest_framework import permissions, status, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
@@ -350,44 +350,44 @@ class CollegeViewSet(viewsets.ModelViewSet):
     queryset = College.objects.all()
     serializer_class = CollegeSerializer
 
-    # @action(detail=True, methods=['get'], url_path='profiles-per-day')
-    # def profiles_per_day(self, request, pk=None):
-    #     """
-    #     Returns the number of profiles created per day for the last `n` days (including today).
-    #     """
-    #     try:
-    #         # Parse `n` from query parameters (default is 7 days)
-    #         n_days = int(request.query_params.get('days', 7))
-    #         end_date = now().date()
-    #         start_date = end_date - timedelta(days=n_days - 1)
+    @action(detail=True, methods=['get'], url_path='profiles-per-day')
+    def profiles_per_day(self, request, pk=None):
+        """
+        Returns the number of profiles created per day for the last `n` days (including today).
+        """
+        try:
+            # Parse `n` from query parameters (default is 7 days)
+            n_days = int(request.query_params.get('days', 7))
+            end_date = now().date()
+            start_date = end_date - timedelta(days=n_days - 1)
 
-    #         # Filter profiles by college and creation date
-    #         profiles = UserProfile.objects.filter(
-    #             college_id=pk,  # Filter by college
-    #             created_at__date__range=(start_date, end_date)
-    #         )
+            # Filter profiles by college and creation date
+            profiles = UserProfile.objects.filter(
+                college_id=pk,  # Filter by college
+                created_at__date__range=(start_date, end_date)
+            )
 
-    #         # Aggregate count per day
-    #         profiles_per_day = (
-    #             profiles
-    #             .annotate(date=models.functions.TruncDate('created_at'))
-    #             .values('date')
-    #             .annotate(count=Count('id'))
-    #             .order_by('date')
-    #         )
+            # Aggregate count per day
+            profiles_per_day = (
+                profiles
+                .annotate(date=TruncDate('created_at'))
+                .values('date')
+                .annotate(count=Count('id'))
+                .order_by('date')
+            )
 
-    #         # Build response dictionary
-    #         date_range = [
-    #             (start_date + timedelta(days=i)).isoformat()
-    #             for i in range(n_days)
-    #         ]
-    #         profile_counts = {entry['date'].isoformat(): entry['count'] for entry in profiles_per_day}
-    #         results = {date: profile_counts.get(date, 0) for date in date_range}
+            # Build response dictionary
+            date_range = [
+                (start_date + timedelta(days=i)).isoformat()
+                for i in range(n_days)
+            ]
+            profile_counts = {entry['date'].isoformat(): entry['count'] for entry in profiles_per_day}
+            results = {date: profile_counts.get(date, 0) for date in date_range}
 
-    #         return Response({'results': results}, status=200)
+            return Response({'results': results}, status=200)
 
-    #     except Exception as e:
-    #         return Response({'error': str(e)}, status=500)
+        except Exception as e:
+            return Response({'error': str(e)}, status=500)
     # def get_permissions(self):
     #     if self.action == 'create':
     #         # Only College Admins can create a college

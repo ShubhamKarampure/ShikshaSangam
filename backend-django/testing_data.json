@@ -1,13 +1,35 @@
 [
     {
-        "name": "Kenneth Rodrigues",
-        "url": "https://www.linkedin.com/in/kenneth-rodrigues/",
-        "headline": "GSoC '24 | Flipkart Grid 6.0 national runner up | Datahack 2.0 winner 🏆 | Rajasthan Police Hackathon Finalist 🥉 | Software Dev 🖥️ | AI ML 🤖 | SPIT '25",
+        "name": "Sharvin Gavad",
+        "url": "https://www.linkedin.com/in/sharvin-gavad/",
+        "headline": "6x Hackathon Winner | Student @FRCRCE | Building @Xircls | AR Developer",
         "pfp": "",
-        "banner": "https://media.licdn.com/dms/image/v2/D4D16AQFnD44mcQ389A/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1726301284331?e=1739404800&v=beta&t=zvAEf1Po45MNctH54VigQdu-FwhAKjRPlC0-dT0XCDs",
-        "about": "A confident and headstrong leaderwith great communication skills,understanding of projects anddesigning and artistic ability.Seeking to implement unique andinnovative solutionsA confident and headstrong leader\nwith great communication skills,\nunderstanding of projects and\ndesigning and artistic ability.\nSeeking to implement unique and\ninnovative solutions",
-        "experience": [],
+        "banner": "",
+        "about": "",
+        "experience": [
+            {
+                "company_name": "Python Developer",
+                "duration": "XIRCLS - 360° Martech Stack & Decentralized Collaborative Marketing Network  · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/C4E0BAQF5o8nno1LowA/company-logo_100_100/company-logo_100_100/0/1639034636097/xircls_logo?e=1741824000&v=beta&t=k1YMmH0VBoJn5guDrMGXsX7n1C_ZujqmGBLk9_CvdoQ",
+                "designations": []
+            }
+        ],
         "projects": [],
-        "skills": []
+        "skills": [
+            "Python (Programming Language)",
+            "Amazon Web Services (AWS)",
+            "React.js",
+            "Django",
+            "Software Development",
+            "Django REST Framework",
+            "Flask",
+            "Software Development",
+            "Python (Programming Language)",
+            "Amazon Web Services (AWS)",
+            "React.js",
+            "Django",
+            "Django REST Framework",
+            "Flask"
+        ]
     }
 ]
