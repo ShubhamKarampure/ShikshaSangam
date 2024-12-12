@@ -1,8 +1,18 @@
 import { API_ROUTES } from "../routes/apiRoute";
+import { getTokenFromCookie } from "@/utils/get-token";
 
 export const fetchJobs = async () => {
   try {
-    const response = await fetch(API_ROUTES.JOBS);
+    const token = getTokenFromCookie();
+    if(!token){
+      throw new Error("Token is missing");
+    }
+    const response = await fetch(API_ROUTES.JOBS, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     if (!response.ok) {
       throw new Error("Failed to fetch jobs.");
     }
