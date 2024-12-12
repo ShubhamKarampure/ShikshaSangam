@@ -198,10 +198,11 @@ export const getAllFeed = async (limit = 3, offset = 0) => {
         bio: p.user.bio,
         is_liked: p.is_liked,
         fullName: p.user.full_name,
+        'isVerified': p.post.isVerified,
       };
     })
   );
-  // console.log(postsArray);
+  console.log(postsArray);
 
   postsArray.push(...postsWithComments);
   return postsArray;
