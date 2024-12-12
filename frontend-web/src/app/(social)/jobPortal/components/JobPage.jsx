@@ -110,7 +110,7 @@ const JobPage = () => {
   }, []);
 
   const handleApply = (jobId) => {
-    setJobApplications((prev) => {
+    setJobApplications((prev) => { 
       const updatedApplications = { ...prev, [jobId]: true };
   
       // Save updated state to localStorage
