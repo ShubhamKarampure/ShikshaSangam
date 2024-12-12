@@ -61,7 +61,7 @@ from transformers import AutoModelForSequenceClassification, AutoTokenizer
 import torch
 
 class TextModeration:
-    def __init__(self, model_name="KoalaAI/Text-Moderation", thresholdOK=0.2):
+    def __init__(self, model_name="KoalaAI/Text-Moderation", thresholdOK=0.7):
         """
         Initializes the TextModeration class by loading the model and tokenizer.
 

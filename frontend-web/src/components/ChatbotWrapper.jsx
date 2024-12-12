@@ -21,7 +21,20 @@ const ChatbotWrapper = () => {
     setIsAIProcessing(true);
 
     // Modify the prompt to ask for a specific format
-    const chatPrompt = `Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case dont put any other wording apart from the answer expected in the start of your answer. Input: "${prompt}"`;
+    //const chatPrompt = `Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case dont put any other wording apart from the answer expected in the start of your answer. Input: "${prompt}"`;
+
+    const chatPrompt = `You are a chatbot designed to answer questions about the ShikshaSangam platform. Respond to user queries in the following format: Return it as a JSON object with only one key "answer" containing the message. For example, {"answer": "your answer here"}. Only return the JSON object, in any case don't put any other wording apart from the answer expected in the start of your answer. Input: "${prompt}"
+
+Answer questions based on the following headers:
+1. Welcome to ShikshaSangam! How can I assist you today? (General inquiries about the platform)
+2. Looking for guidance? Ask me anything about career advice, alumni interactions, or mentorship!
+3. Need help navigating ShikshaSangam? I'm here to help!
+4. Have questions about your profile or account settings? Let me guide you!
+5. Interested in connecting with alumni or students? Ask me how!
+6. Stuck somewhere? I'm here to answer common questions about ShikshaSangam!
+7. Want to learn about ShikshaSangam’s features? Just ask!
+
+Respond accurately based on the user’s input while ensuring the answer is specific and concise."`
 
     try {
       const chatCompletion = await groq.chat.completions.create({
@@ -220,3 +233,5 @@ const ChatbotWrapper = () => {
 };
 
 export default ChatbotWrapper;
+
+
