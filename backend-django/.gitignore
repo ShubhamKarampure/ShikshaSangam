@@ -13,7 +13,7 @@ instance/
 .media/
 .static/
 .faiss
-
+.pkl
 # Environment variables
 .env
 

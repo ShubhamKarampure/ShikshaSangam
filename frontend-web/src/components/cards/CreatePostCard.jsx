@@ -191,7 +191,7 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
               Video
             </a>
           </li> */}
-          <li className="nav-item">
+          {/* <li className="nav-item">
             <a
               className="nav-link bg-light py-1 px-2 mb-0"
               onClick={toggleEvent}
@@ -199,7 +199,7 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
               <BsCalendar2EventFill size={20} className="text-danger pe-2" />
               Event
             </a>
-          </li>
+          </li> */}
 
           <Dropdown drop="start" className="nav-item ms-lg-auto">
             <DropdownToggle
