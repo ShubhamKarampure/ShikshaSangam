@@ -2,6 +2,7 @@ import ActionBox from './components/ActionBox';
 import Discovered from './components/Discovered';
 import Features from './components/Features';
 import Footer from './components/Footer';
+import HallOfFame from './components/HallOfFame';
 import MainBanner from './components/MainBanner';
 import MessagingFeature from './components/MessagingFeature';
 import QRCode from './components/QRCode';
@@ -14,6 +15,7 @@ const LandingPage = () => {
       <TopBar />
       <main>
         <MainBanner />
+        <HallOfFame/>
         <MessagingFeature />
         <Discovered />
         <Video />
