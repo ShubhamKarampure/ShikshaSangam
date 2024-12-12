@@ -1,52 +1,49 @@
 import React, { useEffect, useState } from "react";
+import clsx from "clsx";
 import {
   Button,
   Card,
+  CardBody,
+  CardHeader,
+  CardTitle,
   Col,
   Row,
 } from "react-bootstrap";
-import { BsGeoAlt, BsHandThumbsUpFill, BsClock, BsGlobe, BsPeople, BsPersonPlus } from "react-icons/bs";
+import { BsGeoAlt, BsHandThumbsUpFill } from "react-icons/bs";
+import { BsGlobe, BsPeople, BsPersonPlus } from "react-icons/bs";
 import { useNavigate, useParams } from "react-router-dom";
 import PageMetaData from "@/components/PageMetaData";
 import { getEventDetails } from "@/api/events";
-import MapComponent from "./components/GoogleMap";
+
+import event6 from "@/assets/images/events/06.jpg";
 
 const EventDetails = () => {
   const [event, setEvent] = useState(null);
+  const [selectedMode, setSelectedMode] = useState(null);
   const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
   const { eventId } = useParams();
   const navigate = useNavigate();
 
   useEffect(() => {
-  (async () => {
-    if (eventId) {
-      try {
-        const data = await getEventDetails(eventId);
-        if (data) {
-          // Add a null check for location before splitting
-          const coordinates = data.location 
-            ? data.location.split(',').map(coord => parseFloat(coord.trim()))
-            : null;
-          
-          setEvent({
-            ...data,
-            coordinates: coordinates 
-              ? { lat: coordinates[0], lng: coordinates[1] } 
-              : null
-          });
-        } else {
+    (async () => {
+      if (eventId) {
+        try {
+          const data = await getEventDetails(eventId);
+          if (data) {
+            setEvent(data);
+            // Set initial mode based on event data
+            setSelectedMode(data.mode || 'online');
+          } else {
+            navigate("/not-found");
+          }
+        } catch (error) {
+          console.error("Failed to fetch event details:", error);
           navigate("/not-found");
         }
-      } catch (error) {
-        console.error("Failed to fetch event details:", error);
-        navigate("/not-found");
       }
-    }
-  })();
-}, [eventId, navigate]);
+    })();
+  }, [eventId, navigate]);
 
-// Update the MapComponent rendering to handle null coordinates
-    
   if (!event) {
     return <div>Loading...</div>;
   }
@@ -54,29 +51,30 @@ const EventDetails = () => {
   const counterData = [
     {
       title: "Registered",
-      count: event.registrations_count,
+      count: event.registrations_count ?? 0,
       icon: BsPersonPlus,
     },
     {
-      title: "Mode",
-      count: event.mode,
+      title: "Event Mode",
+      count: selectedMode === 'online' ? "Online" : "Offline",
       icon: BsGlobe,
-    },
-    {
-      title: "Time to Event",
-      count: event.time_to_event,
-      icon: BsClock,
     },
   ];
 
+  const handleModeChange = (mode) => {
+    setSelectedMode(mode);
+  };
+
   return (
     <>
-      <PageMetaData title={event.name} />
+      <PageMetaData title={event.name ?? "Event Details"} />
       <Col md={8} lg={9} className="vstack gap-4">
         <Card
           className="card-body card-overlay-bottom border-0"
           style={{
-            backgroundImage: `url(https://res.cloudinary.com/${cloudName}/${event.poster})`,
+            backgroundImage: event.poster
+              ? `url(https://res.cloudinary.com/${cloudName}/${event.poster})`
+              : `url(${event6})`,
             backgroundPosition: "center",
             backgroundSize: "cover",
             backgroundRepeat: "no-repeat",
@@ -88,13 +86,13 @@ const EventDetails = () => {
                 <div className="bg-primary p-2 text-white rounded-top small lh-1">
                   {new Date(event.date_time).toLocaleString("en-US", {
                     weekday: "short",
-                  })}
+                  }) || "Wed"}
                 </div>
                 <h5 className="mb-0 py-2 lh-1">
                   {new Date(event.date_time).toLocaleString("en-US", {
                     month: "short",
                     day: "2-digit",
-                  })}
+                  }) || "Dec 08"}
                 </h5>
               </div>
             </Col>
@@ -118,6 +116,23 @@ const EventDetails = () => {
         </Card>
 
         <Card className="card-body">
+          {/* Mode Selection Buttons */}
+          <div className="d-flex justify-content-center mb-4">
+            <Button
+              variant={selectedMode === 'online' ? 'primary' : 'outline-primary'}
+              className="me-2"
+              onClick={() => handleModeChange('online')}
+            >
+              Online
+            </Button>
+            <Button
+              variant={selectedMode === 'offline' ? 'primary' : 'outline-primary'}
+              onClick={() => handleModeChange('offline')}
+            >
+              Offline
+            </Button>
+          </div>
+
           <Row className="g-4">
             <Col xs={12}>
               <p className="mb-0">{event.summary}</p>
@@ -137,13 +152,15 @@ const EventDetails = () => {
             <Col sm={6} lg={4}>
               <h5>Entry fees</h5>
               <p className="small mb-0">
-                {event.registration_fee === 0 ? "Free" : `₹${event.registration_fee}`}
+                <a href="">
+                  {event.registration_fee === 0 ? "Free" : `₹${event.registration_fee}`}
+                </a>
               </p>
             </Col>
 
             <Col sm={6} lg={4}>
-              <h5>Category &amp; Type</h5>
-              <p className="small mb-0">{event.type}</p>
+              <h5>Event Mode</h5>
+              <p className="small mb-0">{selectedMode}</p>
             </Col>
 
             <Col sm={6} lg={4}>
@@ -163,53 +180,16 @@ const EventDetails = () => {
             </Col>
 
             <Col sm={6} lg={4}>
-              <h5>Location</h5>
-              <p className="small mb-0">
-                <BsGeoAlt className="me-2" />
-                {event.location}
-              </p>
-            </Col>
-
-            <Col xs={12}>
-              <h5>Description</h5>
-              <p className="small mb-0">{event.description}</p>
-            </Col>
-
-            <Col xs={12}>
-              <h5>Organizer Contacts</h5>
-              {event.organiser_contacts.Organizers.map((organizer, index) => (
-                <div key={index} className="mb-2">
-                  <p className="small mb-0"><strong>{organizer.Name}</strong> - {organizer.Role}</p>
-                  <p className="small mb-0">Contact: {organizer.Contact}</p>
-                </div>
-              ))}
-            </Col>
-
-            <Col xs={12}>
-              <h5>Event Plan</h5>
-              {Object.entries(event.event_plan).map(([day, details]) => (
-                <div key={day} className="mb-3">
-                  <h6>{day}</h6>
-                  {details.Time && <p className="small mb-1">Time: {details.Time}</p>}
-                  {details.Activities && (
-                    <ul className="small mb-0">
-                      {details.Activities.map((activity, index) => (
-                        <li key={index}>{activity}</li>
-                      ))}
-                    </ul>
-                  )}
-                  {details.Mentorship && <p className="small mb-0">Mentorship: {details.Mentorship}</p>}
-                  {details.VenueSetup && <p className="small mb-0">Venue Setup: {details.VenueSetup}</p>}
-                  {details.Communication && <p className="small mb-0">Communication: {details.Communication}</p>}
-                  {details.SafetySecurity && <p className="small mb-0">Safety & Security: {details.SafetySecurity}</p>}
-                </div>
-              ))}
-            </Col>
-
-            <Col xs={12}>
-              <h5>Event Location</h5>
-              { event.coordinates && <MapComponent location={event.coordinates} /> }
-    
+              <div className="d-flex">
+                <h6 style={{ margin: "0px 8px 0px 0px" }}>
+                  <BsHandThumbsUpFill className="text-success" />{" "}
+                  {event.likes_count ?? 0}
+                </h6>
+                <p className="small">People have shown interest recently</p>
+              </div>
+              <button className="btn btn-success-soft btn-sm">
+                Interested?
+              </button>
             </Col>
           </Row>
 
@@ -239,4 +219,3 @@ const EventDetails = () => {
 };
 
 export default EventDetails;
-

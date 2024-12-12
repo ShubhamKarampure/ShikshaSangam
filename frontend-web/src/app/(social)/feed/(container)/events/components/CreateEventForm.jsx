@@ -5,29 +5,38 @@ import DateFormInput from "@/components/form/DateFormInput";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 import { BsFileEarmarkText } from "react-icons/bs";
 import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
-import { Controller, useWatch } from "react-hook-form";
+import { Controller, useWatch, useForm } from "react-hook-form";
 import { useNotificationContext } from "@/context/useNotificationContext";
-import {createMeeting} from "@/api/meet"
-import { useForm } from "react-hook-form";
+import { createMeeting } from "@/api/meet";
 
-function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
-  // Watch the value of 'mode' to conditionally render the location field
+function CreateEventForm({ isOpen, toggle }) {
+  const { control, handleSubmit, setValue } = useForm();
   const mode = useWatch({ control, name: "mode", defaultValue: "online" });
   const { showNotification } = useNotificationContext();
   const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
-  const { setValue } = useForm();
-  const [disable,setDisable]=useState(false);
-  const handleMeetCreation=async()=>{
-    const response=await createMeeting({token:VIDEOSDK_TOKEN})
-    if(response.meetingId){
-      setValue("online_meet_id",response.meetingId)
-      console.log(response.meetingId);      
-      setDisable(true)
-    }else{
-      console.log(response.err);
-      
+  const [disable, setDisable] = useState(false);
+
+  const handleMeetCreation = async () => {
+    try {
+      const response = await createMeeting({ token: VIDEOSDK_TOKEN });
+      if (response?.meetingId) {
+        setValue("online_meet_id", response.meetingId);
+        setDisable(true);
+        showNotification("success", "Meeting link created successfully!");
+      } else {
+        throw new Error(response?.err || "Failed to create meeting");
+      }
+    } catch (error) {
+      console.error(error.message);
+      showNotification("error", "Failed to create meeting link.");
     }
-  }
+  };
+
+  const onSubmit = (data) => {
+    console.log("Form Data:", data);
+    showNotification("success", "Event created successfully!");
+  };
+
   return (
     <Modal
       show={isOpen}
@@ -39,10 +48,10 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
       aria-labelledby="modalLabelCreateEvents"
       aria-hidden="true"
     >
-      <form onSubmit={handleSubmit(() => {})}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <ModalHeader closeButton>
           <h5 className="modal-title" id="modalLabelCreateEvents">
-            Create event
+            Create Event
           </h5>
         </ModalHeader>
         <ModalBody>
@@ -65,26 +74,21 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
             <Col sm={4}>
               <label className="form-label">Date</label>
               <DateFormInput
-                options={{
-                  enableTime: false,
-                }}
+                options={{ enableTime: false }}
                 type="text"
                 className="form-control"
                 placeholder="Select date"
               />
             </Col>
-            <div className="col-sm-4">
+            <Col sm={4}>
               <label className="form-label">Time</label>
               <DateFormInput
-                options={{
-                  enableTime: true,
-                  noCalendar: true,
-                }}
+                options={{ enableTime: true, noCalendar: true }}
                 type="text"
                 className="form-control"
                 placeholder="Select time"
               />
-            </div>
+            </Col>
             <TextFormInput
               name="duration"
               label="Duration"
@@ -109,7 +113,7 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
               )}
             />
 
-            {/* Conditional Location Field */}
+            {/* Conditional Fields */}
             {mode === "offline" && (
               <TextFormInput
                 name="location"
@@ -119,28 +123,27 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
                 control={control}
               />
             )}
-            {mode ==='online' &&(
+            {mode === "online" && (
               <Button onClick={handleMeetCreation} disabled={disable}>
-                Create Meet link
-              </Button>  
+                {disable ? "Meet Link Created" : "Create Meet Link"}
+              </Button>
             )}
 
             <TextFormInput
-              name="Speakers"
+              name="speakers"
               type="email"
               label="Add Speakers"
               placeholder="Speaker email"
               containerClassName="col-12"
               control={control}
             />
-            <div className="mb-3">
-              <DropzoneFormInput
-                showPreview
-                helpText="Drop Banner Image here or click to upload."
-                icon={BsFileEarmarkText}
-                label="Upload Banner"
-              />
-            </div>
+            <DropzoneFormInput
+              showPreview
+              helpText="Drop Banner Image here or click to upload."
+              icon={BsFileEarmarkText}
+              label="Upload Banner"
+              containerClassName="mb-3"
+            />
           </Row>
         </ModalBody>
         <ModalFooter>
@@ -153,7 +156,7 @@ function CreateEventForm({ isOpen, toggle, control, handleSubmit }) {
             Cancel
           </Button>
           <Button variant="success-soft" type="submit">
-            Create now
+            Create Now
           </Button>
         </ModalFooter>
       </form>
