@@ -60,7 +60,7 @@ export default function ChatScreenHeaderRight({ route }) {
 const styles = StyleSheet.create({
   iconButton: {
     marginHorizontal: 8,
-    backgroundColor:'blue'
+    //backgroundColor:'blue'
   },
 });
 
