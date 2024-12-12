@@ -59,17 +59,44 @@ const JobPage = () => {
   const [error, setError] = useState("");
 
   // Fetch jobs from API
+  // useEffect(() => {
+  //   const loadJobs = async () => {
+  //     try {
+  //       const fetchedJobs = await fetchJobs();
+  //       setJobs(fetchedJobs);
+        
+  //       // Initialize job application tracking
+  //       const initialApplicationStatus = fetchedJobs.reduce((acc, job) => {
+  //         acc[job.id] = false;
+  //         return acc;
+  //       }, {});
+  //       setJobApplications(initialApplicationStatus);
+  //     } catch (err) {
+  //       console.error("Error fetching jobs:", err);
+  //       setError("Failed to load jobs.");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   loadJobs();
+  // }, []);
+
   useEffect(() => {
     const loadJobs = async () => {
       try {
         const fetchedJobs = await fetchJobs();
         setJobs(fetchedJobs);
-        
-        // Initialize job application tracking
+  
+        // Retrieve application state from localStorage
+        const savedApplications = JSON.parse(localStorage.getItem("jobApplications")) || {};
+  
+        // Initialize application status
         const initialApplicationStatus = fetchedJobs.reduce((acc, job) => {
-          acc[job.id] = false;
+          acc[job.id] = savedApplications[job.id] || false;
           return acc;
         }, {});
+  
         setJobApplications(initialApplicationStatus);
       } catch (err) {
         console.error("Error fetching jobs:", err);
@@ -78,9 +105,24 @@ const JobPage = () => {
         setLoading(false);
       }
     };
-
+  
     loadJobs();
   }, []);
+
+  const handleApply = (jobId) => {
+    setJobApplications((prev) => {
+      const updatedApplications = { ...prev, [jobId]: true };
+  
+      // Save updated state to localStorage
+      localStorage.setItem("jobApplications", JSON.stringify(updatedApplications));
+  
+      return updatedApplications;
+    });
+  
+    setSelectedJobId(jobId);
+    toggleResumeModal();
+  };
+  
 
   // Memoized filtered jobs
   const filteredJobs = useMemo(() => {
@@ -141,11 +183,7 @@ const JobPage = () => {
     }
   };
 
-  // Handle Apply Button - Open Resume Modal
-  const handleApply = (jobId) => {
-    setSelectedJobId(jobId);
-    toggleResumeModal();
-  };
+  
 
   // Handle Resume File Change
   const handleFileChange = (e) => {
@@ -228,7 +266,7 @@ const JobPage = () => {
         </div>
       </div>
 
-      {/* Search and Filter Section */}
+      Search and Filter Section
       <div className="row mb-4">
         <div className="col-md-4 mb-2">
           <InputGroup>
