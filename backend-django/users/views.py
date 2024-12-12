@@ -506,6 +506,10 @@ class AlumnusProfileViewSet(viewsets.ModelViewSet):
                 alumni_data = AlumnusProfileSerializer(alumni).data  # Serialize AlumnusProfile
                 alumni_data['name'] = user_profile.full_name  # Add full name
                 alumni_data['email'] = user_profile.user.email  # Add email from User
+                if user_profile.avatar_image:
+                    alumni_data['avatar']=user_profile.avatar_image.url
+                else:
+                    alumni_data['avatar']=None
                 alumnis.append(alumni_data)
             except AlumnusProfile.DoesNotExist:
                 continue  
