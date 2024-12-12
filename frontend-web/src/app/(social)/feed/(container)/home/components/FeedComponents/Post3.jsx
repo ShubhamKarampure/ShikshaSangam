@@ -1,4 +1,5 @@
 import {
+  Button,
   Card,
   CardBody,
   CardFooter,
@@ -29,6 +30,7 @@ import { useAuthContext } from "@/context/useAuthContext";
 import { useProfileContext } from "@/context/useProfileContext";
 import { useState, useEffect, useRef, memo } from "react";
 import { likeContent,unlikeContent } from "@/api/feed.js";
+import { API_ROUTES } from "../../../../../../../routes/apiRoute.js";
 
 const LazyImage = ({ src, alt, onClick }) => {
   const [isInView, setIsInView] = useState(false);
@@ -158,6 +160,18 @@ const Post3 = memo(
       postComment(postId, profile_id, data);
 
     };
+    const handleVerify =async () => {
+      const response = await fetch(`${API_ROUTES.POSTS}${postId}/`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({isVerified: true}),
+      });
+      if(response.ok){
+        alert("Post Verified");
+      }
+    }
     const [userComment, setUserComment] = useState("");
     return (
       <>
@@ -291,12 +305,12 @@ const Post3 = memo(
                 </DropdownMenu>
               </Dropdown>
 
-              <li className="nav-item">
-                <Link className="nav-link mb-0" to="">
+              {user.role==='college_admin' && <li className="nav-item">
+                <Button className="nav-link mb-0" to="" onClick={handleVerify}>
                   <BsSendFill size={18} className="pe-1" />
-                  Send
-                </Link>
-              </li>
+                  Verify
+                </Button>
+              </li>}
             </ul>
           </CardFooter>
         </Card>

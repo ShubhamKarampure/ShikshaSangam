@@ -42,12 +42,12 @@ export const createGroup = async (formData) => {
     
   };
 
-  export const GroupParticipate = async () => {
+  export const GroupParticipate = async (groupId) => {
     const token = getTokenFromCookie(); // Retrieve token
     if (!token) throw new Error("Authorization token is missing.");
   
-    const response = await fetch(API_ROUTES.PARTICIPATE, {
-      method: "POST",
+    const response = await fetch(API_ROUTES.PARTICIPATE(groupId), {
+      method: "POST", 
       headers: {
         Authorization: `Bearer ${token}`, // Include authorization header
       },

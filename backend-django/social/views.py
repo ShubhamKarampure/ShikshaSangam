@@ -158,7 +158,7 @@ class PostViewSet(viewsets.ModelViewSet):
             post_content_type = ContentType.objects.get_for_model(Post)
             
             for post in page:
-                
+                isVerified=post.isVerified
                 user = post.userprofile
                 num_likes =  Like.objects.filter( content_type=post_content_type,object_id=post.id).count()
                 num_comments = Comment.objects.filter(post=post).count()
@@ -192,6 +192,7 @@ class PostViewSet(viewsets.ModelViewSet):
                     },
                     'comments_count': num_comments,
                     'is_liked':has_liked,
+                    'isVerified':isVerified
                 })
 
             return self.get_paginated_response(response_data)

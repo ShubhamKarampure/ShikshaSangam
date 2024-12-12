@@ -31,12 +31,7 @@ const TopBar = () => {
               </li>
             </ul>
           </Collapse>
-          <div className="ms-3 ms-lg-auto">
-            <Link className="btn btn-dark" to="/download">
-              
-              Download app
-            </Link>
-          </div>
+          
         </Container>
       </nav>
     </header>;

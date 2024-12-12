@@ -7,7 +7,7 @@ import Post2 from "./FeedComponents/Post2";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import useToggle from '@/hooks/useToggle';
-
+import {useAuthContext} from '@/context/useAuthContext'
 const Feeds = ({allPosts,setAllPosts}) => {
   
   const [isLoading, setIsLoading] = useState(true);
@@ -15,6 +15,7 @@ const Feeds = ({allPosts,setAllPosts}) => {
   const limit = 2;
   const [offset, setOffset] = useState(0);
   const [toggle,setToggle] = useState(false);
+  const {user}=useAuthContext()
   useEffect(() => {
     const fetchFeeds = async () => {
       try {
@@ -53,7 +54,7 @@ const Feeds = ({allPosts,setAllPosts}) => {
           </div>
         ))
       ) : allPosts.length > 0 ? (
-        allPosts.map((post, idx) => <Post3 {...post} key={idx} />)
+        allPosts.map((post, idx) => (user.role==='college_admin'|| post.isVerified) && <Post3 {...post} key={idx} />)
       ) : (
         <p>No posts available.</p>
       )}
