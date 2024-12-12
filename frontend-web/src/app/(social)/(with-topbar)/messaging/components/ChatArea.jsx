@@ -255,7 +255,7 @@ const ChatArea = ({ activeChat }) => {
   const [file, setFile] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [isAIProcessing, setIsAIProcessing] = useState(false);
-  const [inputColor, setInputColor] = useState("white"); // Default color
+  const [inputColor, setInputColor] = useState(theme==='light'?"black":"white"); // Default color
 
   const groq = new Groq({
     apiKey: import.meta.env.VITE_REACT_APP_GROQ_API_KEY,
@@ -305,7 +305,7 @@ const ChatArea = ({ activeChat }) => {
         variant: "danger",
       });
     } finally {
-      setInputColor("white");
+      setInputColor(theme==='light'?"black":"white");
       setIsAIProcessing(false);
     }
   };
@@ -319,7 +319,7 @@ const ChatArea = ({ activeChat }) => {
     if (value.startsWith("@writebot")) {
       setInputColor("lightgreen");
     } else {
-      setInputColor("white");
+      setInputColor(theme==='light'?"black":"white");
     }
     if (value.startsWith("@writebot ") && hasValidQuotes(value)) {
       const prompt = extractPrompt(value); // Extract prompt inside quotes
