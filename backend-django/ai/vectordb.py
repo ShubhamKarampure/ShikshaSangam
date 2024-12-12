@@ -39,12 +39,15 @@ def store_user_embedding(user_profile):
     try:
         user_embedding = UserEmbedding.objects.get(vector_id=vector_id)
         # Update the existing object
-        faiss_manager.add(embedding, id=vector_id, metadata=metadata)
+        faiss_manager.add(embedding, id=vector_id, metadata=metadata
+                          )
         user_embedding.vector = embedding.tolist()
         user_embedding.metadata = metadata
         user_embedding.save()
+
         print(f"Updated UserEmbedding for {vector_id}")
     except UserEmbedding.DoesNotExist:
+        
         # Create a new object
         UserEmbedding.objects.create(
             vector_id=vector_id,
@@ -53,6 +56,7 @@ def store_user_embedding(user_profile):
             user = user_profile 
         )
         faiss_manager.add(embedding, id=vector_id, metadata=metadata)
+
         print(f"Created new UserEmbedding for {vector_id}")
      
 
