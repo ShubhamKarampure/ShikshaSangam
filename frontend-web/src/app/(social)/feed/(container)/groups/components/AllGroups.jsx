@@ -5,12 +5,14 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Col, Modal, ModalBody, 
 import { BsGlobe, BsLock, BsPeople } from 'react-icons/bs';
 import { FaPlus } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
+import {useProfileContext} from '@/context/useProfileContext'
+import {useNotificationContext} from '@/context/useNotificationContext'
 
 // Placeholder image import
 import placeholderImg from '@/assets/images/avatar/placeholder.jpg';
 
 // Import your API functions (adjust path as needed)
-import { createGroup, getAllGroups } from '../../../../../../api/group';
+import { createGroup, getAllGroups ,GroupParticipate} from '../../../../../../api/group';
 
 // Custom hook for toggling (replace with your existing implementation)
 const useToggle = () => {
@@ -32,6 +34,11 @@ const GroupCard = ({ group }) => {
     // Prepend Cloudinary base URL
     return `https://res.cloudinary.com/${cloudName}/${partialUrl}`;
   };
+  const {profile}=useProfileContext()
+  const [isJoined,setIsJoined]=useState(group.participants.includes(profile.id)|| false)
+  const [memberNoState,setMemberNoState]=useState(group.participants.length)
+  console.log(isJoined,group.id);
+  const {showNotification}=useNotificationContext()
   // Ensure group is defined with default values
   const {
     name = 'Unnamed Group',
@@ -41,7 +48,20 @@ const GroupCard = ({ group }) => {
     banner = null,
     avatar = null
   } = group || {};
-
+  const handleJoin=async()=>{
+    try {
+      const response=await GroupParticipate(group.id)
+      console.log(response);
+      showNotification({
+        message:"You have joined the group",
+        severity:"success"
+      })
+      setMemberNoState(memberNoState+1)
+      setIsJoined(true)
+    } catch (error) {
+      console.log(error);
+    }
+  }
   return (
     <Card>
       <div
@@ -55,7 +75,7 @@ const GroupCard = ({ group }) => {
       />
       <div className="card-body text-center pt-0">
         <div className="avatar avatar-lg mt-n5 mb-3">
-          <Link to={`/feed/groups/details/${group?.id}`}>
+          <Link to={isJoined && `/feed/groups/details/${group?.id}`}>
             <img 
               className="avatar-img rounded-circle border border-white border-3 bg-white" 
               src={getFullImageUrl(avatar) || placeholderImg} 
@@ -64,7 +84,7 @@ const GroupCard = ({ group }) => {
           </Link>
         </div>
         <h5 className="mb-0">
-          <Link to={`/feed/groups/details/${group?.id}`}>{name}</Link>
+          <Link to={isJoined && `/feed/groups/details/${group?.id}`}>{name}</Link>
         </h5>
         <small className="icons-center gap-1">
           {visibility === 'private' ? <BsLock size={17} className="pe-1" /> : <BsGlobe size={18} className="pe-1" />}
@@ -72,7 +92,7 @@ const GroupCard = ({ group }) => {
         </small>
         <div className="hstack gap-2 gap-xl-3 justify-content-center mt-3">
           <div>
-            <h6 className="mb-0">{num_participants}</h6>
+            <h6 className="mb-0">{memberNoState}</h6>
             <small>Members</small>
           </div>
           <div className="vr" />
@@ -81,7 +101,7 @@ const GroupCard = ({ group }) => {
             <small>Posts per day</small>
           </div>
         </div>
-        <ul className="avatar-group list-unstyled align-items-center justify-content-center mb-0 mt-3">
+        {/* <ul className="avatar-group list-unstyled align-items-center justify-content-center mb-0 mt-3">
           {random_top_participants.slice(0, 3).map((participant, idx) => (
             <li className="avatar avatar-xs" key={idx}>
               <img 
@@ -100,11 +120,11 @@ const GroupCard = ({ group }) => {
               </div>
             </li>
           )}
-        </ul>
+        </ul> */}
       </div>
       <CardFooter className="text-center">
-        <Button variant="success-soft" size="sm">
-          Join group
+        <Button variant="success-soft" size="sm" disabled={isJoined} onClick={handleJoin}>
+          {isJoined?"Joined group":"Join group"}
         </Button>
       </CardFooter>
     </Card>

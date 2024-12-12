@@ -61,7 +61,8 @@ export const API_ROUTES = {
 
   // Jobs
   JOBS : `${API_BASE_URL}/jobs/jobs/`,
+  RESUME: `${API_BASE_URL}/jobs/applications/`,
   // Groups--
   GROUPS: `${API_BASE_URL}/forum/forums/`,
-  PARTICIPATE: `${API_BASE_URL}/forum/forums/group_id/participate/`
+  PARTICIPATE:(groupId)=> `${API_BASE_URL}/forum/forums/${groupId}/participate/`
 }
