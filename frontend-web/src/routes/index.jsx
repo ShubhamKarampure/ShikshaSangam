@@ -125,6 +125,7 @@ const PrivacyAndTermPage = lazy(
   () => import("@/app/(social)/(with-topbar)/privacy-terms/page")
 );
 
+
 const initialRoutes = [
   {
     path: "/",

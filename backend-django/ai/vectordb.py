@@ -6,12 +6,22 @@ import faiss
 import json
 import numpy as np
 from django.db.models import Case, When
+# from .pineconemanager import PineconeManager
 
 
 # Initialize FAISS
 DIMENSION = 384  # Change this based on your embedding model
 faiss_manager = FAISSManager(dimension=DIMENSION)
 post_faiss = FAISSManager(dimension=DIMENSION, db_path='post_db.faiss')
+
+# pinecone_manager = PineconeManager(
+#     api_key="your-pinecone-api-key",
+#     environment="us-west1-gcp",
+#     index_name="user-vectors",
+#     dimension=DIMENSION
+# )
+
+
 
 def store_user_embedding(user_profile):
     """
@@ -30,7 +40,7 @@ def store_user_embedding(user_profile):
         user_embedding = UserEmbedding.objects.get(vector_id=vector_id)
         # Update the existing object
         faiss_manager.add(embedding, id=vector_id, metadata=metadata)
-        user_embedding.embedding = embedding.tolist()
+        user_embedding.vector = embedding.tolist()
         user_embedding.metadata = metadata
         user_embedding.save()
         print(f"Updated UserEmbedding for {vector_id}")

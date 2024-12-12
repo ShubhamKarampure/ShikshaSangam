@@ -14,8 +14,34 @@ class JobViewSet(viewsets.ModelViewSet):
     queryset = Job.objects.all()
     serializer_class = JobSerializer
     
+    def list(self, request, *args, **kwargs):
+        """
+        List all jobs with an additional field 'has_applied' for the authenticated user.
+        """
+        queryset = self.filter_queryset(self.get_queryset())
 
-   
+        # Serialize the job data
+        serializer = self.get_serializer(queryset, many=True)
+        jobs_data = serializer.data
+
+        # Check if the authenticated user has applied for each job
+        user_profile = None
+    
+        try:
+                user_profile = request.user.user  # Assuming UserProfile is related to User via OneToOneField
+        except UserProfile.DoesNotExist:
+                pass
+
+        # Add 'has_applied' field for each job
+        for job_data, job in zip(jobs_data, queryset):
+            if user_profile:
+                job_data['has_applied'] = Application.objects.filter(job=job, applicant=user_profile).exists()
+            else:
+                job_data['has_applied'] = False
+
+        return Response(jobs_data)
+
+    
     @action(detail=True, methods=['get'])
     def applications(self, request, pk=None):
         """

@@ -14,6 +14,7 @@ class Post(models.Model):
     media = CloudinaryField('media', blank=True, null=True, folder='shikshasangam/postmedia')  # Optional media file (image or video)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    isVerified = models.BooleanField(default=False)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')

@@ -71,7 +71,7 @@ const AllGroupDetails = () => {
               </ul>
             </div>
           </div>
-          <ul className="avatar-group list-unstyled justify-content-center justify-content-md-start align-items-center mb-0 mt-3 flex-wrap">
+          {/* <ul className="avatar-group list-unstyled justify-content-center justify-content-md-start align-items-center mb-0 mt-3 flex-wrap">
             {members.map((member, idx) => (
               <li className="avatar avatar-xs" key={idx}>
                 <img
@@ -91,7 +91,7 @@ const AllGroupDetails = () => {
             <li className="small text-center">
               Carolyn Ortiz, Frances Guerrero, and 20 joined group
             </li>
-          </ul>
+          </ul> */}
 
           <div className="d-flex justify-content-center justify-content-md-start align-items-center mt-3 ms-lg-auto">
             <Button

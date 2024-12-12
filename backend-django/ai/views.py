@@ -9,6 +9,17 @@ from social.models import Follow
 from django.db.models import Q
 from users.models import UserProfile
 
+from rest_framework import viewsets
+from .models import UserEmbedding
+from .serializers import UserEmbeddingSerializer
+
+
+
+# ViewSet for UserEmbedding
+class UserEmbeddingViewSet(viewsets.ModelViewSet):
+    queryset = UserEmbedding.objects.all()
+    serializer_class = UserEmbeddingSerializer
+
 
 class RecommendationView(APIView):
     """
