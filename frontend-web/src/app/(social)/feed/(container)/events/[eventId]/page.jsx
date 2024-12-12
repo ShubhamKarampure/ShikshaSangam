@@ -145,10 +145,10 @@ const EventDetails = () => {
               <h1 className="h3 mb-1 text-white">
                 {event?.name ?? "The learning conference"}
               </h1>
-              {event?.tags?.map((tag)=>(
+              {event?.tags?.map((tag) => (
                 <span className="badge bg-danger text-danger bg-opacity-10 small m-1">
-                {tag}
-              </span>
+                  {tag}
+                </span>
               ))}
             </Col>
             <Col lg={3} className="text-lg-end">
@@ -297,16 +297,29 @@ const EventDetails = () => {
                   </p>
                 </CardHeader>
                 <CardBody className="pt-0">
-                  <iframe
-                    className="w-100 d-block rounded-bottom grayscale"
-                    height={230}
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-74.00425878428698!3d40.74076684379132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80f9cfce5383d5d!2sGoogle!5e0!3m2!1sen!2sin!4v1586000412513!5m2!1sen!2sin"
-                    style={{
-                      border: 0,
-                    }}
-                    aria-hidden="false"
-                    tabIndex={0}
-                  />
+                  {event.id === 3 ? (
+                    <iframe
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3410.9028731546946!2d75.70276397539459!3d31.251111974338325!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x391a5f9a9f13c30f%3A0xfcc692ba79f2767f!2sInnovation%20Studio%20Block%2039!5e0!3m2!1sen!2sin!4v1733962445292!5m2!1sen!2sin"
+                      style={{
+                        border: 0,
+                      }}
+                      aria-hidden="false"
+                      tabIndex={0}
+                      className="w-100 d-block rounded-bottom grayscale"
+                      height={230}
+                    ></iframe>
+                  ) : (
+                    <iframe
+                      className="w-100 d-block rounded-bottom grayscale"
+                      height={230}
+                      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3022.9663095343008!2d-74.00425878428698!3d40.74076684379132!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c259bf5c1654f3%3A0xc80f9cfce5383d5d!2sGoogle!5e0!3m2!1sen!2sin!4v1586000412513!5m2!1sen!2sin"
+                      style={{
+                        border: 0,
+                      }}
+                      aria-hidden="false"
+                      tabIndex={0}
+                    />
+                  )}
                 </CardBody>
               </Card>
             ) : (
