@@ -59,5 +59,7 @@ export const API_ROUTES = {
   NOTIFICATIONS: `${API_BASE_URL}/social/notifications/`,
 
   // Jobs
-  JOBS : `${API_BASE_URL}/jobs/jobs/`
+  JOBS : `${API_BASE_URL}/jobs/jobs/`,
+  // Groups--
+  GROUPS: `${API_BASE_URL}/forum/forums/`
 }

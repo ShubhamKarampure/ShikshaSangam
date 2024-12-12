@@ -56,10 +56,11 @@ export const createPost = async (postData) => {
     body: postData, // FormData instance
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.message || 'Failed to create user post');
-  }
+  if (response.status===400) {
+    return response.json();
+  }else if (!response.ok) {
+    throw new Error(`Error: ${response.status}`);
+  } 
 
   return response.json();
 };
