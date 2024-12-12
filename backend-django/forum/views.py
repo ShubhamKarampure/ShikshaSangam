@@ -63,36 +63,36 @@ class ForumViewSet(ModelViewSet):
 
     #     return Response({'message': 'Join request submitted.'}, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['post'], url_path='approve-access')
-    def approve_access(self, request, pk=None):
-        """
-        Approve a join request or accept an invite for a forum.
-        """
-        forum = self.get_object()
-        moderator = request.user.userprofile
+    # @action(detail=True, methods=['post'], url_path='approve-access')
+    # def approve_access(self, request, pk=None):
+    #     """
+    #     Approve a join request or accept an invite for a forum.
+    #     """
+    #     forum = self.get_object()
+    #     moderator = request.user.userprofile
 
-        # Check if the moderator has permissions
-        if not ForumMod.objects.filter(forum=forum, userprofile=moderator).exists():
-            return Response({'error': 'Only moderators can approve access.'}, status=status.HTTP_403_FORBIDDEN)
+    #     # Check if the moderator has permissions
+    #     if not ForumMod.objects.filter(forum=forum, userprofile=moderator).exists():
+    #         return Response({'error': 'Only moderators can approve access.'}, status=status.HTTP_403_FORBIDDEN)
 
-        access_id = request.data.get('access_id')
-        try:
-            access_request = ForumAccess.objects.get(id=access_id, forum=forum, status='Pending')
-            access_request.status = 'Approved'
-            access_request.save()
+    #     access_id = request.data.get('access_id')
+    #     try:
+    #         access_request = ForumAccess.objects.get(id=access_id, forum=forum, status='Pending')
+    #         access_request.status = 'Approved'
+    #         access_request.save()
 
-            # Add the user to participants
-            forum.participants.add(access_request.userprofile)
+    #         # Add the user to participants
+    #         forum.participants.add(access_request.userprofile)
 
-            return Response({'message': 'Access approved successfully.'}, status=status.HTTP_200_OK)
-        except ForumAccess.DoesNotExist:
-            return Response({'error': 'Access request not found or already processed.'}, status=status.HTTP_404_NOT_FOUND) 
+    #         return Response({'message': 'Access approved successfully.'}, status=status.HTTP_200_OK)
+    #     except ForumAccess.DoesNotExist:
+    #         return Response({'error': 'Access request not found or already processed.'}, status=status.HTTP_404_NOT_FOUND) 
 
     @action(detail=True, methods=['post'], url_path='participate')
     def participate(self, request, pk=None):
         try:
             forum = self.get_object()
-            userprofile = request.user.userprofile  # Assuming request.user is linked to UserProfile
+            userprofile = request.user.user  # Assuming request.user is linked to UserProfile
             if userprofile in forum.participants.all():
                 return Response({'message': 'Already participating'}, status=status.HTTP_200_OK)
 

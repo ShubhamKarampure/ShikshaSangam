@@ -43,5 +43,6 @@ export const uploadResume = async (formData) => {
     }
   
     return response.json();
+  
   };
   

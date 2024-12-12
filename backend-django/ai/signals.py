@@ -39,20 +39,20 @@ def update_user_embedding(sender, instance, created,  **kwargs):
         print(f"Skipping embedding update for UserProfile {instance.id}: no relevant fields updated.")
 
    # Handle updates for specific fields
-    updated_fields = kwargs.get('update_fields')
-    print(f'updated_fields = {updated_fields}')
-    relevant_fields = {"resume", "skills",'project','experience' "bio"}
+    # updated_fields = kwargs.get('update_fields')
+    # print(f'updated_fields = {updated_fields}')
+    # relevant_fields = {"resume", "skills",'project','experience' "bio"}
 
-    if updated_fields:
-        print('updated')
-        if relevant_fields.intersection(updated_fields):  # Check if relevant fields were updated
-            print(f"Updating embedding for UserProfile {instance.id}: relevant fields changed.")
-            store_user_embedding(instance)
-        else:
-            print(f"Skipping embedding update for UserProfile {instance.id}: irrelevant fields updated.")
-    else: 
+    # if updated_fields:
+    #     print('updated')
+    #     if relevant_fields.intersection(updated_fields):  # Check if relevant fields were updated
+    #         print(f"Updating embedding for UserProfile {instance.id}: relevant fields changed.")
+    #         store_user_embedding(instance)
+    #     else:
+    #         print(f"Skipping embedding update for UserProfile {instance.id}: irrelevant fields updated.")
+    # else: 
         
-        pass
+    #     pass
         # If `update_fields` is not available, assume a full save and check fields manually
         # if instance.resume or instance.preferences or instance.bio:
         #     # print(f"Updating embedding for UserProfile {instance.id}: full save detected.")
