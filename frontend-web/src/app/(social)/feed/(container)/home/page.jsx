@@ -13,17 +13,20 @@ import CreatePostCard from "@/components/cards/CreatePostCard";
 import { Link } from "react-router-dom";
 import LoadContentButton from "@/components/LoadContentButton";
 import { useState } from "react";
+import { useAuthContext } from "@/context/useAuthContext";
 
 const Home = () => {
   const [allPosts, setAllPosts] = useState([]);
+  const { user } = useAuthContext();
   return (
     <>
-      <Col md={8} lg={6} className="vstack gap-4">
-        <CreatePostCard allPosts={allPosts} setAllPosts={setAllPosts}/>
-        <Feeds allPosts={allPosts} setAllPosts={setAllPosts}/>
-      </Col>
-
-      <Col lg={3}>
+      {user.role !== "college_admin" ? (
+        <>
+        <Col md={8} lg={6} className="vstack gap-4">
+          <CreatePostCard allPosts={allPosts} setAllPosts={setAllPosts} />
+          <Feeds allPosts={allPosts} setAllPosts={setAllPosts} />
+        </Col>
+        <Col lg={3}>
         <Row className="g-4">
           <Col sm={6} lg={12}>
             <Followers />
@@ -77,6 +80,13 @@ const Home = () => {
           </Col>
         </Row>
       </Col>
+      </>
+      ) : (
+        <Col className="vstack gap-4">
+          <CreatePostCard allPosts={allPosts} setAllPosts={setAllPosts} />
+          <Feeds allPosts={allPosts} setAllPosts={setAllPosts} />
+        </Col>
+      )}
     </>
   );
 };
