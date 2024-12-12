@@ -66,7 +66,7 @@ def process_user_data(file_url, college):
         return f"Error processing file: {e}"
 
 @api_view(['POST'])
-@permission_classes([IsAuthenticated])
+# @permission_classes([IsAuthenticated])
 def upload_csv_files(request):
     """
     Handle CSV file uploads, store them in Cloudinary, and process user data.
@@ -75,8 +75,8 @@ def upload_csv_files(request):
     user_profile = user.user
 
     # Ensure only admins can upload
-    if not hasattr(user_profile, "collegeadminprofile"):
-        return JsonResponse({"error": "Only college admins can upload user data."}, status=403)
+    # if not hasattr(user_profile, "collegeadminprofile"):
+    #     return JsonResponse({"error": "Only college admins can upload user data."}, status=403)
 
     college = user_profile.college
 
