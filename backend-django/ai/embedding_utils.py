@@ -99,6 +99,7 @@ def extract_resume_text_from_url(resume_url):
         f.write(response.content)
 
     with open("temp_resume.pdf", "rb") as pdf_file:
+        if not pdf_file: return
         reader = PyPDF2.PdfReader(pdf_file)
         text = " ".join([page.extract_text() for page in reader.pages])
     return text
