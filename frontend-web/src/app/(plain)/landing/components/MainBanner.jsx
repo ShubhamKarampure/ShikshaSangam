@@ -6,8 +6,11 @@ import macPlaceholder from '@/assets/images/mockup/mac-placeholder.jpg';
 import element1 from '@/assets/images/elements/01.svg';
 import element4 from '@/assets/images/elements/04.svg';
 import element7 from '@/assets/images/elements/07.svg';
+import { useNavigate } from 'react-router-dom';
+
 
 const MainBanner = () => {
+  const navigate=useNavigate()
   return (
     <section className="pt-5 pb-0 position-relative">
       <Container>
@@ -17,7 +20,7 @@ const MainBanner = () => {
            
             <p className="lead">Explore seamless communication, event hosting, and content sharing for alumni and students.</p>
             <div className="d-sm-flex justify-content-center">
-              <button className="btn btn-primary">Join Now</button>
+              <button className="btn btn-primary" onClick={()=>navigate('/auth/sign-in')}>Join Now</button>
               <div className="mt-2 mt-sm-0 ms-sm-3">
                 <div className="hstack justify-content-center justify-content-sm-start gap-1">
                   {Array(Math.floor(4.5)).fill(0).map((_star, idx) => (

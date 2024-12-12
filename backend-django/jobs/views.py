@@ -26,7 +26,7 @@ class JobViewSet(viewsets.ModelViewSet):
 
         # Check if the authenticated user has applied for each job
         user_profile = None
-    
+        print(request.user)
         try:
                 user_profile = request.user.user  # Assuming UserProfile is related to User via OneToOneField
         except UserProfile.DoesNotExist:
