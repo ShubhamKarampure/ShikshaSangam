@@ -33,7 +33,7 @@ class ForumModSerializer(serializers.ModelSerializer):
 
 
 class ResourceSerializer(serializers.ModelSerializer):
-    posted_by = MiniUserProfileSerializer()
+    # posted_by = MiniUserProfileSerializer()
     forum = serializers.PrimaryKeyRelatedField(queryset=Forum.objects.all())
     tags = serializers.IntegerField(source='tags.count', read_only=True)
     num_upvotes = serializers.SerializerMethodField()

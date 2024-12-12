@@ -19,7 +19,7 @@ class Forum(models.Model):
     banner = CloudinaryField('forum_avatar', blank=True, null=True, folder='shikshasangam/forum_avatar') 
     avatar = CloudinaryField('forum_banner', blank=True, null=True, folder='shikshasangam/forum_banner') 
     participants = models.ManyToManyField(UserProfile, related_name='forums')
-    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True)
+    chat = models.ForeignKey(Chat, on_delete=models.SET_NULL, null=True, blank=True)
     visibility = models.CharField(
         max_length=10, 
         choices=[('public', 'Public'), ('private', 'Private')], 

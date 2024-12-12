@@ -7,17 +7,62 @@ from .models import Event, EventRegistration, EventFAQ, EventLike
 from .serializers import EventSerializer, OrganiserEventSerializer, EventFAQSerializer,EventRegistrationSerializer, EventListSerializer, EventLikeSerializer
 from rest_framework.pagination import PageNumberPagination
 from social.models import Follow
-
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.models import User
 class EventPagination(PageNumberPagination):
     page_size = 16  # Assumong 4x4 grid.,
     page_size_query_param = 'page_size'
     max_page_size = 100
 
 
+def get_user_profiles_by_emails(email_list):
+    """
+    Convert a list of emails to corresponding UserProfile objects.
+    Args:
+        email_list (list): List of emails.
+    Returns:
+        list: List of UserProfile objects for valid emails.
+        list: List of emails that didn't match any UserProfile.
+    """
+    user_profiles = []
+    invalid_emails = []
+
+    for email in email_list:
+        try:
+            user = User.objects.get(email=email)
+            user_profiles.append(user.user.id)  # Accessing the related UserProfile
+        except ObjectDoesNotExist:
+            invalid_emails.append(email)
+    
+    return user_profiles, invalid_emails
+
 class EventViewSet(viewsets.ModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
     pagination_class  = EventPagination
+
+    @action(detail=False, methods=['post'])
+    def create_with_emails(self, request):
+        emails = request.data.pop('speaker_emails')
+
+        profile_ids, _ = get_user_profiles_by_emails(emails)
+
+        request.data['speaker_profiles'] = profile_ids
+
+         # Serialize and save the Event
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            event = serializer.save()
+
+            # Return the created event and invalid emails
+            return Response({
+                "event": EventSerializer(event).data,
+                "invalid_emails": invalid_emails
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        
 
     @action(detail=False, methods=['get'])
     def list_events(self, request):
