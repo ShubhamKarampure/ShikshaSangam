@@ -81,7 +81,7 @@ const GroupCard = ({ group }) => {
             <small>Posts per day</small>
           </div>
         </div>
-        <ul className="avatar-group list-unstyled align-items-center justify-content-center mb-0 mt-3">
+        {/* <ul className="avatar-group list-unstyled align-items-center justify-content-center mb-0 mt-3">
           {random_top_participants.slice(0, 3).map((participant, idx) => (
             <li className="avatar avatar-xs" key={idx}>
               <img 
@@ -100,7 +100,7 @@ const GroupCard = ({ group }) => {
               </div>
             </li>
           )}
-        </ul>
+        </ul> */}
       </div>
       <CardFooter className="text-center">
         <Button variant="success-soft" size="sm">
