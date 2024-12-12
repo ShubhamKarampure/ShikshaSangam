@@ -91,8 +91,6 @@ const CreatePostCard = ({allPosts,setAllPosts}) => {
     if(files)
       formData.append("media",files)
     formData.append("userprofile",profile.id)
-    console.log(formData);
-    console.log(profile.id);
     
     const res=await createPost(formData)
     if(res){

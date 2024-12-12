@@ -28,7 +28,7 @@ class Event(models.Model):
     description = models.TextField(null=True, blank=True)
     summary = models.CharField(max_length=255, null=True, blank=True)
     event_plan = models.JSONField(default=dict, blank=True, null=True)  # Detailed plan of the event
-    speaker_profiles = models.ManyToManyField(UserProfile, blank=True, related_name="speaking_events")  # Linked to app users
+    speaker_profiles = models.ManyToManyField(UserProfile, blank=True, related_name="speaking_events", null=True)  # Linked to app users
     speakers = models.JSONField(default=list, blank=True)  # List of speakers or hosts
     tags = models.JSONField(default=list, blank=True)  # e.g., ["ML", "AI"]
     created_by = models.ForeignKey(UserProfile, on_delete=models.SET_NULL, null=True, related_name='created_events')

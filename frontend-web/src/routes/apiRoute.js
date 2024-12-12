@@ -47,6 +47,7 @@ export const API_ROUTES = {
   EVENT_REGISTRATION: `${API_BASE_URL}/registrations/`, // Event registration CRUD
   EVENT_FAQS: `${API_BASE_URL}/faqs/`, // Event FAQ CRUD
   EVENT_LIKES: `${API_BASE_URL}/likes/`, // Event like CRUD
+  EVENT_REGISTRATION: `${API_BASE_URL}/events/registrations/`, // Event registration CRUD
 
   UPLOAD_CSV: `${API_BASE_URL}/users/upload-user-data/`, // Upload CSV file
   FEED: `${API_BASE_URL}/social/posts/college_posts`, // Feed

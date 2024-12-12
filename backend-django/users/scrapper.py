@@ -79,7 +79,7 @@ def scrape_pfp_banner():
 
     try:
         image_div = soup.find('div', {'class': 'ph5 pb5'})
-        image_tag = image_div.find('img', {'class' : 'xGjJxwyrLnfqcnSORmaFTppGosdPvatKxpUzzI pv-top-card-profile-picture__image--show evi-image ember-view'})
+        image_tag = image_div.find('img', {'class' : 'eAySjWxRIVwfeKiCJmmtKAIeoYVYeQqjWtbXywxM pv-top-card-profile-picture__image--show evi-image ember-view'})
         pfp_uri = image_tag.get('src')
     except Exception as e:
         print(e)
@@ -152,7 +152,7 @@ def get_exp(exp):
     exp_dict['logo'] = logo  
 
     # Extract designations
-    designations = exp.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM jHYnaxErEEIsToOxOmBzTNPyzeGMGrLnXpAo'}) or []
+    designations = exp.find_all('div', {'class': 'QWgWuJFyWtIGGkmTNbugMvqsjRBAqyTAs xnYBuCyIHRgKsOsTWqdiBTWAoLWvUlw'}) or []
     item_list = []
 
     for position in designations:
@@ -180,7 +180,7 @@ def scrape_experience(sections):
             return
 
         try:
-            experiences = experience_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'})
+            experiences = experience_section.find_all('div', {'class': 'QWgWuJFyWtIGGkmTNbugMvqsjRBAqyTAs VpNeetMslzHSoNeFDsSpLgMZsZtaWgtcfFkw QVSvlhFvYQRVapSBOuBKjbkkoeGbJdXZxHfoU'})
             profile_data['experience'] = [get_exp(exp) for exp in experiences]
             #print('EXPERIENCE DONE                   =\n',profile_data['experience'])
         except Exception as e:
@@ -226,7 +226,7 @@ def scrape_projects():
     soup = BeautifulSoup(page_source, 'lxml')
 
     projects_section = soup.find('section', {'class': 'artdeco-card pb3'})
-    items = projects_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'}) if projects_section else []
+    items = projects_section.find_all('div', {'class': 'QWgWuJFyWtIGGkmTNbugMvqsjRBAqyTAs VpNeetMslzHSoNeFDsSpLgMZsZtaWgtcfFkw QVSvlhFvYQRVapSBOuBKjbkkoeGbJdXZxHfoU'}) if projects_section else []
 
     profile_data['projects'] = [get_project(item) for item in items]
     #print('PROJECT DONE                    =\n',profile_data['projects'])
@@ -267,7 +267,7 @@ def scrape_skills():
     soup = BeautifulSoup(page_source, 'lxml')
 
     skills_section = soup.find('section', {'class': 'artdeco-card pb3'})
-    items = skills_section.find_all('div', {'class': 'hIjByARIbdjBxpZeewxpGUvPxndDFsGlUM lNyCmUqrPYTMvGtyGwKovShkqizcxAclqss tXqHbVoLpPPHKZcljUANaKfoFPpttMrg'}) if skills_section else []
+    items = skills_section.find_all('div', {'class': 'QWgWuJFyWtIGGkmTNbugMvqsjRBAqyTAs VpNeetMslzHSoNeFDsSpLgMZsZtaWgtcfFkw QVSvlhFvYQRVapSBOuBKjbkkoeGbJdXZxHfoU'}) if skills_section else []
 
     profile_data['skills'] = [get_skills(item) for item in items]
     #print('Skills done             =\n',profile_data['skills'])
