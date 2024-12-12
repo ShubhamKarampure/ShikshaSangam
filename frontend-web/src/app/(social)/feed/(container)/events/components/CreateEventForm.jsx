@@ -4,10 +4,11 @@ import TextAreaFormInput from "@/components/form/TextAreaFormInput";
 import DateFormInput from "@/components/form/DateFormInput";
 import DropzoneFormInput from "@/components/form/DropzoneFormInput";
 import { BsFileEarmarkText } from "react-icons/bs";
-import { Button, Col, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
+import { Button, Col, Form, Modal, ModalBody, ModalFooter, ModalHeader, Row } from "react-bootstrap";
 import { Controller, useWatch, useForm } from "react-hook-form";
 import { useNotificationContext } from "@/context/useNotificationContext";
 import { createMeeting } from "@/api/meet";
+import { createEvent } from "@/api/events";
 
 function CreateEventForm({ isOpen, toggle }) {
   const { control, handleSubmit, setValue } = useForm();
@@ -15,7 +16,7 @@ function CreateEventForm({ isOpen, toggle }) {
   const { showNotification } = useNotificationContext();
   const VIDEOSDK_TOKEN = import.meta.env.VITE_VIDEOSDK_TOKEN;
   const [disable, setDisable] = useState(false);
-
+  const [files, setFiles] = useState(null);
   const handleMeetCreation = async () => {
     try {
       const response = await createMeeting({ token: VIDEOSDK_TOKEN });
@@ -32,9 +33,24 @@ function CreateEventForm({ isOpen, toggle }) {
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async(data) => {
     console.log("Form Data:", data);
-    showNotification("success", "Event created successfully!");
+    const newFormData=new FormData();
+    newFormData.append("name",data.title);
+    newFormData.append("mode",data.mode);
+    newFormData.append("online_meet_id",data.online_meet_id);
+    newFormData.append("description",data.description);
+    if(files){
+      newFormData.append("poster",files[0]);
+    }
+    const response=await createEvent(newFormData);
+    if(response){
+      showNotification({
+        message: "Event created successfully!",
+        variant: "success",
+      });
+      toggle();
+    }
   };
 
   return (
@@ -143,6 +159,7 @@ function CreateEventForm({ isOpen, toggle }) {
               icon={BsFileEarmarkText}
               label="Upload Banner"
               containerClassName="mb-3"
+              onFileUpload={(file) => setFiles(file)}
             />
           </Row>
         </ModalBody>
