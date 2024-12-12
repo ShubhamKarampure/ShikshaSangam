@@ -26,7 +26,7 @@ const Celebration = lazy(
 const Messaging = lazy(
   () => import("@/app/(social)/(with-topbar)/messaging/page")
 );
-const Events = lazy(
+const Events = lazy( 
   () => import("@/app/(social)/feed/(container)/events/page")
 );
 const Events2 = lazy(() => import("@/app/(social)/(with-topbar)/events/page"));
@@ -58,6 +58,7 @@ const BlogDetails = lazy(
 );
 const Meet = lazy(() => import("@/app/(social)/live/meet"));
 const JobPortal = lazy(() => import("@/app/(social)/jobPortal/page"));
+const JobDescription = lazy(() => import("@/app/(social)/jobPortal/[job_id]/components/JobDescription"));
 
 //admin pages
 const AlumniUpload = lazy(() => import("@/app/(admin)/uploadAlumni/page"));
@@ -337,7 +338,13 @@ export const socialWithTopbarRoutes = [
     path: "/job",
     name: "Job Portal",
     element: <JobPortal />,
+  },
+  {
+    path: "/job/:jobId",
+    name: "Job Description",
+    element: <JobDescription />,
   }
+
 ];
 
 export const profilePagesRoutes = [
