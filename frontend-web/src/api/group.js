@@ -41,4 +41,28 @@ export const createGroup = async (formData) => {
    
     
   };
+
+  export const GroupParticipate = async () => {
+    const token = getTokenFromCookie(); // Retrieve token
+    if (!token) throw new Error("Authorization token is missing.");
+  
+    const response = await fetch(API_ROUTES.PARTICIPATE, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`, // Include authorization header
+      },
+    });
+  
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData?.message || "Failed to fetch groups");
+    }
+    
+  
+   const responseData =  await response.json(); // Return the groups data
+   console.log("Response from getAllGroups" , responseData);
+   return responseData;
+   
+    
+  };
   
