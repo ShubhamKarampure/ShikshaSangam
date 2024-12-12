@@ -15,6 +15,20 @@ class JobViewSet(viewsets.ModelViewSet):
     serializer_class = JobSerializer
     
 
+   
+    @action(detail=True, methods=['get'])
+    def applications(self, request, pk=None):
+        """
+        Get all applications for a specific job.
+        """
+        try:
+            job = Job.objects.get(pk=pk)
+        except Job.DoesNotExist:
+            return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
+
+        applications = job.applications.all()  # Access related_name "applications"
+        serializer = ApplicationSerializer(applications, many=True)
+        return Response(serializer.data)
 
 
     # Custom action to filter by title
@@ -41,64 +55,35 @@ class JobViewSet(viewsets.ModelViewSet):
 
 
 
+
 class ApplicationViewSet(viewsets.ModelViewSet):
     queryset = Application.objects.all()
     serializer_class = ApplicationSerializer
 
-    def get_queryset(self):
+    def create(self, request, *args, **kwargs):
         """
-        Filters applications based on the logged-in user's role:
-        - If the user is a job poster, show applications for their jobs.
-        - If the user is an applicant, show their own applications.
+        Create an application for a job.
         """
-        user_profile = self.request.user.user  # Adjust based on your user model structure
-        if user_profile.role == "college_staff":  # Assuming job posters are staff
-            return self.queryset.filter(job__posted_by=user_profile)
-        else:
-            return self.queryset.filter(applicant=user_profile)
+        data = request.data
 
-    @action(detail=True, methods=["post"], url_path="upload-resume")
-    def upload_resume(self, request, pk=None):
-        """
-        If the applicant's user profile doesn't have a resume, the uploaded resume for this job
-        becomes the user's default resume.
-        """
+        # Ensure the job exists
         try:
-            application = self.get_object()
+            job = Job.objects.get(id=data.get('job'))
+        except Job.DoesNotExist:
+            return Response({"error": "Job not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            # Ensure the current user is the applicant
-            if application.applicant != request.user.user:
-                return Response(
-                    {"error": "You are not authorized to update this application."},
-                    status=status.HTTP_403_FORBIDDEN,
-                )
+        # Ensure the applicant exists
+        try:
+            applicant = UserProfile.objects.get(id=data.get('applicant'))
+        except UserProfile.DoesNotExist:
+            return Response({"error": "Applicant not found."}, status=status.HTTP_404_NOT_FOUND)
 
-            resume = request.data.get("resume")
-            if not resume:
-                return Response(
-                    {"error": "Resume file is required."},
-                    status=status.HTTP_400_BAD_REQUEST,
-                )
+        # Check if the applicant has already applied for this job
+        if Application.objects.filter(job=job, applicant=applicant).exists():
+            return Response({"error": "You have already applied for this job."}, status=status.HTTP_400_BAD_REQUEST)
 
-            # Update the application's resume
-            application.resume = resume
-            application.save()
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
-            # Set the resume to the user's profile if not already present
-            user_profile = application.applicant
-            if not user_profile.resume:
-                user_profile.resume = resume
-                user_profile.save()
-
-            return Response(
-                {"message": "Resume uploaded successfully."},
-                status=status.HTTP_200_OK,
-            )
-
-        except Application.DoesNotExist:
-            return Response(
-                {"error": "Application not found."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)

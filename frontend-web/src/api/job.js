@@ -6,7 +6,9 @@ export const fetchJobs = async () => {
     if (!response.ok) {
       throw new Error("Failed to fetch jobs.");
     }
-    return await response.json();
+    const data = await response.json();
+    console.log("Response Data:", data);
+    return data;
   } catch (error) {
     console.error("Error fetching jobs:", error);
     throw error;
@@ -33,7 +35,7 @@ export const createJob = async (jobData) => {
 };
 
 export const uploadResume = async (formData) => {
-    const response = await fetch("/api/resumes/upload", {
+    const response = await fetch(API_ROUTES.RESUME, {
       method: "POST",
       body: formData,
     });
