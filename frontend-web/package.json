@@ -27,6 +27,7 @@
     "@mui/x-charts": "^7.23.0",
     "@mui/x-date-pickers": "^7.23.0",
     "@popperjs/core": "^2.11.8",
+    "@react-google-maps/api": "^2.20.3",
     "@react-oauth/google": "^0.12.1",
     "@videosdk.live/react-sdk": "^0.1.98",
     "axios": "^1.7.9",
