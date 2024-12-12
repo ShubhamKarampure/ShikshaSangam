@@ -15,13 +15,12 @@ const LandingPage = () => {
       <main>
         <MainBanner />
         <MessagingFeature />
-        <Features />
         <Discovered />
         <Video />
         <ActionBox />
       </main>
       <Footer />
-      <QRCode />
+     
     </>;
 };
 export default LandingPage;
