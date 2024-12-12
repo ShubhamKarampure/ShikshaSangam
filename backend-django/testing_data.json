@@ -1,35 +1,108 @@
 [
     {
-        "name": "Sharvin Gavad",
-        "url": "https://www.linkedin.com/in/sharvin-gavad/",
-        "headline": "6x Hackathon Winner | Student @FRCRCE | Building @Xircls | AR Developer",
-        "pfp": "",
-        "banner": "",
-        "about": "",
+        "name": "Aayushi Jain",
+        "url": "https://www.linkedin.com/in/aayyushi-jain/",
+        "headline": "Change-Maker | NSUT CSE'26 | Web Dev | 427K+ Impressions | UI/UX | GenAI | 3X Hackathon Winner",
+        "pfp": "https://media.licdn.com/dms/image/v2/D5603AQF4PdMNR9CpJg/profile-displayphoto-shrink_400_400/profile-displayphoto-shrink_400_400/0/1719604741702?e=1739404800&v=beta&t=V1jeA0221lWjzoxj5EFSChXD2kNuQD7qK_5cc7be6cg",
+        "banner": "https://media.licdn.com/dms/image/v2/C5616AQHdOeEAqgt0Jw/profile-displaybackgroundimage-shrink_350_1400/profile-displaybackgroundimage-shrink_350_1400/0/1591296903150?e=1739404800&v=beta&t=iDjP7NoYdkY-rRuHf37LZW6t72TKIttYuLLNxFkJzV4",
+        "about": "- 3X Hackathon Winner- Tech Journey Featured in Penguin Random House Publication's Book: by Rupangi Sharma- Represented India at Sirius Centre, Sochi, Russia- Proficient in Web Development, Generative AI, UI/UX Development- Worked at Adobe as a UI/UX intern creating TechBus (an app to improve school transport)- Tech Stack: React, Tailwind CSS, Gemini API, NextJS, Python- Love writing code for startups and looking for similar opportunities- Ghostwriter for LinkedIn Accounts (Hit me up if you want to increase your reach on LinkedIn)- Building Ashjin, Personal LinkedIn Branding Agency aiming to help people find their right audience on  LinkedIn-Love communicating my ideas on DSA, internships, interviews and college life. My goal is to enhance my knowledge, gain technical expertise and one day be a startup founder. My perennial source of inspiration is Steve Jobs and I wish I find a team and garage one day like him.- 3X Hackathon Winner\n- Tech Journey Featured in Penguin Random House Publication's Book: by Rupangi Sharma\n- Represented India at Sirius Centre, Sochi, Russia\n- Proficient in Web Development, Generative AI, UI/UX Development\n- Worked at Adobe as a UI/UX intern creating TechBus (an app to improve school transport)\n- Tech Stack: React, Tailwind CSS, Gemini API, NextJS, Python\n- Love writing code for startups and looking for similar opportunities\n- Ghostwriter for LinkedIn Accounts (Hit me up if you want to increase your reach on LinkedIn)\n- Building Ashjin, Personal LinkedIn Branding Agency aiming to help people find their right audience on \n   LinkedIn\n-Love communicating my ideas on DSA, internships, interviews and college life. \n\nMy goal is to enhance my knowledge, gain technical expertise and one day be a startup founder. My perennial source of inspiration is Steve Jobs and I wish I find a team and garage one day like him.",
         "experience": [
             {
-                "company_name": "Python Developer",
-                "duration": "XIRCLS - 360° Martech Stack & Decentralized Collaborative Marketing Network  · Internship",
-                "logo": "https://media.licdn.com/dms/image/v2/C4E0BAQF5o8nno1LowA/company-logo_100_100/company-logo_100_100/0/1639034636097/xircls_logo?e=1741824000&v=beta&t=k1YMmH0VBoJn5guDrMGXsX7n1C_ZujqmGBLk9_CvdoQ",
+                "company_name": "Business Development Intern",
+                "duration": "basys.ai · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/C560BAQFHxFCYCIoHZA/company-logo_100_100/company-logo_100_100/0/1648930291261/basysai_logo?e=1741824000&v=beta&t=SC3J0iVvhSz0I66zZaNRwSmLMoAPpTiI1wALRHC2ElM",
+                "designations": []
+            },
+            {
+                "company_name": "Technical Cofounder",
+                "duration": "Happy Plum Language Learning  · Full-time",
+                "logo": "https://media.licdn.com/dms/image/v2/D4D0BAQHst9HXSHQTYw/company-logo_100_100/company-logo_100_100/0/1714607720518/happy_plum_mandarin_learning_logo?e=1741824000&v=beta&t=gNfU-vFcU6UiKihvWIcwv9mtYzD9Ox9Nygtq2TKVFfQ",
+                "designations": []
+            },
+            {
+                "company_name": "Mentor",
+                "duration": "CreatED · Part-time",
+                "logo": "https://media.licdn.com/dms/image/v2/D4D0BAQFMeCZKEhmHcQ/company-logo_100_100/company-logo_100_100/0/1704797336918?e=1741824000&v=beta&t=qYB_D2bbPJqE8JpH1a-wgGAlbO-7GO38bCI92meHWxE",
+                "designations": []
+            },
+            {
+                "company_name": "Software Developer",
+                "duration": "API Swan · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/D4D0BAQFw2fu23AsH9g/company-logo_100_100/company-logo_100_100/0/1703676319784/apiswann_logo?e=1741824000&v=beta&t=qniDta9xQcyUaqPS7-RZb_aNMkHZmdcqvtM80UwYAuc",
+                "designations": []
+            },
+            {
+                "company_name": "Frontend Intern",
+                "duration": "Staqu Technologies · Internship",
+                "logo": "https://media.licdn.com/dms/image/v2/C4D0BAQGzIRzvSxc9fA/company-logo_100_100/company-logo_100_100/0/1675922162951/staqu_technologies_logo?e=1741824000&v=beta&t=JpS8taalcZtGR_ZmqeA5ryypz7O3299oXby7r9qVgNA",
                 "designations": []
             }
         ],
-        "projects": [],
+        "projects": [
+            {
+                "project_name": "TechBUS",
+                "duration": "Apr 2020 - Present",
+                "description": "An app which improves the efficiency of the school transport system and increases the security of the school students through a variety of features."
+            },
+            {
+                "project_name": "TechCHAI",
+                "duration": "Jan 2020 - Present",
+                "description": "Associated with Atal Innovation Mission Official"
+            },
+            {
+                "project_name": "ALPHA-All Purpose Homes For ALL",
+                "duration": "Jun 2019 - Present",
+                "description": "In this project, I 3D modelled various kinds of houses. Compact houses for the city, night shelters for the poor and shape changeable houses. If such houses are introduced in market then it would prove to be highly beneficial for the over populated metro cities in India."
+            },
+            {
+                "project_name": "Waste Management System",
+                "duration": "In this project we created a working model with various units which provide easy handling of waste produced in schools and converts 90% of the waste into a resource.",
+                "description": ""
+            }
+        ],
         "skills": [
-            "Python (Programming Language)",
-            "Amazon Web Services (AWS)",
+            "Machine Learning",
+            "Generative AI",
+            "Teaching",
+            "Mentoring",
             "React.js",
-            "Django",
-            "Software Development",
-            "Django REST Framework",
-            "Flask",
-            "Software Development",
+            "javas",
+            "Data Analytics",
+            "Video Analytics",
+            "Retail Sales",
+            "Arduino IDE",
+            "Raspberry Pi",
+            "Video Editing",
+            "Academic Writing",
+            "Mobile Application Development",
+            "Public Speaking",
+            "Web Applications",
             "Python (Programming Language)",
-            "Amazon Web Services (AWS)",
+            "Communication",
+            "3D Modeling",
+            "Entrepreneurship",
+            "Machine Learning",
+            "Teaching",
+            "Data Analytics",
+            "Video Analytics",
+            "Retail Sales",
+            "Raspberry Pi",
+            "Video Editing",
+            "Academic Writing",
+            "Mobile Application Development",
+            "Web Applications",
+            "3D Modeling",
+            "Entrepreneurship",
+            "User Experience (UX)",
+            "Product Design",
             "React.js",
-            "Django",
-            "Django REST Framework",
-            "Flask"
+            "javas",
+            "Arduino IDE",
+            "Python (Programming Language)",
+            "Mentoring",
+            "Public Speaking",
+            "Communication",
+            "Generative AI"
         ]
     }
 ]
