@@ -133,8 +133,8 @@ Respond accurately based on the user’s input while ensuring the answer is spec
       ) : (
         <div
           style={{
-            width: "300px",
-            height: "400px",
+            width: "350px",
+            height: "500px",
             backgroundColor: "#001f3f",
             color: "#fff",
             borderRadius: "10px",
