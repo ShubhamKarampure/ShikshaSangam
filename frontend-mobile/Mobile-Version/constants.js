@@ -9,8 +9,8 @@ YOUR_IP = "172.26.144.90";
 
 const BACKEND_URL = "http://" + YOUR_IP + ":8000";
 
-export const CHATSCREEN_POOLING = 6000;
-export const MESSAGESCREEN_POOLING = 10000;
+export const CHATSCREEN_POOLING = 1000;
+export const MESSAGESCREEN_POOLING = 1000;
 
 export default BACKEND_URL;
 

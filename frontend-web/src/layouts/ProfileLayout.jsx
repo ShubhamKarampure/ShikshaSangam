@@ -66,7 +66,7 @@ const Experience = ({ experienceData }) => {
         </Button>
       </CardHeader>
       <CardBody className="position-relative pt-0">
-        {experienceData.map((experience, idx) => (
+        {experienceData?.map((experience, idx) => (
           <div key={idx} className="mb-4">
             {/* Company Logo and Name */}
             <div className="d-flex align-items-start">
@@ -85,7 +85,7 @@ const Experience = ({ experienceData }) => {
 
             {/* Designations */}
             <div className="mt-3">
-              {experience.designations.map((designation, designationIdx) => (
+              {experience?.designations?.map((designation, designationIdx) => (
                 <div key={designationIdx} className="mb-3">
                   <h6 className="mb-0">{designation.designation}</h6>
                   <p className="small text-muted mb-1">

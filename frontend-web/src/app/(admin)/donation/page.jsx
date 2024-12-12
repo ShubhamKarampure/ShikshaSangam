@@ -4,7 +4,7 @@ import TopHeader from '@/components/layout/TopHeader'
 import { Container } from 'react-bootstrap'
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import DonationsPage from './component/DonationsPage'
+import Home from '@/app/(social)/feed/(container)/home/page'
 
 const darkTheme = createTheme({
   palette: {
@@ -24,7 +24,7 @@ function page() {
         <Container className="py-4" style={{width:'80%'}}>
           <ThemeProvider theme={darkTheme}>
             <CssBaseline />
-            <DonationsPage />
+            < Home />
           </ThemeProvider>
         </Container>
       </div>
