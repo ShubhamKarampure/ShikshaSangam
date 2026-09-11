@@ -5,8 +5,6 @@
 # import json
 # from django.conf import settings
 
-# GEMINI_API_KEY = "AIzaSyDZWAfbJU0B_tEcCcPKtXt4AJeEhQ3WJbY"  # Replace with your key
-
 # @csrf_exempt
 # def chatbot_query(request):
 #     if request.method == "POST":
@@ -40,7 +38,10 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.conf import settings
-GEMINI_API_KEY = "AIzaSyDZWAfbJU0B_tEcCcPKtXt4AJeEhQ3WJbY"  # Replace with your key
+import os
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
 
 @csrf_exempt
 def chatbot_query(request):
